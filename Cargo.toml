@@ -1,0 +1,8 @@
+[package]
+name = "geonft"
+version = "0.1.0"
+authors = ["Brian Anderson <andersrb@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+rocket = "0.4.7"
