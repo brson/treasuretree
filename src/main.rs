@@ -4,22 +4,22 @@
 
 #[get("/api/create")]
 fn create_treasure_key() -> String {
-    panic!()
+    "create".to_string()
 }
 
 #[post("/api/plant")]
 fn plant_treasure_with_key() -> String {
-    panic!()
+    "plant".to_string()
 }
 
 #[post("/api/claim")]
 fn claim_treasure_with_key() -> String {
-    panic!()
+    "claim".to_string()
 }
 
 #[get("/")]
 fn static_root() -> String {
-    panic!()
+    "hi".to_string()
 }
 
 fn main() {
@@ -28,6 +28,7 @@ fn main() {
             create_treasure_key,
             plant_treasure_with_key,
             claim_treasure_with_key,
+            static_root,
         ])
         .launch();
 }
