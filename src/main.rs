@@ -7,6 +7,7 @@ use std::path::{PathBuf, Path};
 use anyhow::{Result, anyhow, bail};
 use include_dir::Dir;
 use rocket::response::content::Html;
+use rocket_contrib::templates::Template;
 
 static STATIC_FILES: Dir = include_dir!("./static");
 
@@ -72,6 +73,11 @@ fn static_file(path: PathBuf) -> Result<StaticResponder> {
     })
 }
 
+#[get("/t")]
+fn template() -> Template {
+    Template::render("index", ())
+}
+
 use rocket::http::ContentType;
 use rocket::response::Responder;
 
@@ -83,10 +89,12 @@ struct StaticResponder {
 
 fn main() {
     rocket::ignite()
+        .attach(Template::fairing())
         .mount("/", routes![
             root,
             static_page,
             static_file,
+            template,
             create_treasure_key,
             plant_treasure_with_key,
             claim_treasure_with_key,
