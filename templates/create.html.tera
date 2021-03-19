@@ -1,10 +1,7 @@
-<!doctype html>
+{% extends "lib/base" %}
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-  </head>
-  <body>
-    create
-  </body>
-</html>
+{% block body %}
+
+create
+
+{% endblock body %}

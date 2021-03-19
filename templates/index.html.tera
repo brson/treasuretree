@@ -1,16 +1,11 @@
-<!doctype html>
+{% extends "lib/base" %}
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-  </head>
+{% block body %}
 
-  <body>
-    <ul>
-      <li><a href="create">create</a>
-      <li><a href="plant">plant</a>
-      <li><a href="claim">claim</a>
-    </ul>
-  </body>
+<ul>
+  <li><a href="create">create</a>
+  <li><a href="plant">plant</a>
+  <li><a href="claim">claim</a>
+</ul>
 
-</html>
+{% endblock body %}
