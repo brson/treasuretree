@@ -1,3 +1,10 @@
 body {
-    background-color: lightpink;
+    padding: 1rem;
+}
+
+.qrcode-frame {
+    border: 1mm solid black;
+    margin: auto;
+    padding: 1rem;
+    text-align: center;
 }

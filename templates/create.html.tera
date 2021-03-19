@@ -2,8 +2,20 @@
 
 {% block body %}
 
-<h1>Your new Treasure Key (QR Code)</h1>
+<div class="qrcode-frame">
+  <img class="qrcode" src="qrcode/qrcode.png" alt="QR Code">
 
-<img class="qrcode" src="qrcode/qrcode.png" alt="QR Code">
+  <p>You've found a <em>NFTy Treasure</em>!</p>
+
+  <p>Scan the QR code to claim it.</p>
+
+  <p>
+    Or visit<br\>
+    https://www.nfty-treasure.net/claim?key=foobarbaz
+  </p>
+
+  <p>www.nfty-treasure.net</p>
+
+</div>
 
 {% endblock body %}
