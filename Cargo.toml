@@ -5,4 +5,7 @@ authors = ["Brian Anderson <andersrb@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+anyhow = "1.0.38"
+include_dir = "0.6.0"
+log = "0.4.14"
 rocket = "0.4.7"
