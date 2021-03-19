@@ -2,6 +2,8 @@
 
 {% block body %}
 
-create
+<h1>Your new Treasure Key (QR Code)</h1>
+
+<img class="qrcode" src="qrcode/qrcode.png" alt="QR Code">
 
 {% endblock body %}
