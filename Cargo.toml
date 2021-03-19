@@ -8,3 +8,6 @@ edition = "2018"
 anyhow = "1.0.38"
 include_dir = "0.6.0"
 rocket = "0.4.7"
+qrcodegen = "1.6.0"
+
+

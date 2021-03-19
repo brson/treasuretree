@@ -241,6 +241,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "include_dir",
+ "qrcodegen",
  "rocket",
 ]
 
@@ -517,6 +518,12 @@ checksum = "1e0704ee1a7e00d7bb417d0770ea303c1bccbabf0ef1667dae92b5967f5f8a71"
 dependencies = [
  "unicode-xid 0.2.1",
 ]
+
+[[package]]
+name = "qrcodegen"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d24ea38b2345f15533e6668104bec0136883404287e095f15f9ea2522e2b4b6c"
 
 [[package]]
 name = "quote"

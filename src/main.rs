@@ -7,7 +7,7 @@ use std::path::{PathBuf, Path};
 use anyhow::{Result, anyhow, bail};
 use include_dir::Dir;
 use rocket::response::content::Html;
-
+    
 static STATIC_FILES: Dir = include_dir!("./static");
 
 #[get("/api/create")]
@@ -75,6 +75,8 @@ fn static_file(path: PathBuf) -> Result<StaticResponder> {
 use rocket::http::ContentType;
 use rocket::response::Responder;
 
+mod treasure_qrcode;
+
 #[derive(Responder)]
 struct StaticResponder {
     content: Vec<u8>,
@@ -93,3 +95,6 @@ fn main() {
         ])
         .launch();
 }
+
+
+
