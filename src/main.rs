@@ -47,6 +47,8 @@ fn static_page(page: String) -> Result<Html<String>> {
 #[get("/<path..>", rank = 0)]
 fn static_file(path: PathBuf) -> Result<StaticResponder> {
 
+    assert!(path.is_relative());
+
     let ext = path.extension()
         .map(|ostr| ostr.to_str())
         .flatten();
