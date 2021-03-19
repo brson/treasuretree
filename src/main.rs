@@ -3,7 +3,7 @@
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate include_dir;
 
-use std::path::PathBuf;
+use std::path::{PathBuf, Path};
 use anyhow::{Result, anyhow};
 use include_dir::Dir;
 use log::info;
@@ -33,11 +33,39 @@ fn static_root() -> Html<String> {
 }
 
 #[get("/<path..>")]
-fn static_file(path: PathBuf) -> Result<String> {
-    let file = STATIC_FILES.get_file(path)
+fn static_file(path: PathBuf) -> Result<StaticResponder> {
+
+    let path = if path == Path::new("") {
+        PathBuf::from("/index.html")
+    } else {
+        path
+    };
+
+    let ext = path.extension()
+        .map(|ostr| ostr.to_str())
+        .flatten();
+
+    let file = STATIC_FILES.get_file(&path)
         .ok_or_else(|| anyhow!("not found"))?;
 
-    Ok(file.contents_utf8().unwrap().to_string())
+    let content = file.contents().to_vec();
+    let content_type = ext.map(|ext| ContentType::from_extension(ext))
+        .flatten()
+        .ok_or_else(|| anyhow!("can't determine content type"))?;
+
+    Ok(StaticResponder {
+        content,
+        content_type,
+    })
+}
+
+use rocket::http::ContentType;
+use rocket::response::Responder;
+
+#[derive(Responder)]
+struct StaticResponder {
+    content: Vec<u8>,
+    content_type: ContentType,
 }
 
 fn main() {
