@@ -1,0 +1,11 @@
+{% extends "lib/base" %}
+
+{% block body %}
+
+<ul>
+  <li><a href="create">create</a>
+  <li><a href="plant">plant</a>
+  <li><a href="claim">claim</a>
+</ul>
+
+{% endblock body %}

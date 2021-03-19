@@ -1,0 +1,7 @@
+{% extends "lib/base" %}
+
+{% block body %}
+
+plant
+
+{% endblock body %}

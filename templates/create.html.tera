@@ -1,0 +1,7 @@
+{% extends "lib/base" %}
+
+{% block body %}
+
+create
+
+{% endblock body %}

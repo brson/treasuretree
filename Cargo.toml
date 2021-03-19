@@ -6,8 +6,17 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1.0.38"
-include_dir = "0.6.0"
 rocket = "0.4.7"
+serde_json = "1.0.64"
 qrcodegen = "1.6.0"
+
+[dependencies.serde]
+version = "1.0.124"
+features = ["derive"]
+
+[dependencies.rocket_contrib]
+version = "0.4.7"
+default-features = false
+features = ["tera_templates"]
 
 
