@@ -4,9 +4,8 @@
 #[macro_use] extern crate include_dir;
 
 use std::path::{PathBuf, Path};
-use anyhow::{Result, anyhow};
+use anyhow::{Result, anyhow, bail};
 use include_dir::Dir;
-use log::info;
 use rocket::response::content::Html;
 
 static STATIC_FILES: Dir = include_dir!("./static");
@@ -27,23 +26,35 @@ fn claim_treasure_with_key() -> String {
 }
 
 #[get("/")]
-fn static_root() -> Html<String> {
+fn root() -> Html<String> {
     let file = STATIC_FILES.get_file("index.html").unwrap();
     Html(file.contents_utf8().unwrap().to_string())
 }
 
-#[get("/<path..>")]
-fn static_file(path: PathBuf) -> Result<StaticResponder> {
+#[get("/<page>")]
+fn static_page(page: String) -> Result<Html<String>> {
+    let path = &Path::new(&page);
+    let path = path.with_extension("html");
 
-    let path = if path == Path::new("") {
-        PathBuf::from("/index.html")
-    } else {
-        path
-    };
+    let file = STATIC_FILES.get_file(&path)
+        .ok_or_else(|| anyhow!("not found"))?;
+
+    let content = file.contents_utf8().expect("utf8");
+
+    Ok(Html(content.to_owned()))
+}
+
+#[get("/<path..>", rank = 0)]
+fn static_file(path: PathBuf) -> Result<StaticResponder> {
 
     let ext = path.extension()
         .map(|ostr| ostr.to_str())
         .flatten();
+
+    // HTML content is served from URI's with no file extension
+    if ext == Some("html") {
+        bail!("not found");
+    }
 
     let file = STATIC_FILES.get_file(&path)
         .ok_or_else(|| anyhow!("not found"))?;
@@ -71,11 +82,12 @@ struct StaticResponder {
 fn main() {
     rocket::ignite()
         .mount("/", routes![
+            root,
+            static_page,
+            static_file,
             create_treasure_key,
             plant_treasure_with_key,
             claim_treasure_with_key,
-            static_root,
-            static_file,
         ])
         .launch();
 }
