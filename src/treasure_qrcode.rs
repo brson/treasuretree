@@ -1,4 +1,4 @@
-use qrcodegen::QrCode as QrCode;
+use qrcodegen::QrCode;
 use qrcodegen::QrCodeEcc;
 use qrcodegen::QrSegment;
 use rand::prelude::*;
@@ -6,10 +6,10 @@ use rand::prelude::*;
 #[derive(Debug)]
 pub struct UniqueCode {
     hex: Vec<u8>,
-    qrcode: String,  // todo: change type to QrCode
+    qrcode: String, // todo: change type to QrCode
     url: String,
 }
-    
+
 pub fn create_qr_code() -> Vec<UniqueCode> {
     init_random_qrcode(10)
 }
@@ -22,9 +22,8 @@ fn init_random_qrcode(quantity: i32) -> Vec<UniqueCode> {
         let mut nums = [0u8; 20];
         rng.fill(&mut nums[..]);
 
-        let qr = QrCode::encode_binary(
-            &nums, QrCodeEcc::Low).unwrap();
-        
+        let qr = QrCode::encode_binary(&nums, QrCodeEcc::Low).unwrap();
+
         qrcodes.push(UniqueCode {
             hex: nums.to_vec(),
             qrcode: qr.to_svg_string(2),
@@ -32,7 +31,7 @@ fn init_random_qrcode(quantity: i32) -> Vec<UniqueCode> {
         });
     }
 
-//    println!("{:#?}", &qrcodes);
+    //    println!("{:#?}", &qrcodes);
     qrcodes
 }
 

@@ -40,16 +40,16 @@ mod treasure_qrcode;
 
 fn main() {
     treasure_qrcode::create_qr_code();
-    /*
-        rocket::ignite()
-            .attach(Template::fairing())
-            .mount("/", routes![
-                root,
-                static_page,
-                create_treasure_key,
-                plant_treasure_with_key,
-                claim_treasure_with_key,
-            ])
-            .launch();
-    */
+
+    rocket::ignite()
+        .attach(Template::fairing())
+        .mount("/", routes![
+            root,
+            static_page,
+            create_treasure_key,
+            plant_treasure_with_key,
+            claim_treasure_with_key,
+        ])
+        .launch();
+
 }
