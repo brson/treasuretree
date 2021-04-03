@@ -1,15 +1,15 @@
 #![allow(unused)]
-
 #![feature(decl_macro, proc_macro_hygiene)]
 
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate rocket;
 
-use std::path::{PathBuf, Path};
-use anyhow::{Result, anyhow, bail};
+use anyhow::{anyhow, bail, Result};
 use rocket::response::content::Html;
 use rocket_contrib::templates::Template;
 use serde::Serialize;
 use serde_json::json;
+use std::path::{Path, PathBuf};
 
 #[get("/api/create")]
 fn create_treasure_key() -> String {
@@ -39,17 +39,17 @@ fn static_page(page: String) -> Template {
 mod treasure_qrcode;
 
 fn main() {
-    rocket::ignite()
-        .attach(Template::fairing())
-        .mount("/", routes![
-            root,
-            static_page,
-            create_treasure_key,
-            plant_treasure_with_key,
-            claim_treasure_with_key,
-        ])
-        .launch();
+    treasure_qrcode::create_qr_code();
+    /*
+        rocket::ignite()
+            .attach(Template::fairing())
+            .mount("/", routes![
+                root,
+                static_page,
+                create_treasure_key,
+                plant_treasure_with_key,
+                claim_treasure_with_key,
+            ])
+            .launch();
+    */
 }
-
-
-
