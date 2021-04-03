@@ -36,6 +36,17 @@ fn static_page(page: String) -> Template {
     Template::render(page, json!({}))
 }
 
+#[get("/css/<file>")]
+fn static_css(file: String) -> Template {
+    let file = &Path::new(&file);
+
+    assert!(file.file_name().is_some());
+
+    let template_name = file.with_extension("");
+    let template_name = format!("css/{}", template_name.display());
+    Template::render(template_name, json!({}))
+}
+
 mod treasure_qrcode;
 
 fn main() {
@@ -46,6 +57,7 @@ fn main() {
         .mount("/", routes![
             root,
             static_page,
+            static_css,
             create_treasure_key,
             plant_treasure_with_key,
             claim_treasure_with_key,
