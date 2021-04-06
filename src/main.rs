@@ -11,17 +11,18 @@ use serde::Serialize;
 use serde_json::json;
 use std::path::{Path, PathBuf};
 use treasure_qrcode::create_qr_code;
+use rocket_contrib::json::Json;
+
+#[derive(Debug, Serialize)]
+pub struct UniqueCodeJson {
+    hex: String,
+    qrcode: String,
+    url: String,
+}
+
 
 #[get("/api/create")]
-fn create_treasure_key() -> String {
-
-    #[derive(Debug)]
-    pub struct UniqueCodeJson {
-        hex: String,
-        qrcode: String,
-        url: String,
-    }
-
+fn create_treasure_key() -> Json<UniqueCodeJson> {
     let init_keys = create_qr_code();
     let first_key = &init_keys[0];
 
@@ -30,8 +31,9 @@ fn create_treasure_key() -> String {
         qrcode: first_key.qrcode.to_svg_string(2),
         url: first_key.url.clone(),
     };
-    
-    format!("{:#?}", first_key)
+
+//    let res = serde_json::to_string_pretty(&first_key);
+    Json(first_key)
 }
 
 #[post("/api/plant")]
