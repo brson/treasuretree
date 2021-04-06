@@ -5,9 +5,9 @@ use rand::prelude::*;
 use std::fmt;
 
 pub struct UniqueCode {
-    hex: Vec<u8>,
-    qrcode: QrCode,
-    url: String,
+    pub hex: Vec<u8>,
+    pub qrcode: QrCode,
+    pub url: String,
 }
 
 impl fmt::Debug for UniqueCode {

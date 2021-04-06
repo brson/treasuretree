@@ -14,11 +14,24 @@ use treasure_qrcode::create_qr_code;
 
 #[get("/api/create")]
 fn create_treasure_key() -> String {
-    //    "create".to_string()
+
+    #[derive(Debug)]
+    pub struct UniqueCodeJson {
+        hex: String,
+        qrcode: String,
+        url: String,
+    }
+
     let init_keys = create_qr_code();
     let first_key = &init_keys[0];
 
-    format!("{:?}", first_key)
+    let first_key = UniqueCodeJson {
+        hex: hex::encode(&first_key.hex),
+        qrcode: first_key.qrcode.to_svg_string(2),
+        url: first_key.url.clone(),
+    };
+    
+    format!("{:#?}", first_key)
 }
 
 #[post("/api/plant")]
