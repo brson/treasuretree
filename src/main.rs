@@ -10,10 +10,15 @@ use rocket_contrib::templates::Template;
 use serde::Serialize;
 use serde_json::json;
 use std::path::{Path, PathBuf};
+use treasure_qrcode::create_qr_code;
 
 #[get("/api/create")]
 fn create_treasure_key() -> String {
-    "create".to_string()
+    //    "create".to_string()
+    let init_keys = create_qr_code();
+    let first_key = &init_keys[0];
+
+    format!("{:?}", first_key)
 }
 
 #[post("/api/plant")]
