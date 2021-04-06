@@ -1,0 +1,7 @@
+console.log("before click");
+let createButton = document.getElementById("create-button");
+console.log(createButton);
+createButton.addEventListener("click", () => {
+    console.log("click");
+});
+

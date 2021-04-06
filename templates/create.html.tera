@@ -2,6 +2,10 @@
 
 {% block body %}
 
+<div>
+  <input type="button" id="create-button" value="Create QR Code">
+</div>
+
 <div class="qrcode-frame">
   <img class="qrcode" src="qrcode/qrcode.png" alt="QR Code">
 
@@ -17,5 +21,7 @@
   <p>www.nfty-treasure.net</p>
 
 </div>
+
+<script src="js/create.js"></script>
 
 {% endblock body %}

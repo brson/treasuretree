@@ -20,7 +20,6 @@ pub struct UniqueCodeJson {
     url: String,
 }
 
-
 #[get("/api/create")]
 fn create_treasure_key() -> Json<UniqueCodeJson> {
     let init_keys = create_qr_code();
@@ -32,7 +31,6 @@ fn create_treasure_key() -> Json<UniqueCodeJson> {
         url: first_key.url.clone(),
     };
 
-//    let res = serde_json::to_string_pretty(&first_key);
     Json(first_key)
 }
 
@@ -67,6 +65,17 @@ fn static_css(file: String) -> Template {
     Template::render(template_name, json!({}))
 }
 
+#[get("/js/<file>")]
+fn static_js(file: String) -> Template {
+    let file = &Path::new(&file);
+
+    assert!(file.file_name().is_some());
+
+    let template_name = file.with_extension("");
+    let template_name = format!("js/{}", template_name.display());
+    Template::render(template_name, json!({}))
+}
+
 mod treasure_qrcode;
 
 fn main() {
@@ -78,6 +87,7 @@ fn main() {
             root,
             static_page,
             static_css,
+            static_js,
             create_treasure_key,
             plant_treasure_with_key,
             claim_treasure_with_key,
