@@ -63,5 +63,4 @@ fn main() {
             claim_treasure_with_key,
         ])
         .launch();
-
 }

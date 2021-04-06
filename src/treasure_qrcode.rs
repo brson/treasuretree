@@ -2,12 +2,22 @@ use qrcodegen::QrCode;
 use qrcodegen::QrCodeEcc;
 use qrcodegen::QrSegment;
 use rand::prelude::*;
+use std::fmt;
 
-#[derive(Debug)]
 pub struct UniqueCode {
     hex: Vec<u8>,
-    qrcode: String, // todo: change type to QrCode
+    qrcode: QrCode,
     url: String,
+}
+
+impl fmt::Debug for UniqueCode {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("UniqueCode")
+            .field("hex", &self.hex)
+            .field("qrcode", &"qrcode_placeholder")
+            .field("url", &self.url)
+            .finish()
+    }
 }
 
 pub fn create_qr_code() -> Vec<UniqueCode> {
@@ -26,12 +36,12 @@ fn init_random_qrcode(quantity: i32) -> Vec<UniqueCode> {
 
         qrcodes.push(UniqueCode {
             hex: nums.to_vec(),
-            qrcode: qr.to_svg_string(2),
+            qrcode: qr, // qr.to_svg_string(2),
             url: "placeholder".to_string(), // "domain?key=".to_string() + &nums,
         });
     }
 
-    //    println!("{:#?}", &qrcodes);
+    println!("{:#?}", &qrcodes);
     qrcodes
 }
 
