@@ -10,6 +10,6 @@ createButton.addEventListener("click", async () => {
     let jsonResponse = await response.json();
     console.log(jsonResponse);
 
-    // todo: insert response to dom
+    document.getElementById("display-qrcode").innerHTML = jsonResponse.qrcode;
 });
 

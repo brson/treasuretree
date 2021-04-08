@@ -4,6 +4,7 @@
 
 <div>
   <input type="button" id="create-button" value="Create QR Code">
+  <p id="display-qrcode"></p>
 </div>
 
 <div class="qrcode-frame">

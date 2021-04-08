@@ -5,7 +5,7 @@ use rand::prelude::*;
 use std::fmt;
 
 pub struct UniqueCode {
-    pub hex: Vec<u8>,
+    pub hex: String,
     pub qrcode: QrCode,
     pub url: String,
 }
@@ -32,12 +32,14 @@ fn init_random_qrcode(quantity: i32) -> Vec<UniqueCode> {
         let mut nums = [0u8; 20];
         rng.fill(&mut nums[..]);
 
-        let qr = QrCode::encode_binary(&nums, QrCodeEcc::Low).unwrap();
-
+        let hex_string = hex::encode(&nums);
+        let url = format!("https://rib.rs?key={}", &hex_string);
+        let qrcode = QrCode::encode_text(&url, QrCodeEcc::Low).unwrap();
+        
         qrcodes.push(UniqueCode {
-            hex: nums.to_vec(),
-            qrcode: qr, // qr.to_svg_string(2),
-            url: "placeholder".to_string(), // "domain?key=".to_string() + &nums,
+            hex: hex_string.clone(),
+            qrcode,
+            url,
         });
     }
 

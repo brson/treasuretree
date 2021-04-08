@@ -26,8 +26,9 @@ fn create_treasure_key() -> Json<UniqueCodeJson> {
     let first_key = &init_keys[0];
 
     let first_key = UniqueCodeJson {
-        hex: hex::encode(&first_key.hex),
-        qrcode: first_key.qrcode.to_svg_string(2),
+        hex: first_key.hex.clone(),
+        // 50 is the size, bigger number means smaller size on the page
+        qrcode: first_key.qrcode.to_svg_string(50), 
         url: first_key.url.clone(),
     };
 
