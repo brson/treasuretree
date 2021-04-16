@@ -7,7 +7,7 @@ extern crate rocket;
 use anyhow::{anyhow, bail, Result};
 use rocket::response::content::Html;
 use rocket_contrib::{templates::Template, json::Json};
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 use serde_json::json;
 use std::path::{Path, PathBuf};
 use treasure_qrcode::create_qr_code;
@@ -42,8 +42,54 @@ fn create_treasure_key() -> Json<UniqueCodeJson> {
     Json(first_key)
 }
 
-#[post("/api/plant", data = "<paste>")]
-fn plant_treasure_with_key(paste: Data) -> Result<String, std::io::Error> {
+#[derive(Deserialize)]
+struct PlantInfoRequest {
+    /// An image, base64 encoded
+    base64_image: String,
+    /// A private key, hex encoded
+    ///
+    /// FIXME: Should be a pub-key, derived on the client
+    private_key: String,
+}
+
+/// Stores a treasure and associated key
+///
+/// Stores the json to disk,
+/// with the private key (pubkey in the future) as the name of the file.
+/// The key can be used later to retrieve (or claim) the treasure.
+#[post("/api/plant", data = "<plant_info>")]
+fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Result<()> {
+    panic!()
+}
+
+/// Return an html page displaying a treasure
+///
+/// `private_key` is hex encoded.
+///
+/// The page includes an `img` tag with the url of the treasure image,
+/// and displays the private (public) key of the treasure.
+///
+/// Remember to percent-decode the rawstr.
+///
+/// Load the template from templates/treasure/template.html.tera.
+#[get("/treasure/<private_key>")]
+fn retrieve_treasure(private_key: &RawStr) -> Result<Template> {
+    panic!()
+}
+
+/// A treasure's pic.
+///
+/// The `private_key` is hex encoded.
+///
+/// Need to set the mime/type.
+/// For now set to image/jpeg.
+#[get("/treasure-pics/<private_key>")]
+fn retrieve_treasure_pic(private_key: &RawStr) -> Result<File> {
+    panic!()
+}
+
+#[post("/api/upload-test", data = "<paste>")]
+fn upload_test(paste: Data) -> Result<String, std::io::Error> {
     let new_treasure = Treasure::new(12);
     let filename = format!("treasure/{treasure_id}", treasure_id = new_treasure);
     let url = format!("{host}/treasure/{treasure_id}\n", host = "http://localhost:8000", treasure_id = new_treasure);
@@ -53,8 +99,8 @@ fn plant_treasure_with_key(paste: Data) -> Result<String, std::io::Error> {
     Ok(url)
 }
 
-#[get("/treasure/<treasure_id>")]
-fn retrieve_treasure(treasure_id: &RawStr) -> Option<File> {
+#[get("/treasure-test/<treasure_id>")]
+fn retrieve_treasure_test(treasure_id: &RawStr) -> Option<File> {
     let filename = format!("treasure/{treasure_id}", treasure_id = treasure_id);
     File::open(&filename).ok()
 }
@@ -106,8 +152,11 @@ fn main() {
             static_js,
             create_treasure_key,
             plant_treasure_with_key,
+            retrieve_treasure,
+            retrieve_treasure_pic,
+            upload_test,
+            retrieve_treasure_test,
             claim_treasure_with_key,
-            retrieve_treasure
         ])
         .launch();
 }
