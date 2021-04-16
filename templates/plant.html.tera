@@ -2,6 +2,10 @@
 
 {% block body %}
 
-plant
+<div>
+  <input type="button", id="plant-button" value="Plant Treasure">
+</div>
+
+<script src="js/plant.js"></script>
 
 {% endblock body %}

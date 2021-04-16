@@ -6,12 +6,19 @@ extern crate rocket;
 
 use anyhow::{anyhow, bail, Result};
 use rocket::response::content::Html;
-use rocket_contrib::templates::Template;
+use rocket_contrib::{templates::Template, json::Json};
 use serde::Serialize;
 use serde_json::json;
 use std::path::{Path, PathBuf};
 use treasure_qrcode::create_qr_code;
-use rocket_contrib::json::Json;
+use treasure::Treasure;
+
+use rocket::Data;
+use std::fs::File;
+use rocket::http::RawStr;
+
+mod treasure_qrcode;
+mod treasure;
 
 #[derive(Debug, Serialize)]
 pub struct UniqueCodeJson {
@@ -35,9 +42,21 @@ fn create_treasure_key() -> Json<UniqueCodeJson> {
     Json(first_key)
 }
 
-#[post("/api/plant")]
-fn plant_treasure_with_key() -> String {
-    "plant".to_string()
+#[post("/api/plant", data = "<paste>")]
+fn plant_treasure_with_key(paste: Data) -> Result<String, std::io::Error> {
+    let new_treasure = Treasure::new(12);
+    let filename = format!("treasure/{treasure_id}", treasure_id = new_treasure);
+    let url = format!("{host}/treasure/{treasure_id}\n", host = "http://localhost:8000", treasure_id = new_treasure);
+    println!("{}", &url);
+    paste.stream_to_file(Path::new(&filename))?;
+
+    Ok(url)
+}
+
+#[get("/treasure/<treasure_id>")]
+fn retrieve_treasure(treasure_id: &RawStr) -> Option<File> {
+    let filename = format!("treasure/{treasure_id}", treasure_id = treasure_id);
+    File::open(&filename).ok()
 }
 
 #[post("/api/claim")]
@@ -77,11 +96,7 @@ fn static_js(file: String) -> Template {
     Template::render(template_name, json!({}))
 }
 
-mod treasure_qrcode;
-
 fn main() {
-    treasure_qrcode::create_qr_code();
-
     rocket::ignite()
         .attach(Template::fairing())
         .mount("/", routes![
@@ -92,6 +107,7 @@ fn main() {
             create_treasure_key,
             plant_treasure_with_key,
             claim_treasure_with_key,
+            retrieve_treasure
         ])
         .launch();
 }
