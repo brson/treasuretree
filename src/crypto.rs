@@ -7,7 +7,7 @@ use bech32::{FromBase32, ToBase32, Variant};
 pub fn new_secret_key() -> Result<String> {
     let secret_key = SecretKey::generate(&mut thread_rng());
     let bytes = secret_key.as_bytes();
-    let encoded = bech32::encode("gt", bytes.to_base32(), Variant::Bech32)?;
+    let encoded = bech32::encode("gt", bytes.to_base32(), Variant::Bech32m)?;
     Ok(encoded)
 }
 
