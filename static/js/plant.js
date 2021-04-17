@@ -19,13 +19,17 @@ plantButton.addEventListener("click", async () => {
 let imageUploadButton = document.getElementById("image-upload-button");
 
 imageUploadButton.addEventListener("change", async () => {
+    let imgElt = document.getElementById("treasure-image");
+
     if (imageUploadButton.files.length == 0) {
         treasureImageBin = null;
+        imgElt.src = "";
         return;
     }
 
     let file = imageUploadButton.files[0];
     let bin = await file.arrayBuffer();
     let blob = new Blob([bin], { type: file.type });
-    //let urlCreator = window.URL
+
+    imgElt.src = URL.createObjectURL(blob);
 });
