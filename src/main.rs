@@ -23,31 +23,31 @@ mod treasure;
 
 #[derive(Debug, Serialize)]
 pub struct UniqueCodeJson {
-    hex: String,
+    secret_key: String,
     qrcode: String,
     url: String,
 }
 
 #[get("/api/create")]
-fn create_treasure_key() -> Json<UniqueCodeJson> {
-    let init_keys = create_qr_code();
+fn create_treasure_key() -> Result<Json<UniqueCodeJson>> {
+    let init_keys = create_qr_code()?;
     let first_key = &init_keys[0];
 
     let first_key = UniqueCodeJson {
-        hex: first_key.hex.clone(),
+        secret_key: first_key.secret_key.clone(),
         // 50 is the size, bigger number means smaller size on the page
         qrcode: first_key.qrcode.to_svg_string(50), 
         url: first_key.url.clone(),
     };
 
-    Json(first_key)
+    Ok(Json(first_key))
 }
 
 #[derive(Deserialize)]
 struct PlantInfoRequest {
-    /// An image, base64 encoded
-    base64_image: String,
-    /// A private key, hex encoded
+    /// An image, bech32 encoded
+    image: String,
+    /// A private key, bech32 encoded
     ///
     /// FIXME: Should be a pub-key, derived on the client
     private_key: String,
@@ -65,7 +65,7 @@ fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Result<()> {
 
 /// Return an html page displaying a treasure
 ///
-/// `private_key` is hex encoded.
+/// `private_key` is bech32 encoded.
 ///
 /// The page includes an `img` tag with the url of the treasure image,
 /// and displays the private (public) key of the treasure.
@@ -80,7 +80,7 @@ fn retrieve_treasure(private_key: &RawStr) -> Result<Template> {
 
 /// A treasure's pic.
 ///
-/// The `private_key` is hex encoded.
+/// The `private_key` is bech32 encoded.
 ///
 /// Need to set the mime/type.
 /// For now set to image/jpeg.

@@ -1,3 +1,4 @@
+use anyhow::Result;
 use qrcodegen::QrCode;
 use qrcodegen::QrCodeEcc;
 use qrcodegen::QrSegment;
@@ -6,7 +7,7 @@ use std::fmt;
 use crate::crypto;
 
 pub struct UniqueCode {
-    pub hex: String,
+    pub secret_key: String,
     pub qrcode: QrCode,
     pub url: String,
 }
@@ -14,34 +15,34 @@ pub struct UniqueCode {
 impl fmt::Debug for UniqueCode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("UniqueCode")
-            .field("hex", &self.hex)
+            .field("secret_key", &self.secret_key)
             .field("qrcode", &"qrcode_placeholder")
             .field("url", &self.url)
             .finish()
     }
 }
 
-pub fn create_qr_code() -> Vec<UniqueCode> {
+pub fn create_qr_code() -> Result<Vec<UniqueCode>> {
     init_random_qrcode(10)
 }
 
-fn init_random_qrcode(quantity: i32) -> Vec<UniqueCode> {
+fn init_random_qrcode(quantity: i32) -> Result<Vec<UniqueCode>> {
     let mut qrcodes = Vec::new();
 
     for i in 0..quantity {
-        let hex_string = crypto::new_secret_key_hex();
-        let url = format!("https://rib.rs?key={}", &hex_string);
+        let secret_key_string = crypto::new_secret_key()?;
+        let url = format!("https://rib.rs?key={}", &secret_key_string);
         let qrcode = QrCode::encode_text(&url, QrCodeEcc::Low).unwrap();
         
         qrcodes.push(UniqueCode {
-            hex: hex_string.clone(),
+            secret_key: secret_key_string.clone(),
             qrcode,
             url,
         });
     }
 
     println!("{:#?}", &qrcodes);
-    qrcodes
+    Ok(qrcodes)
 }
 
 // Prints the given QrCode object to the console.
