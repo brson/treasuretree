@@ -7,6 +7,7 @@ extern crate rocket;
 use anyhow::{anyhow, bail, Result};
 use rocket::response::content::Html;
 use rocket_contrib::{templates::Template, json::Json};
+use rocket_contrib::serve::StaticFiles;
 use serde::{Serialize, Deserialize};
 use serde_json::json;
 use std::path::{Path, PathBuf};
@@ -121,36 +122,16 @@ fn static_page(page: String) -> Template {
     Template::render(page, json!({}))
 }
 
-#[get("/css/<file>")]
-fn static_css(file: String) -> Template {
-    let file = &Path::new(&file);
-
-    assert!(file.file_name().is_some());
-
-    let template_name = file.with_extension("");
-    let template_name = format!("css/{}", template_name.display());
-    Template::render(template_name, json!({}))
-}
-
-#[get("/js/<file>")]
-fn static_js(file: String) -> Template {
-    let file = &Path::new(&file);
-
-    assert!(file.file_name().is_some());
-
-    let template_name = file.with_extension("");
-    let template_name = format!("js/{}", template_name.display());
-    Template::render(template_name, json!({}))
-}
-
 fn main() {
+    let css_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/static/css");
+    let js_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/static/js");
     rocket::ignite()
         .attach(Template::fairing())
+        .mount("/css", StaticFiles::from(css_dir))
+        .mount("/js", StaticFiles::from(js_dir))
         .mount("/", routes![
             root,
             static_page,
-            static_css,
-            static_js,
             create_treasure_key,
             plant_treasure_with_key,
             retrieve_treasure,
