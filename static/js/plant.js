@@ -28,7 +28,14 @@ let qrScanButton = document.getElementById("qrscan-button");
 QrScanner.WORKER_PATH = "js/lib/qr-scanner-worker.min.js";
 
 qrScanButton.addEventListener("click", async () => {
-    qrScanButton.enabled = false;
+    let treasureClaimUrlElt = document.getElementById("treasure-claim-url");
+    let secretKeyElt = document.getElementById("secret-key");
+    let publicKeyElt = document.getElementById("public-key");
+
+    treasureClaimUrlElt.innerText = null;
+    secretKeyElt.innerText = null;
+    publicKeyElt.innerText = null;
+
     let video = document.getElementById("qr-video");
     let stopScanning = null;
     const qrScanner = new QrScanner(video, async (result) => {
@@ -40,7 +47,7 @@ qrScanButton.addEventListener("click", async () => {
         let url = result;
         let sanityCheck = wasm.sanity_check_url(url);
 
-        if (sanityCheck != null) {
+        if (sanityCheck === false) {
             console.error("QR code looks bogus");
             // TODO
             return;
@@ -54,10 +61,6 @@ qrScanButton.addEventListener("click", async () => {
             // TODO
             return;
         }
-
-        let treasureClaimUrlElt = document.getElementById("treasure-claim-url");
-        let secretKeyElt = document.getElementById("secret-key");
-        let publicKeyElt = document.getElementById("public-key");
 
         treasureClaimUrlElt.innerText = url;
         secretKeyElt.innerText = secretKey_;
@@ -74,9 +77,9 @@ qrScanButton.addEventListener("click", async () => {
     stopScanning = () => {
         qrScanner.stop();
         qrScanner.destroy();
-        qrScanButton.enabled = true;
+        qrScanButton.disabled = false;
     }
-    qrScanButton.enabled = false;
+    qrScanButton.disabled = true;
     qrScanner.start();
 });
 
