@@ -1,6 +1,12 @@
+let wasmInited = false;
+
 async function initWasm() {
-    if (wasm_bindgen === undefined) {
-        console.log("no wasm_bindgen loaded - build with 'bash ./build-wasm.sh'");
+    if (wasmInited === true) {
+        return wasm_bindgen;
+    }
+
+    if (typeof wasm_bindgen === "undefined") {
+        console.error("no wasm_bindgen loaded - build with 'bash ./build-wasm.sh'");
         return;
     }
 
@@ -8,11 +14,13 @@ async function initWasm() {
 
     wasm_bindgen.set_panic_hook();
 
+    wasmInited = true;
+
     return wasm_bindgen;
 }
 
 initWasm().then((wasm) => {
-    console.log("wasm inited");
+    console.log("wasm initialized");
 }).catch((e) => {
     console.log(e);
 });

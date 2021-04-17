@@ -3,6 +3,10 @@
 {% block body %}
 
 <div>
+  <input type="file", id="image-upload-button" value="Upload Image">
+
+  <img id="treasure-image">
+
   <input type="button", id="plant-button" value="Plant Treasure">
 </div>
 
