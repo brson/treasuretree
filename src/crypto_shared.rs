@@ -19,7 +19,7 @@ pub fn key_pair_from_secret_key(key: &str) -> Result<Keypair> {
 
 pub fn keypair_to_url(keypair: &Keypair) -> Result<String> {
     let secret_key_string = encode_secret_key(&keypair.secret)?;
-    let url = format!("{}={}", URL_PREFIX, secret_key_string);
+    let url = format!("{}{}", URL_PREFIX, secret_key_string);
     Ok(url)
 }
 
