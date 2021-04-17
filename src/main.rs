@@ -17,6 +17,7 @@ use rocket::Data;
 use std::fs::File;
 use rocket::http::RawStr;
 
+mod crypto;
 mod treasure_qrcode;
 mod treasure;
 
