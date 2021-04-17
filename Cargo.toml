@@ -4,6 +4,10 @@ version = "0.1.0"
 authors = ["Brian Anderson <andersrb@gmail.com>"]
 edition = "2018"
 
+[features]
+default = ["std-errors"]
+std-errors = []
+
 [dependencies]
 anyhow = "1.0.40"
 rocket = "0.4.7"

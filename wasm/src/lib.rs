@@ -1,6 +1,9 @@
 mod utils;
 
 use wasm_bindgen::prelude::*;
+use anyhow::Result;
+use ed25519_dalek::{PublicKey, SecretKey, Keypair};
+use bech32::{FromBase32, ToBase32, Variant};
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -13,11 +16,27 @@ pub fn set_panic_hook() {
     utils::set_panic_hook();
 }
 
-pub struct KeyInfo {
-    secret: String,
-    public: String,
+#[path = "../../src/crypto_shared.rs"]
+mod crypto_shared;
+use crypto_shared as crypto;
+
+#[wasm_bindgen]
+pub fn sanity_check_url(url: &str) -> bool {
+    url.starts_with(crypto::URL_PREFIX)
 }
 
-pub fn secret_url_to_key_info(url: &str) -> KeyInfo {
-    panic!()
+#[wasm_bindgen]
+pub fn secret_url_to_secret_key(url: &str) -> Option<String> {
+    crypto::url_to_keypair(url).ok()
+        .map(|kp| kp.secret)
+        .map(|key| crypto::encode_secret_key(&key).ok())
+        .flatten()
+}
+
+#[wasm_bindgen]
+pub fn secret_url_to_public_key(url: &str) -> Option<String> {
+    crypto::url_to_keypair(url).ok()
+        .map(|kp| kp.public)
+        .map(|key| crypto::encode_public_key(&key).ok())
+        .flatten()
 }

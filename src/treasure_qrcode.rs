@@ -30,12 +30,13 @@ fn init_random_qrcode(quantity: i32) -> Result<Vec<UniqueCode>> {
     let mut qrcodes = Vec::new();
 
     for i in 0..quantity {
-        let secret_key_string = crypto::new_secret_key()?;
-        let url = format!("https://rib.rs?key={}", &secret_key_string);
+        let keypair = crypto::new_keypair();
+        let secret_key_string = crypto::encode_secret_key(&keypair.secret)?;
+        let url = crypto::keypair_to_url(&keypair)?;
         let qrcode = QrCode::encode_text(&url, QrCodeEcc::Low).unwrap();
         
         qrcodes.push(UniqueCode {
-            secret_key: secret_key_string.clone(),
+            secret_key: secret_key_string,
             qrcode,
             url,
         });
