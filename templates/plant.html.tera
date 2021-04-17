@@ -3,13 +3,24 @@
 {% block body %}
 
 <div>
-  <input type="file", id="image-upload-button" value="Upload Image">
+  <div><input type="file" id="image-upload-button" value="Upload Image"></div>
 
-  <img id="treasure-image">
+  <div><img id="treasure-image"></div>
 
-  <input type="button", id="plant-button" value="Plant Treasure">
+  <div><input type="button" id="qrscan-button" value="Scan QR Code"></div>
+
+  <div><video id="qr-video"></video></div>
+
+  <div>
+    <p><span>Treasure URL:</span><span id="treasure-url"></p>
+    <p><span>Secret Key:</span><span id="secret-key"></p>
+    <p><span>Public Key:</span><span id="public-key"></p>
+  </div>
+
+  <div><input type="button" id="plant-button" value="Plant Treasure"></div>
 </div>
 
+<script src="js/lib/qr-scanner.umd.min.js"></script>
 <script src="js/plant.js"></script>
 
 {% endblock body %}
