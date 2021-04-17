@@ -1,8 +1,9 @@
 use qrcodegen::QrCode;
 use qrcodegen::QrCodeEcc;
 use qrcodegen::QrSegment;
-use rand::prelude::*;
 use std::fmt;
+
+use crate::crypto;
 
 pub struct UniqueCode {
     pub hex: String,
@@ -25,14 +26,10 @@ pub fn create_qr_code() -> Vec<UniqueCode> {
 }
 
 fn init_random_qrcode(quantity: i32) -> Vec<UniqueCode> {
-    let mut rng = rand::thread_rng();
     let mut qrcodes = Vec::new();
 
     for i in 0..quantity {
-        let mut nums = [0u8; 20];
-        rng.fill(&mut nums[..]);
-
-        let hex_string = hex::encode(&nums);
+        let hex_string = crypto::new_secret_key_hex();
         let url = format!("https://rib.rs?key={}", &hex_string);
         let qrcode = QrCode::encode_text(&url, QrCodeEcc::Low).unwrap();
         
