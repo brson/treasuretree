@@ -18,7 +18,6 @@ pub struct KeyInfo {
     public: String,
 }
 
-#[wasm_bindgen]
 pub fn secret_url_to_key_info(url: &str) -> KeyInfo {
     panic!()
 }
