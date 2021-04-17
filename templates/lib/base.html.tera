@@ -6,6 +6,9 @@
     <link rel="stylesheet" href="css/style.css">
   </head>
 
+  <script src="wasm/pkg/geonft_wasm.js"></script>
+  <script src="js/wasm-init.js"></script>
+
   <body>
     {% block body %}
     {% endblock body %}

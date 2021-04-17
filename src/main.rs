@@ -125,10 +125,12 @@ fn static_page(page: String) -> Template {
 fn main() {
     let css_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/static/css");
     let js_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/static/js");
+    let wasm_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/wasm/pkg");
     rocket::ignite()
         .attach(Template::fairing())
         .mount("/css", StaticFiles::from(css_dir))
         .mount("/js", StaticFiles::from(js_dir))
+        .mount("/wasm/pkg", StaticFiles::from(wasm_dir))
         .mount("/", routes![
             root,
             static_page,
