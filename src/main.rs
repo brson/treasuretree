@@ -5,7 +5,6 @@
 extern crate rocket;
 
 use anyhow::{anyhow, bail, Result};
-use thiserror::Error;
 use rocket::response::{content::Html, Responder};
 use rocket_contrib::{templates::Template, json::Json};
 use rocket_contrib::serve::StaticFiles;
@@ -22,14 +21,6 @@ use rocket::http::{RawStr, Method};
 mod crypto;
 mod treasure_qrcode;
 mod treasure;
-
-#[derive(Error, Debug)]
-pub enum GeonftError {
-    #[error("Invalid input data")]
-    InvalidInput,
-    #[error(transparent)]
-    IOError(#[from] anyhow::Error),
-}
 
 #[derive(Debug, Serialize)]
 pub struct UniqueCodeJson {
@@ -74,18 +65,19 @@ struct PlantInfoResponse {
 /// with the private key (pubkey in the future) as the name of the file.
 /// The key can be used later to retrieve (or claim) the treasure.
 #[post("/api/plant", format = "json", data = "<plant_info>")]
-fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Json<PlantInfoResponse> {
+fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Result<Json<PlantInfoResponse>> {
     let treasure_key = &plant_info.private_key;
     let filename = format!("treasure/{key}", key = treasure_key);
     let return_url = format!("{host}/api/plant/{key}\n", host = "http://localhost:8000", key = treasure_key);
 
     println!("{:#?}", &plant_info);
     // plant_info.stream_to_file(Path::new(&filename))?;
+
     let res = PlantInfoResponse {
         return_url,
     };
     
-    Json(res)
+    Ok(Json(res))
 }
 
 /// Return an html page displaying a treasure
