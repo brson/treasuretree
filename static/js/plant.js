@@ -88,9 +88,23 @@ let plantButton = document.getElementById("plant-button");
 plantButton.addEventListener("click", async () => {
     console.log("click");
 
-    let response = await fetch("api/plant");
+    let treasure_info = {
+        image: "foobarimage",
+        private_key: "testprivatekey"
+    };
+    
+    let response = await fetch("api/plant",
+                               {
+                                   method: "POST",
+                                   headers: {
+                                       'Accept': 'application/json',
+                                       'Content-Type': 'application/json'
+                                   },
+                                   body: JSON.stringify(treasure_info)
+                               });
     console.log(response);
 
-    let jsonResponse = await response.json();
+    // let jsonResponse = await response.json();
+    let jsonResponse = await response.text();
     console.log(jsonResponse);
 });

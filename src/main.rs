@@ -5,22 +5,31 @@
 extern crate rocket;
 
 use anyhow::{anyhow, bail, Result};
-use rocket::response::content::Html;
+use thiserror::Error;
+use rocket::response::{content::Html, Responder};
 use rocket_contrib::{templates::Template, json::Json};
 use rocket_contrib::serve::StaticFiles;
 use serde::{Serialize, Deserialize};
 use serde_json::json;
 use std::path::{Path, PathBuf};
+use std::fmt;
 use treasure_qrcode::create_qr_code;
 use treasure::Treasure;
-
 use rocket::Data;
 use std::fs::File;
-use rocket::http::RawStr;
+use rocket::http::{RawStr, Method};
 
 mod crypto;
 mod treasure_qrcode;
 mod treasure;
+
+#[derive(Error, Debug)]
+pub enum GeonftError {
+    #[error("Invalid input data")]
+    InvalidInput,
+    #[error(transparent)]
+    IOError(#[from] anyhow::Error),
+}
 
 #[derive(Debug, Serialize)]
 pub struct UniqueCodeJson {
@@ -44,7 +53,7 @@ fn create_treasure_key() -> Result<Json<UniqueCodeJson>> {
     Ok(Json(first_key))
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct PlantInfoRequest {
     /// An image, bech32 encoded
     image: String,
@@ -54,14 +63,29 @@ struct PlantInfoRequest {
     private_key: String,
 }
 
+#[derive(Serialize, Debug)]
+struct PlantInfoResponse {
+    return_url: String,
+}
+
 /// Stores a treasure and associated key
 ///
 /// Stores the json to disk,
 /// with the private key (pubkey in the future) as the name of the file.
 /// The key can be used later to retrieve (or claim) the treasure.
-#[post("/api/plant", data = "<plant_info>")]
-fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Result<()> {
-    panic!()
+#[post("/api/plant", format = "json", data = "<plant_info>")]
+fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Json<PlantInfoResponse> {
+    let treasure_key = &plant_info.private_key;
+    let filename = format!("treasure/{key}", key = treasure_key);
+    let return_url = format!("{host}/api/plant/{key}\n", host = "http://localhost:8000", key = treasure_key);
+
+    println!("{:#?}", &plant_info);
+    // plant_info.stream_to_file(Path::new(&filename))?;
+    let res = PlantInfoResponse {
+        return_url,
+    };
+    
+    Json(res)
 }
 
 /// Return an html page displaying a treasure
