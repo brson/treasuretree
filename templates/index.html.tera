@@ -1,5 +1,8 @@
 {% extends "lib/base" %}
 
+{% block scripts %}
+{% endblock scripts %}
+
 {% block body %}
 
 <ul>

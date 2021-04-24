@@ -1,5 +1,12 @@
 {% extends "lib/base" %}
 
+{% block scripts %}
+
+<script src="js/lib/qr-scanner.umd.min.js" defer></script>
+<script src="js/plant.js" defer></script>
+
+{% block scripts %}
+
 {% block body %}
 
 <div>
@@ -19,8 +26,5 @@
 
   <div><input type="button" id="plant-button" value="Plant Treasure"></div>
 </div>
-
-<script src="js/lib/qr-scanner.umd.min.js"></script>
-<script src="js/plant.js"></script>
 
 {% endblock body %}

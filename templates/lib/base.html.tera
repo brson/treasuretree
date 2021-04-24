@@ -4,10 +4,14 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/style.css">
-  </head>
 
-  <script src="wasm/pkg/geonft_wasm.js"></script>
-  <script src="js/wasm-init.js"></script>
+    <script src="wasm/pkg/geonft_wasm.js" defer></script>
+    <script src="js/wasm-init.js" defer></script>
+
+    {% block scripts %}
+    {% endblock scripts %}
+
+  </head>
 
   <body>
     {% block body %}

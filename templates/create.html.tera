@@ -1,10 +1,17 @@
 {% extends "lib/base" %}
 
+{% block scripts %}
+
+<script src="js/create.js" defer></script>
+
+{% endblock scripts %}
+
 {% block body %}
 
 <div>
   <input type="button" id="create-button" value="Create QR Code">
   <p id="display-qrcode"></p>
+
 </div>
 
 <div class="qrcode-frame">
@@ -22,7 +29,5 @@
   <p>www.nfty-treasure.net</p>
 
 </div>
-
-<script src="js/create.js"></script>
 
 {% endblock body %}

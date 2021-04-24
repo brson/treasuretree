@@ -1,5 +1,11 @@
 {% extends "lib/base" %}
 
+{% block scripts %}
+
+<script src="js/claim.js" defer></script>
+
+{% endblock scripts %}
+
 {% block body %}
 
 claim
