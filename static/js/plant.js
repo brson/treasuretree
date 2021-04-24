@@ -35,9 +35,15 @@ imageUploadButton.addEventListener("change", async () => {
 
 let qrScanButton = document.getElementById("qrscan-button");
 let qrCancelButton = document.getElementById("qrscan-cancel-button");
+let secretKeyInput = document.getElementById("secret-key");
+let treasureClaimUrlElt = document.getElementById("treasure-claim-url");
+let publicKeyElt = document.getElementById("public-key");
 
 console.assert(qrScanButton);
 console.assert(qrCancelButton);
+console.assert(secretKeyInput);
+console.assert(treasureClaimUrlElt);
+console.assert(publicKeyElt);
 
 QrScanner.WORKER_PATH = "js/lib/qr-scanner-worker.min.js";
 
@@ -45,25 +51,25 @@ let stopScanning = null;
 
 qrScanButton.addEventListener("click", async () => {
 
-    let treasureClaimUrlElt = document.getElementById("treasure-claim-url");
-    let secretKeyElt = document.getElementById("secret-key");
-    let publicKeyElt = document.getElementById("public-key");
     let video = document.getElementById("qr-video");
 
-    console.assert(treasureClaimUrlElt);
-    console.assert(secretKeyElt);
-    console.assert(publicKeyElt);
     console.assert(video);    
 
     treasureClaimUrlElt.innerText = null;
-    secretKeyElt.innerText = null;
+    secretKeyInput.value = null;
     publicKeyElt.innerText = null;
 
-    const qrScanner = new QrScanner(video, async (result) => {
-        console.log(result);
-        stopScanning();
+    treasureClaimUrl = null;
+    secretKey = null;
+    publicKey = null;
 
-        let wasm = await initWasm();
+    let wasm = await initWasm();
+
+    const qrScanner = new QrScanner(video, (result) => {
+        console.log(result);
+
+        // Don't do async work after this to avoid races updated the UI
+        stopScanning();
 
         let url = result;
         let sanityCheck = wasm.sanity_check_url(url);
@@ -84,7 +90,7 @@ qrScanButton.addEventListener("click", async () => {
         }
 
         treasureClaimUrlElt.innerText = url;
-        secretKeyElt.innerText = secretKey_;
+        secretKeyInput.value = secretKey_;
         publicKeyElt.innerText = publicKey_;
 
         treasureClaimUrl = url;
@@ -98,6 +104,7 @@ qrScanButton.addEventListener("click", async () => {
     
     qrScanButton.disabled = true;
     qrCancelButton.disabled = false;
+    secretKeyInput.disabled = true;
     video.classList.remove("no-display");
 
     stopScanning = () => {
@@ -105,6 +112,7 @@ qrScanButton.addEventListener("click", async () => {
         qrScanner.destroy();
         qrScanButton.disabled = false;
         qrCancelButton.disabled = true;
+        secretKeyInput.disabled = false;
         video.classList.add("no-display");
     }
 
@@ -115,7 +123,34 @@ qrCancelButton.addEventListener("click", async () => {
     stopScanning();
 });
 
+secretKeyInput.addEventListener("input", async () => {
 
+    let wasm = await initWasm();
+
+    treasureClaimUrlElt.innerText = null;
+    publicKeyElt.innerText = null;
+
+    treasureClaimUrl = null;
+    secretKey = null;
+    publicKey = null;
+
+    let secretKey_ = secretKeyInput.value;
+    let publicKey_ = wasm.secret_key_to_public_key(secretKey_);
+    let treasureClaimUrl_ = wasm.secret_key_to_secret_url(secretKey_);
+
+    if (publicKey_ == null || treasureClaimUrl_ == null) {
+        console.error("unable to decode key");
+        // TODO
+        return;
+    }
+
+    publicKeyElt.innerText = publicKey_;
+    treasureClaimUrlElt.innerText = treasureClaimUrl_;
+
+    treasureClaimUrl = treasureClaimUrl_;
+    secretKey = secretKey_;
+    publicKey = publicKey_;
+});
 
 
 let plantButton = document.getElementById("plant-button");

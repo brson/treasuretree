@@ -32,7 +32,7 @@ fn init_random_qrcode(quantity: i32) -> Result<Vec<UniqueCode>> {
     for i in 0..quantity {
         let keypair = crypto::new_keypair();
         let secret_key_string = crypto::encode_secret_key(&keypair.secret)?;
-        let url = crypto::keypair_to_url(&keypair)?;
+        let url = crypto::keypair_to_secret_url(&keypair)?;
         let qrcode = QrCode::encode_text(&url, QrCodeEcc::Low).unwrap();
         
         qrcodes.push(UniqueCode {

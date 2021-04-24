@@ -41,9 +41,9 @@ Plant a Treasure
   <p><video id="qr-video" class="no-display"></video></p>
 
   <div>
-    <p><span>Treasure URL:</span><span id="treasure-claim-url"></span></p>
-    <p><span>Secret Key:</span><span id="secret-key"></span></p>
-    <p><span>Public Key:</span><span id="public-key"></span></p>
+    <p><span>Secret Key:</span> <input type="text" id="secret-key"></p>
+    <p><span>Public Key:</span> <span id="public-key" class="breakable"></span></p>
+    <p><span>Treasure URL:</span> <span id="treasure-claim-url" class="breakable"></span></p>
   </div>
 
 </section>
