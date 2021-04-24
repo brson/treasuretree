@@ -24,7 +24,7 @@ body {
 a,
 h1, h2,
 input,
-span.file-input {
+span.file-input > label {
     font-weight: bold;
     letter-spacing: 0.1em;
 }
@@ -94,7 +94,7 @@ section {
 
 a,
 input,
-span.file-input {
+span.file-input > label {
     background-color: var(--action-color);
     border-color: var(--action-color-dark);
     box-shadow: 0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--action-color-light) inset;
@@ -103,7 +103,7 @@ span.file-input {
 
 a,
 input,
-span.file-input {
+span.file-input > label {
     text-shadow:
         0px 0px 1px hsla(300, 50%, 25%, 100%),
         0px 0px 1px hsla(300, 50%, 25%, 100%),
@@ -199,14 +199,14 @@ a {
 }
 
 input,
-span.file-input {
+span.file-input > label {
     padding: 2rem;
 }
 
 /* special file input button handling */
 /* ala https://stackoverflow.com/a/25825731 */
 
-span.file-input {
+span.file-input > label {
     display: inline-block;
 }
 
@@ -229,7 +229,7 @@ input[type="file"] {
 a,
 section,
 input,
-span.file-input {
+span.file-input > label {
     border-width: 1.5px;
 }
 
@@ -248,7 +248,7 @@ footer section {
 
 a,
 input:hover,
-span.file-input:hover {
+span.file-input:hover > label {
     cursor: pointer;
 }
 
