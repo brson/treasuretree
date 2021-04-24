@@ -3,7 +3,11 @@
 }
 
 
+
+
+/* ----- */
 /* fonts */
+/* ----- */
 
 :root {
     font-size; 1rem;
@@ -30,7 +34,10 @@ span.file-input > label {
 }
 
 
+
+/* ------ */
 /* colors */
+/* ------ */
 
 * {
     color: inherit;
@@ -153,7 +160,10 @@ footer p {
 }
 
 
+
+/* ------ */
 /* layout */
+/* ------ */
 
 * {
     margin: 0;
@@ -216,7 +226,10 @@ input[type="file"] {
 
 
 
+
+/* ------- */
 /* borders */
+/* ------- */
 
 * {
     border-width: 0;
@@ -244,7 +257,9 @@ footer section {
 
 
 
+/* ----------- */
 /* interaction */
+/* ----------- */
 
 a,
 input:hover,
