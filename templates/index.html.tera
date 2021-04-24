@@ -21,7 +21,7 @@
   <ul>
     <li><a href="create">create</a> a new treasure key (QR code)
     <li><a href="plant">plant</a> your treasure with its key
-    <li><a href="claim">claim</a> claim a planted treasure
+    <li><a href="claim">claim</a> a planted treasure
   </ul>
 </section>
 

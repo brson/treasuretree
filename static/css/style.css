@@ -23,11 +23,14 @@ h1, h2 {
 * {
     color: black;
     border-color: black;
+    background-color: white;
 }
 
 a {
-    color: skyblue;
+    color: magenta;
 }
+
+
 
 
 /* layout */
@@ -43,8 +46,6 @@ body {
 }
 
 section {
-    border-width: 2px;
-    border-style: solid;
     margin: 1rem;
 }
 
@@ -72,4 +73,30 @@ li {
 
 input {
     padding: 1rem;
+}
+
+/* special file input button handling */
+/* ala https://stackoverflow.com/a/25825731 */
+
+span.file-input {
+    display: inline-block;
+    padding: 1rem;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+
+/* borders */
+
+* {
+    border-width: 0;
+    border-style: solid;
+}
+
+section,
+input,
+span.file-input {
+    border-width: 2px;
 }

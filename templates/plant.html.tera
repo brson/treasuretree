@@ -19,9 +19,16 @@
     <h2>Plant a Treasure</h2>
   </section>
 
+</header>
+
 <section>
 
-  <p><input type="file" id="image-upload-button" value="Upload Image"></p>
+  <p>
+    <span class="file-input">
+      <label for="image-upload-button">Upload Image</label>
+      <input type="file" id="image-upload-button">
+    </span>
+  </p>
 
   <p><img id="treasure-image"></p>
 
