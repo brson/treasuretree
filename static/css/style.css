@@ -267,3 +267,17 @@ span.file-input:hover > label {
     cursor: pointer;
 }
 
+
+
+
+/* ------------------ */
+/* app-specific rules */
+/* ------------------ */
+
+.secret-key {
+    overflow-wrap: break-word;
+}
+
+.key-container {
+    text-align: center;
+}
