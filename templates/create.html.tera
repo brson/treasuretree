@@ -1,24 +1,21 @@
 {% extends "lib/base" %}
 
+
+{% block title %}
+
+Create a Treasure Code
+
+{% endblock title %}
+
+
 {% block scripts %}
 
 <script src="js/create.js" defer></script>
 
 {% endblock scripts %}
 
+
 {% block body %}
-
-<header>
-
-  <section>
-    <h1><input type="button" id="top-button" value="Treasure Hunt"></h1>
-  </section>
-
-  <section>
-    <h2>Create a Treasure Code</h2>
-  </section>
-
-</header>
 
 <section>
 

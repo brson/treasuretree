@@ -1,5 +1,13 @@
 {% extends "lib/base" %}
 
+
+{% block title %}
+
+Plant a Treasure
+
+{% endblock title %}
+
+
 {% block scripts %}
 
 <script src="js/lib/qr-scanner.umd.min.js" defer></script>
@@ -7,19 +15,8 @@
 
 {% endblock scripts %}
 
+
 {% block body %}
-
-<header>
-
-  <section>
-    <h1><input type="button" id="top-button" value="Treasure Hunt"></h1>
-  </section>
-
-  <section>
-    <h2>Plant a Treasure</h2>
-  </section>
-
-</header>
 
 <section>
 

@@ -8,6 +8,18 @@
     <script src="wasm/pkg/geonft_wasm.js" defer></script>
     <script src="js/wasm-init.js" defer></script>
 
+    <header>
+
+      <section>
+        <h1><input type="button" id="top-button" value="Treasure Hunt"></h1>
+      </section>
+
+      <section>
+        <h2>{% block title %}{% endblock title %}</h2>
+      </section>
+
+    </header>
+
     {% block scripts %}
     {% endblock scripts %}
 

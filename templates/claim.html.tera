@@ -1,24 +1,21 @@
 {% extends "lib/base" %}
 
+
+{% block title %}
+
+Claim a Treasure
+
+{% endblock title %}
+
+
 {% block scripts %}
 
 <script src="js/claim.js" defer></script>
 
 {% endblock scripts %}
 
+
 {% block body %}
-
-<header>
-
-  <section>
-    <h1><input type="button" id="top-button" value="Treasure Hunt"></h1>
-  </section>
-
-  <section>
-    <h2>Claim Treasure</h2>
-  </section>
-
-</header>
 
 <section>
 
