@@ -51,7 +51,7 @@ Plant a Treasure
 
 <section>
 
-  <p><input type="button" id="plant-button" value="Plant Treasure"></p>
+  <p><input type="button" id="plant-button" value="Plant Treasure" disabled></p>
 
 </section>
 

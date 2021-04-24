@@ -46,11 +46,12 @@ fn create_treasure_key() -> Result<Json<UniqueCodeJson>> {
 
 #[derive(Serialize, Deserialize, Debug)]
 struct PlantInfoRequest {
-    /// An image, bech32 encoded
+    /// An image, base64 encoded
     image: String,
     /// A private key, bech32 encoded
     ///
     /// FIXME: Should be a pub-key, derived on the client
+    /// FIXME: Rename to secret_key
     private_key: String,
 }
 

@@ -2,8 +2,11 @@ let treasureImageEncoded = null;
 let treasureClaimUrl = null;
 let secretKey = null;
 let publicKey = null;
+let treasurePlanted = false;
 
+let plantButton = document.getElementById("plant-button");
 
+console.assert(plantButton);
 
 
 let imageUploadButton = document.getElementById("image-upload-button");
@@ -15,6 +18,8 @@ console.assert(useTestImageButton);
 console.assert(imageElt);
 
 imageUploadButton.addEventListener("change", async () => {
+
+    plantButton.disabled = true;
 
     treasureImageEncoded = null;
     imageElt.src = "";
@@ -30,9 +35,15 @@ imageUploadButton.addEventListener("change", async () => {
 
     imageElt.src = URL.createObjectURL(blob);
     imageElt.classList.remove("no-display");
+
+    treasureImageEncoded = btoa(blob);
+
+    maybeEnablePlantButton();
 });
 
 useTestImageButton.addEventListener("click", async () => {
+
+    plantButton.disabled = true;
 
     treasureImageEncoded = null;
     imageElt.scr = "";
@@ -51,6 +62,10 @@ useTestImageButton.addEventListener("click", async () => {
 
         imageElt.src = URL.createObjectURL(blob);
         imageElt.classList.remove("no-display");
+
+        treasureImageEncoded = btoa(blob);
+
+        maybeEnablePlantButton();
     } catch (e) {
         // TODO
         console.error(e);
@@ -83,6 +98,8 @@ qrScanButton.addEventListener("click", async () => {
     let video = document.getElementById("qr-video");
 
     console.assert(video);    
+
+    plantButton.disabled = true;
 
     treasureClaimUrlElt.innerText = null;
     secretKeyInput.value = null;
@@ -143,6 +160,7 @@ qrScanButton.addEventListener("click", async () => {
         qrCancelButton.disabled = true;
         secretKeyInput.disabled = false;
         video.classList.add("no-display");
+        maybeEnablePlantButton();
     }
 
     qrScanner.start();
@@ -155,6 +173,8 @@ qrCancelButton.addEventListener("click", async () => {
 secretKeyInput.addEventListener("input", async () => {
 
     let wasm = await initWasm();
+
+    plantButton.disabled = true;
 
     treasureClaimUrlElt.innerText = null;
     publicKeyElt.innerText = null;
@@ -179,31 +199,59 @@ secretKeyInput.addEventListener("input", async () => {
     treasureClaimUrl = treasureClaimUrl_;
     secretKey = secretKey_;
     publicKey = publicKey_;
+
+    maybeEnablePlantButton();
 });
 
-
-let plantButton = document.getElementById("plant-button");
 
 plantButton.addEventListener("click", async () => {
-    console.log("click");
 
-    let treasure_info = {
-        image: "foobarimage",
-        private_key: "testprivatekey"
-    };
-    
-    let response = await fetch("api/plant",
-                               {
-                                   method: "POST",
-                                   headers: {
-                                       'Accept': 'application/json',
-                                       'Content-Type': 'application/json'
-                                   },
-                                   body: JSON.stringify(treasure_info)
-                               });
-    console.log(response);
+    plantButton.disabled = true;
 
-    // let jsonResponse = await response.json();
-    let jsonResponse = await response.text();
-    console.log(jsonResponse);
+    console.assert(treasureImageEncoded);
+    console.assert(secretKey);
+
+    try {
+        let treasureInfo = {
+            image: treasureImageEncoded,
+            private_key: secretKey
+        };
+
+        let response = await fetch("api/plant", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(treasureInfo)
+        });
+        console.log(response);
+
+        if (!response.ok) {
+            // TODO
+        }
+
+        // let jsonResponse = await response.json();
+        let jsonResponse = await response.json();
+        console.log(jsonResponse);
+
+        treasurePlanted = true;
+    } catch (e) {
+        // TODO
+        console.error(e);
+    } finally {
+        maybeEnablePlantButton();
+    }
 });
+
+function maybeEnablePlantButton() {
+    let dataReady =
+        treasureImageEncoded &&
+        treasureClaimUrl &&
+        secretKey &&
+        publicKey;
+
+    if (dataReady && !treasurePlanted) {
+        plantButton.disabled = false;
+    }
+}
