@@ -248,7 +248,8 @@ span.file-input > label {
     padding: 2rem;
 }
 
-img {
+img,
+video {
     max-width: 100%;
 }
 
@@ -260,6 +261,10 @@ span.file-input > label {
 }
 
 input[type="file"] {
+    display: none;
+}
+
+.no-display {
     display: none;
 }
 

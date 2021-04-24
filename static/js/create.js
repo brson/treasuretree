@@ -1,12 +1,15 @@
 let createButton = document.getElementById("create-button");
-let qrCodeContainer = document.getElementById("display-qrcode");
-let secretKeyContainer = document.getElementById("secret-key");
 
 console.assert(createButton);
-console.assert(qrCodeContainer);
-console.assert(secretKeyContainer);
 
 createButton.addEventListener("click", async () => {
+
+    let qrCodeContainer = document.getElementById("display-qrcode");
+    let secretKeyContainer = document.getElementById("secret-key");
+
+    console.assert(qrCodeContainer);
+    console.assert(secretKeyContainer);
+
     qrCodeContainer.innerHTML = null;
     secretKeyContainer.innerHTML = null;
     createButton.disabled = true;

@@ -38,7 +38,7 @@ Plant a Treasure
     <input type="button" id="qrscan-cancel-button" value="Cancel Scan" disabled>
   </p>
 
-  <p><video id="qr-video"></video></p>
+  <p><video id="qr-video" class="no-display"></video></p>
 
   <div>
     <p><span>Treasure URL:</span><span id="treasure-claim-url"></span></p>

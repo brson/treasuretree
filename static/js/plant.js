@@ -1,17 +1,20 @@
-console.log("before click");
-
 let treasureImageBin = null;
 let treasureClaimUrl = null;
 let secretKey = null;
 let publicKey = null;
 
+
+
+
 let imageUploadButton = document.getElementById("image-upload-button");
-let imageElt = document.getElementById("treasure-image");
 
 console.assert(imageUploadButton);
-console.assert(imageElt);
 
 imageUploadButton.addEventListener("change", async () => {
+
+    let imageElt = document.getElementById("treasure-image");
+
+    console.assert(imageElt);
 
     treasureImageBin = null;
     imageElt.src = "";
@@ -27,21 +30,35 @@ imageUploadButton.addEventListener("change", async () => {
     imageElt.src = URL.createObjectURL(blob);
 });
 
+
+
+
 let qrScanButton = document.getElementById("qrscan-button");
+let qrCancelButton = document.getElementById("qrscan-cancel-button");
+
+console.assert(qrScanButton);
+console.assert(qrCancelButton);
 
 QrScanner.WORKER_PATH = "js/lib/qr-scanner-worker.min.js";
 
+let stopScanning = null;
+
 qrScanButton.addEventListener("click", async () => {
+
     let treasureClaimUrlElt = document.getElementById("treasure-claim-url");
     let secretKeyElt = document.getElementById("secret-key");
     let publicKeyElt = document.getElementById("public-key");
+    let video = document.getElementById("qr-video");
+
+    console.assert(treasureClaimUrlElt);
+    console.assert(secretKeyElt);
+    console.assert(publicKeyElt);
+    console.assert(video);    
 
     treasureClaimUrlElt.innerText = null;
     secretKeyElt.innerText = null;
     publicKeyElt.innerText = null;
 
-    let video = document.getElementById("qr-video");
-    let stopScanning = null;
     const qrScanner = new QrScanner(video, async (result) => {
         console.log(result);
         stopScanning();
@@ -76,16 +93,30 @@ qrScanButton.addEventListener("click", async () => {
         
     }, (error) => {
         console.error(error);
-        //stopScanning();
     });
+
+    
+    qrScanButton.disabled = true;
+    qrCancelButton.disabled = false;
+    video.classList.remove("no-display");
+
     stopScanning = () => {
         qrScanner.stop();
         qrScanner.destroy();
         qrScanButton.disabled = false;
+        qrCancelButton.disabled = true;
+        video.classList.add("no-display");
     }
-    qrScanButton.disabled = true;
+
     qrScanner.start();
 });
+
+qrCancelButton.addEventListener("click", async () => {
+    stopScanning();
+});
+
+
+
 
 let plantButton = document.getElementById("plant-button");
 
