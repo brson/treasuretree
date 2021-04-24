@@ -121,6 +121,41 @@ span.file-input > label {
         0px 0px 2px hsla(300, 100%, 50%, 100%);
 }
 
+header h1 input:hover {
+    box-shadow:
+        0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--logo-color-light) inset,
+        0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--logo-color-light),
+        0px 0px 1px 3px var(--logo-color-dark);
+}
+
+a:hover,
+input:hover,
+span.file-input > label:hover {
+    box-shadow:
+        0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--action-color-light) inset,
+        0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--action-color-light),
+        0px 0px 1px 3px var(--action-color-dark);
+}
+
+header h1 input:active {
+    color: var(--logo-color);
+    background-color: var(--logo-color-light);
+    text-shadow: none;
+}
+
+a:active,
+input:active,
+span.file-input > label:active {
+    color: var(--action-color);
+    background-color: var(--action-color-light);
+    text-shadow: none;
+}
+
+input:disabled,
+span.file-input > label:disabled {
+    opacity: 50%;
+}
+
 footer p {
     color: rgb(50%, 50%, 50%);
 }
