@@ -11,7 +11,7 @@
 <header>
 
   <section>
-    <h1>Treasure Hunt</h1>
+    <h1><input type="button" id="top-button" value="Treasure Hunt"></h1>
   </section>
 
   <section>

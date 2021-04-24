@@ -37,8 +37,17 @@ span.file-input {
 * {
     color: inherit;
     border-color: black;
-    --action-color: hsl(300, 75%, 75%);
-    --action-color-dark: hsla(300, 50%, 40%, 100%);
+    --action-color: hsl(300, 75%, 75%); /* magenta */
+    --action-color-dark: hsl(300, 50%, 40%);
+}
+
+header section:nth-of-type(2) {
+    background-color: hsl(30, 75%, 75%);
+    color: white;
+    text-shadow:
+        0px 0px 1px hsla(30, 50%, 0%, 100%),
+        0px 0px 2px hsla(30, 50%, 50%, 100%),
+        0px 0px 2px hsla(30, 100%, 50%, 100%);
 }
 
 body {
@@ -49,7 +58,16 @@ a {
     background-color: var(--action-color);
     color: white;
     padding: 0.1em 0.4em 0.1em 0.4em;
-    border-color: rgba(0, 0, 0, 25%);
+    border-color: var(--action-color-dark);
+}
+
+header h1 input {
+    border-color: hsl(180, 50%, 40%);
+    background-color: hsl(180, 75%, 75%);
+    text-shadow:
+        0px 0px 1px hsla(180, 50%, 0%, 100%),
+        0px 0px 2px hsla(180, 50%, 50%, 100%),
+        0px 0px 2px hsla(180, 100%, 50%, 100%);
 }
 
 input,
@@ -98,6 +116,7 @@ p, h1, h2 {
 
 header h1 {
     text-align: right;
+    margin-right: 0rem;
 }
 
 ul {
@@ -142,6 +161,12 @@ input,
 span.file-input {
     border-width: 2px;
 }
+
+header section:nth-of-type(1) {
+    border-width: 0;
+}
+
+
 
 
 /* interaction */
