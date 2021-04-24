@@ -3,11 +3,18 @@
 }
 
 
-
 /* fonts */
 
+:root {
+    font-size; 1rem;
+}
+
+body {
+    font-size: 200%;
+}
+
 * {
-    font-size: 1rem;
+    font-size: inherit;
     font-family: monospace;
     font-weight: inherit;
     line-height: normal;
@@ -163,13 +170,13 @@ section {
 }
 
 section {
-    max-width: 80ch;
+    max-width: 60ch;
     margin-left: auto;
     margin-right: auto;
 }
 
-p, h1, h2 {
-    margin: 1rem;    
+p, h1, h2, li {
+    margin: 2rem;
 }
 
 header h1 {
@@ -187,17 +194,13 @@ ul {
     list-style: none;
 }
 
-li {
-    margin: 1rem;
-}
-
 a {
     padding: 0.2em 0.5em 0.2em 0.5em;
 }
 
 input,
 span.file-input {
-    padding: 1rem;
+    padding: 2rem;
 }
 
 /* special file input button handling */
