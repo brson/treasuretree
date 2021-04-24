@@ -160,7 +160,7 @@ header h1 input:hover:not(:disabled) {
 a:hover,
 input:hover:not(:disabled),
 input[type="text"]:focus,
-span.file-input > label:hover {
+span.file-input > input:not(:disabled) label:hover {
     box-shadow:
         0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--action-color-light) inset,
         0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--action-color-light),
@@ -183,6 +183,10 @@ span.file-input > label:active {
 
 /* TODO: disable file input? */
 input:disabled {
+    opacity: 50%;
+}
+
+span.file-input > input:disabled ~ label {
     opacity: 50%;
 }
 
@@ -335,8 +339,13 @@ footer section {
 
 a,
 input:hover,
-span.file-input:hover > label {
+span.file-input > label:hover {
     cursor: pointer;
+}
+
+input:hover:disabled,
+span.file-input > input:disabled ~ label:hover {
+    cursor: not-allowed;
 }
 
 input[type="text"]:hover {

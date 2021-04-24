@@ -31,9 +31,6 @@ createButton.addEventListener("click", async () => {
 
         qrCodeContainer.innerHTML = jsonResponse.qrcode;
         secretKeyContainer.innerHTML = jsonResponse.secret_key;
-    } catch (e) {
-        // TODO
-        console.error(e);
     } finally {
         createButton.disabled = false;
     }

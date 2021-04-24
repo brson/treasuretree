@@ -22,8 +22,8 @@ Plant a Treasure
 
   <p>
     <span class="file-input">
-      <label for="image-upload-button">Upload Image</label>
       <input type="file" id="image-upload-button">
+      <label for="image-upload-button">Upload Image</label>
     </span>
     <input type="button" id="use-test-image-button" value="Use Test Image">
   </p>

@@ -25,20 +25,29 @@ imageUploadButton.addEventListener("change", async () => {
     imageElt.src = "";
     imageElt.classList.add("no-display");
 
-    if (imageUploadButton.files.length == 0) {
-        return;
+    imageUploadButton.disabled = true;
+    useTestImageButton.disabled = true;
+
+    try {
+
+        if (imageUploadButton.files.length == 0) {
+            return;
+        }
+
+        let file = imageUploadButton.files[0];
+        let bin = await file.arrayBuffer();
+        let blob = new Blob([bin], { type: file.type });
+
+        imageElt.src = URL.createObjectURL(blob);
+        imageElt.classList.remove("no-display");
+
+        treasureImageEncoded = btoa(blob);
+
+        maybeEnablePlantButton();
+    } finally {
+        imageUploadButton.disabled = false;
+        useTestImageButton.disabled = false;
     }
-
-    let file = imageUploadButton.files[0];
-    let bin = await file.arrayBuffer();
-    let blob = new Blob([bin], { type: file.type });
-
-    imageElt.src = URL.createObjectURL(blob);
-    imageElt.classList.remove("no-display");
-
-    treasureImageEncoded = btoa(blob);
-
-    maybeEnablePlantButton();
 });
 
 useTestImageButton.addEventListener("click", async () => {
@@ -49,6 +58,7 @@ useTestImageButton.addEventListener("click", async () => {
     imageElt.scr = "";
     imageElt.classList.add("no-display");
 
+    imageUploadButton.disabled = true;
     useTestImageButton.disabled = true;
 
     try {
@@ -66,10 +76,8 @@ useTestImageButton.addEventListener("click", async () => {
         treasureImageEncoded = btoa(blob);
 
         maybeEnablePlantButton();
-    } catch (e) {
-        // TODO
-        console.error(e);
     } finally {
+        imageUploadButton.disabled = false;
         useTestImageButton.disabled = false;
     }
 });
@@ -240,9 +248,6 @@ plantButton.addEventListener("click", async () => {
         let plantedMessageElt = document.getElementById("planted-message");
         console.assert(plantedMessageElt);
         plantedMessageElt.classList.remove("no-display");
-    } catch (e) {
-        // TODO
-        console.error(e);
     } finally {
         maybeEnablePlantButton();
     }
