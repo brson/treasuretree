@@ -5,18 +5,23 @@
 <script src="js/lib/qr-scanner.umd.min.js" defer></script>
 <script src="js/plant.js" defer></script>
 
-{% block scripts %}
+{% endblock scripts %}
 
 {% block body %}
 
-<div>
-  <div><input type="file" id="image-upload-button" value="Upload Image"></div>
+<section>
 
-  <div><img id="treasure-image"></div>
+  <p><input type="file" id="image-upload-button" value="Upload Image"></p>
 
-  <div><input type="button" id="qrscan-button" value="Scan QR Code"></div>
+  <p><img id="treasure-image"></p>
 
-  <div><video id="qr-video"></video></div>
+</section>
+
+<section>
+
+  <p><input type="button" id="qrscan-button" value="Scan QR Code"></p>
+
+  <p><video id="qr-video"></video></p>
 
   <div>
     <p><span>Treasure URL:</span><span id="treasure-claim-url"></span></p>
@@ -24,7 +29,12 @@
     <p><span>Public Key:</span><span id="public-key"></span></p>
   </div>
 
-  <div><input type="button" id="plant-button" value="Plant Treasure"></div>
-</div>
+</section>
+
+<section>
+
+  <p><input type="button" id="plant-button" value="Plant Treasure"></p>
+
+</section>
 
 {% endblock body %}

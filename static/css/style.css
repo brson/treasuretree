@@ -1,10 +1,15 @@
+:root {
+    box-sizing: border-box;
+}
+
 body {
     padding: 1rem;
 }
 
-.qrcode-frame {
-    border: 1mm solid black;
-    margin: auto;
-    padding: 1rem;
-    text-align: center;
+section {
+    border: 2px solid black;
+}
+
+p {
+    margin: 1rem;    
 }
