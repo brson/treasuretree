@@ -16,6 +16,7 @@ use treasure_qrcode::create_qr_code;
 use treasure::Treasure;
 use rocket::Data;
 use std::fs::File;
+use std::io::prelude::*;
 use rocket::http::{RawStr, Method};
 
 mod crypto;
@@ -54,7 +55,7 @@ struct PlantInfoRequest {
     private_key: String,
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 struct PlantInfoResponse {
     return_url: String,
 }
@@ -73,6 +74,9 @@ fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Result<Json<Pl
     println!("{:#?}", &plant_info);
     // plant_info.stream_to_file(Path::new(&filename))?;
 
+    let mut file = File::create(filename)?;
+    file.write_all(serde_json::to_string(&plant_info.into_inner()).unwrap().as_bytes());
+    
     let res = PlantInfoResponse {
         return_url,
     };
