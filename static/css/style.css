@@ -50,8 +50,8 @@ body {
     background-color: white;
 }
 
-p {
-    color: rgb(25%, 25%, 25%);
+p, li {
+    color: rgb(40%, 40%, 40%);
 }
 
 header h1 input {
