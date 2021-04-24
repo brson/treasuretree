@@ -19,6 +19,10 @@ createButton.addEventListener("click", async () => {
 
         console.log(response);
 
+        if (!response.ok) {
+            // TODO
+        }
+
         let jsonResponse = await response.json();
 
         console.log(jsonResponse);
@@ -27,6 +31,9 @@ createButton.addEventListener("click", async () => {
 
         qrCodeContainer.innerHTML = jsonResponse.qrcode;
         secretKeyContainer.innerHTML = jsonResponse.secret_key;
+    } catch (e) {
+        // TODO
+        console.error(e);
     } finally {
         createButton.disabled = false;
     }

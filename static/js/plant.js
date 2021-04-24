@@ -1,4 +1,4 @@
-let treasureImageBin = null;
+let treasureImageEncoded = null;
 let treasureClaimUrl = null;
 let secretKey = null;
 let publicKey = null;
@@ -7,17 +7,18 @@ let publicKey = null;
 
 
 let imageUploadButton = document.getElementById("image-upload-button");
+let useTestImageButton = document.getElementById("use-test-image-button")
+let imageElt = document.getElementById("treasure-image");
 
 console.assert(imageUploadButton);
+console.assert(useTestImageButton);
+console.assert(imageElt);
 
 imageUploadButton.addEventListener("change", async () => {
 
-    let imageElt = document.getElementById("treasure-image");
-
-    console.assert(imageElt);
-
-    treasureImageBin = null;
+    treasureImageEncoded = null;
     imageElt.src = "";
+    imageElt.classList.add("no-display");
 
     if (imageUploadButton.files.length == 0) {
         return;
@@ -28,6 +29,34 @@ imageUploadButton.addEventListener("change", async () => {
     let blob = new Blob([bin], { type: file.type });
 
     imageElt.src = URL.createObjectURL(blob);
+    imageElt.classList.remove("no-display");
+});
+
+useTestImageButton.addEventListener("click", async () => {
+
+    treasureImageEncoded = null;
+    imageElt.scr = "";
+    imageElt.classList.add("no-display");
+
+    useTestImageButton.disabled = true;
+
+    try {
+        let response = await fetch("images/coconut-tree.png");
+
+        if (!response.ok) {
+            // TODO
+        }
+
+        let blob = await response.blob();
+
+        imageElt.src = URL.createObjectURL(blob);
+        imageElt.classList.remove("no-display");
+    } catch (e) {
+        // TODO
+        console.error(e);
+    } finally {
+        useTestImageButton.disabled = false;
+    }
 });
 
 
