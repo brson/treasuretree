@@ -15,7 +15,7 @@ use std::fmt;
 use treasure_qrcode::create_qr_code;
 use treasure::Treasure;
 use rocket::Data;
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::prelude::*;
 use rocket::http::{RawStr, Method};
 
@@ -70,6 +70,8 @@ fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Result<Json<Pl
     let treasure_key = &plant_info.private_key;
     let filename = format!("treasure/{key}", key = treasure_key);
     let return_url = format!("{host}/api/plant/{key}\n", host = "http://localhost:8000", key = treasure_key);
+
+    fs::create_dir_all("treasure")?;
 
     let mut file = File::create(filename)?;
     serde_json::to_writer(file, &plant_info.0)?;
