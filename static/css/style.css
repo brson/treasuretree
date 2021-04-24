@@ -3,7 +3,11 @@
 }
 
 
+
+
+/* ----- */
 /* fonts */
+/* ----- */
 
 :root {
     font-size; 1rem;
@@ -30,7 +34,10 @@ span.file-input > label {
 }
 
 
+
+/* ------ */
 /* colors */
+/* ------ */
 
 * {
     color: inherit;
@@ -153,7 +160,10 @@ footer p {
 }
 
 
+
+/* ------ */
 /* layout */
+/* ------ */
 
 * {
     margin: 0;
@@ -216,12 +226,14 @@ input[type="file"] {
 
 
 
+
+/* ------- */
 /* borders */
+/* ------- */
 
 * {
     border-width: 0;
     border-style: solid;
-    border-radius: 0.8rem;
     --box-shadow-border-width: 3px;
     --box-shadow-border-blur: 0.5px;
 }
@@ -231,6 +243,7 @@ section,
 input,
 span.file-input > label {
     border-width: 1.5px;
+    border-radius: 0.8rem;
 }
 
 header section:nth-of-type(1) {
@@ -244,7 +257,9 @@ footer section {
 
 
 
+/* ----------- */
 /* interaction */
+/* ----------- */
 
 a,
 input:hover,
@@ -252,3 +267,17 @@ span.file-input:hover > label {
     cursor: pointer;
 }
 
+
+
+
+/* ------------------ */
+/* app-specific rules */
+/* ------------------ */
+
+.secret-key {
+    overflow-wrap: break-word;
+}
+
+.key-container {
+    text-align: center;
+}
