@@ -17,7 +17,7 @@ Actions Menu
 <section>
   <ul>
     <li><a href="create">create</a> a new treasure key (QR code)
-    <li><a href="plant">plant</a> your treasure with its key
+    <li><a href="plant">plant</a> a treasure with its key
     <li><a href="claim">claim</a> a planted treasure
   </ul>
 </section>

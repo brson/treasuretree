@@ -3,7 +3,7 @@
 
 {% block title %}
 
-Create a Treasure Code
+Create a Treasure Key
 
 {% endblock title %}
 
