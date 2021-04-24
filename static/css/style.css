@@ -92,6 +92,34 @@ span.file-input {
         0px 0px 2px hsla(300, 100%, 50%, 100%);
 }
 
+footer p {
+    color: rgb(50%, 50%, 50%);
+}
+
+#heart {
+    color: var(--action-color);
+    opacity: 75%;
+    text-shadow:
+        0px 0px 2px hsl(300, 50%, 40%),
+        0px 0px 2px hsl(300, 50%, 40%),
+        0px 0px 2px hsl(300, 50%, 40%),
+        0px 0px 2px hsl(300, 50%, 40%),
+
+        0px 0px 1px hsl(300, 50%, 40%),
+        0px 0px 1px hsl(300, 50%, 40%),
+        0px 0px 1px hsl(300, 50%, 40%),
+        0px 0px 1px hsl(300, 50%, 40%),
+        0px 0px 1px hsl(300, 50%, 40%),
+        0px 0px 1px hsl(300, 50%, 40%),
+        0px 0px 1px hsl(300, 50%, 40%),
+        0px 0px 1px hsl(300, 50%, 40%),
+        0px 0px 1px hsl(300, 50%, 40%),
+        0px 0px 1px hsl(300, 50%, 40%),
+        0px 0px 1px hsl(300, 50%, 40%),
+        0px 0px 1px hsl(300, 50%, 40%),
+        0px 0px 1px hsl(300, 50%, 40%),
+        0px 0px 1px hsl(300, 50%, 40%);
+}
 
 
 /* layout */
@@ -123,6 +151,11 @@ p, h1, h2 {
 header h1 {
     text-align: right;
     margin-right: 0rem;
+}
+
+footer p {
+    margin-top: 2rem;
+    text-align: center;
 }
 
 ul {
@@ -173,6 +206,10 @@ span.file-input {
 }
 
 header section:nth-of-type(1) {
+    border-width: 0;
+}
+
+footer section {
     border-width: 0;
 }
 

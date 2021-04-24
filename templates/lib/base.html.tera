@@ -8,6 +8,13 @@
     <script src="wasm/pkg/geonft_wasm.js" defer></script>
     <script src="js/wasm-init.js" defer></script>
 
+    {% block scripts %}
+    {% endblock scripts %}
+
+  </head>
+
+  <body>
+
     <header>
 
       <section>
@@ -20,14 +27,19 @@
 
     </header>
 
-    {% block scripts %}
-    {% endblock scripts %}
-
-  </head>
-
-  <body>
     {% block body %}
     {% endblock body %}
+
+    <footer>
+
+      <section>
+
+        <p>Created by the committee for<br>Cocobutt <span id="heart">❤︎</span> Coconut.</p>
+
+      </section>
+
+    </footer>
+
   </body>
 
 </html>
