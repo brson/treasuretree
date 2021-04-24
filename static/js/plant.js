@@ -6,13 +6,17 @@ let secretKey = null;
 let publicKey = null;
 
 let imageUploadButton = document.getElementById("image-upload-button");
+let imageElt = document.getElementById("treasure-image");
+
+console.assert(imageUploadButton);
+console.assert(imageElt);
 
 imageUploadButton.addEventListener("change", async () => {
-    let imgElt = document.getElementById("treasure-image");
+
+    treasureImageBin = null;
+    imageElt.src = "";
 
     if (imageUploadButton.files.length == 0) {
-        treasureImageBin = null;
-        imgElt.src = "";
         return;
     }
 
@@ -20,7 +24,7 @@ imageUploadButton.addEventListener("change", async () => {
     let bin = await file.arrayBuffer();
     let blob = new Blob([bin], { type: file.type });
 
-    imgElt.src = URL.createObjectURL(blob);
+    imageElt.src = URL.createObjectURL(blob);
 });
 
 let qrScanButton = document.getElementById("qrscan-button");

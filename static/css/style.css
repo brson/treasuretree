@@ -248,6 +248,10 @@ span.file-input > label {
     padding: 2rem;
 }
 
+img {
+    max-width: 100%;
+}
+
 /* special file input button handling */
 /* ala https://stackoverflow.com/a/25825731 */
 
