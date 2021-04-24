@@ -36,8 +36,8 @@ fn create_treasure_key() -> Result<Json<UniqueCodeJson>> {
 
     let first_key = UniqueCodeJson {
         secret_key: first_key.secret_key.clone(),
-        // 50 is the size, bigger number means smaller size on the page
-        qrcode: first_key.qrcode.to_svg_string(50), 
+        // Argument is the size, bigger number means smaller size on the page
+        qrcode: first_key.qrcode.to_svg_string(0), 
         url: first_key.url.clone(),
     };
 

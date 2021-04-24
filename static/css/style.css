@@ -234,7 +234,6 @@ input[type="file"] {
 * {
     border-width: 0;
     border-style: solid;
-    border-radius: 0.8rem;
     --box-shadow-border-width: 3px;
     --box-shadow-border-blur: 0.5px;
 }
@@ -244,6 +243,7 @@ section,
 input,
 span.file-input > label {
     border-width: 1.5px;
+    border-radius: 0.8rem;
 }
 
 header section:nth-of-type(1) {
