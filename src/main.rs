@@ -72,7 +72,7 @@ fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Result<Json<Pl
     let return_url = format!("{host}/api/plant/{key}\n", host = "http://localhost:8000", key = treasure_key);
 
     let mut file = File::create(filename)?;
-    file.write_all(serde_json::to_string(&plant_info.0)?.as_bytes());
+    serde_json::to_writer(file, &plant_info.0)?;
     
     let res = PlantInfoResponse {
         return_url,
