@@ -33,7 +33,10 @@ Plant a Treasure
 
 <section>
 
-  <p><input type="button" id="qrscan-button" value="Scan QR Code"></p>
+  <p>
+    <input type="button" id="qrscan-button" value="Scan QR Code">
+    <input type="button" id="qrscan-cancel-button" value="Cancel Scan" disabled>
+  </p>
 
   <p><video id="qr-video"></video></p>
 

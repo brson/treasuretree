@@ -121,7 +121,7 @@ span.file-input > label {
         0px 0px 2px hsla(300, 100%, 50%, 100%);
 }
 
-header h1 input:hover {
+header h1 input:hover:not(:disabled) {
     box-shadow:
         0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--logo-color-light) inset,
         0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--logo-color-light),
@@ -129,7 +129,7 @@ header h1 input:hover {
 }
 
 a:hover,
-input:hover,
+input:hover:not(:disabled),
 span.file-input > label:hover {
     box-shadow:
         0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--action-color-light) inset,
@@ -151,8 +151,8 @@ span.file-input > label:active {
     text-shadow: none;
 }
 
-input:disabled,
-span.file-input > label:disabled {
+/* TODO: disable file input? */
+input:disabled {
     opacity: 50%;
 }
 
