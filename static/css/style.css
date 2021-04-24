@@ -196,6 +196,7 @@ input[type="file"] {
 * {
     border-width: 0;
     border-style: solid;
+    border-radius: 0.4rem;
 }
 
 a,
