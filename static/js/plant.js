@@ -236,6 +236,10 @@ plantButton.addEventListener("click", async () => {
         console.log(jsonResponse);
 
         treasurePlanted = true;
+
+        let plantedMessageElt = document.getElementById("planted-message");
+        console.assert(plantedMessageElt);
+        plantedMessageElt.classList.remove("no-display");
     } catch (e) {
         // TODO
         console.error(e);

@@ -53,6 +53,8 @@ Plant a Treasure
 
   <p><input type="button" id="plant-button" value="Plant Treasure" disabled></p>
 
+  <p id="planted-message" class="success-message no-display">Treasure Planted<p>
+
 </section>
 
 {% endblock body %}
