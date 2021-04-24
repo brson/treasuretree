@@ -1,3 +1,10 @@
+* {
+    font-size: 1rem;
+    font-family: monospace;
+    font-weight: normal;
+    line-height: normal;
+}
+
 :root {
     box-sizing: border-box;
 }
@@ -9,12 +16,23 @@ body {
 
 section {
     border: 2px solid black;
-}
-
-p {
-    margin: 1rem;    
+    margin: 1rem;
 }
 
 section {
-    margin: 1rem;
+    max-width: 80ch;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+p, h1, h2 {
+    margin: 1rem;    
+}
+
+h1, h2 {
+    font-weight: bold;
+}
+
+header h1 {
+    text-align: right;
 }

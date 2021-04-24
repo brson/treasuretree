@@ -5,11 +5,23 @@
 
 {% block body %}
 
+<header>
+
+  <section>
+    <h1>Treasure Hunt</h1>
+  </section>
+
+  <section>
+    <h2>Actions Menu</h2>
+  </section>
+
+</header>
+
 <section>
   <ul>
-    <li><a href="create">create</a> a new treasure key (QR code)
-    <li><a href="plant">plant</a> your treasure with its key
-    <li><a href="claim">claim</a> claim a planted treasure
+    <li><p><a href="create">create</a> a new treasure key (QR code)
+    <li><p><a href="plant">plant</a> your treasure with its key
+    <li><p><a href="claim">claim</a> claim a planted treasure
   </ul>
 </section>
 

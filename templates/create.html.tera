@@ -8,6 +8,18 @@
 
 {% block body %}
 
+<header>
+
+  <section>
+    <h1>Treasure Hunt</h1>
+  </section>
+
+  <section>
+    <h2>Create a Treasure Code</h2>
+  </section>
+
+</header>
+
 <section>
 
   <p><input type="button" id="create-button" value="Create QR Code"></p>

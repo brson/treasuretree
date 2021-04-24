@@ -9,6 +9,16 @@
 
 {% block body %}
 
+<header>
+
+  <section>
+    <h1>Treasure Hunt<h1>
+  </section>
+
+  <section>
+    <h2>Plant a Treasure</h2>
+  </section>
+
 <section>
 
   <p><input type="file" id="image-upload-button" value="Upload Image"></p>
