@@ -27,13 +27,16 @@ span.file-input {
 
 * {
     color: inherit;
-    border-color: rgb(50%, 50%, 50%);
+    border-color: rgb(70%, 70%, 70%);
     --action-color: hsl(300, 75%, 75%); /* magenta */
-    --action-color-dark: hsl(300, 50%, 40%);
+    --action-color-dark: hsl(300, 50%, 60%);
+    --action-color-light: hsl(300, 50%, 95%);
     --logo-color: hsl(180, 75%, 75%); /* cyan */
-    --logo-color-dark: hsl(180, 50%, 40%);
+    --logo-color-dark: hsl(180, 50%, 60%);
+    --logo-color-light: hsl(180, 50%, 95%);
     --header-color: hsl(30, 75%, 75%); /* orange */
-    --header-color-dark: hsl(30, 50%, 40%);
+    --header-color-dark: hsl(30, 50%, 60%);
+    --header-color-light: hsl(30, 75%, 95%);
 }
 
 body {
@@ -47,6 +50,7 @@ p {
 header h1 input {
     background-color: var(--logo-color);
     border-color: var(--logo-color-dark);
+    box-shadow: 0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--logo-color-light) inset;
     text-shadow:
         0px 0px 1px hsla(180, 50%, 25%, 100%),
         0px 0px 1px hsla(180, 50%, 25%, 100%),
@@ -60,6 +64,7 @@ header h1 input {
 header section:nth-of-type(2) {
     background-color: var(--header-color);
     border-color: var(--header-color-dark);
+    box-shadow: 0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--header-color-light) inset;
     color: white;
     text-shadow:
         0px 0px 1px hsla(30, 50%, 25%, 100%),
@@ -71,11 +76,21 @@ header section:nth-of-type(2) {
         0px 0px 2px hsla(30, 100%, 50%, 100%);
 }
 
+footer section,
+header section:nth-of-type(1) {
+    box-shadow: none;
+}
+
+section {
+    box-shadow: 0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) rgb(95%, 95%, 95%) inset;
+}
+
 a,
 input,
 span.file-input {
     background-color: var(--action-color);
     border-color: var(--action-color-dark);
+    box-shadow: 0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--action-color-light) inset;
     color: white;
 }
 
@@ -98,27 +113,36 @@ footer p {
 
 #heart {
     color: var(--action-color);
-    opacity: 75%;
+    -webkit-text-stroke: 1px var(--action-color-light);
+    opacity: 90%;
     text-shadow:
-        0px 0px 2px hsl(300, 50%, 40%),
-        0px 0px 2px hsl(300, 50%, 40%),
-        0px 0px 2px hsl(300, 50%, 40%),
-        0px 0px 2px hsl(300, 50%, 40%),
+        1px 0px 0px var(--action-color-dark),
+        0px 1px 0px var(--action-color-dark),
+        1px 1px 0px var(--action-color-dark),
+        -1px 0px 0px var(--action-color-dark),
+        0px -1px 0px var(--action-color-dark),
+        -1px -1px 0px var(--action-color-dark),
+        -1px 0px 0px var(--action-color-dark),
+        0px 1px 0px var(--action-color-dark),
+        -1px 1px 0px var(--action-color-dark),
+        1px 0px 0px var(--action-color-dark),
+        0px -1px 0px var(--action-color-dark),
+        1px -1px 0px var(--action-color-dark),
 
-        0px 0px 1px hsl(300, 50%, 40%),
-        0px 0px 1px hsl(300, 50%, 40%),
-        0px 0px 1px hsl(300, 50%, 40%),
-        0px 0px 1px hsl(300, 50%, 40%),
-        0px 0px 1px hsl(300, 50%, 40%),
-        0px 0px 1px hsl(300, 50%, 40%),
-        0px 0px 1px hsl(300, 50%, 40%),
-        0px 0px 1px hsl(300, 50%, 40%),
-        0px 0px 1px hsl(300, 50%, 40%),
-        0px 0px 1px hsl(300, 50%, 40%),
-        0px 0px 1px hsl(300, 50%, 40%),
-        0px 0px 1px hsl(300, 50%, 40%),
-        0px 0px 1px hsl(300, 50%, 40%),
-        0px 0px 1px hsl(300, 50%, 40%);
+
+        0px 0px 2px var(--action-color-dark),
+        0px 0px 2px var(--action-color-dark),
+        0px 0px 2px var(--action-color-dark),
+        0px 0px 2px var(--action-color-dark),
+        0px 0px 2px var(--action-color-dark),
+        0px 0px 2px var(--action-color-dark),
+        0px 0px 2px var(--action-color-dark),
+        0px 0px 2px var(--action-color-dark),
+        0px 0px 2px var(--action-color-dark),
+        0px 0px 2px var(--action-color-dark),
+        0px 0px 2px var(--action-color-dark),
+        0px 0px 2px var(--action-color-dark),
+        0px 0px 2px var(--action-color-dark);
 }
 
 
@@ -159,7 +183,8 @@ footer p {
 }
 
 ul {
-    padding-left: 1rem;
+    padding-left: 0;
+    list-style: none;
 }
 
 li {
@@ -167,16 +192,13 @@ li {
 }
 
 a {
-    padding: 0.1em 0.4em 0.1em 0.4em;
+    padding: 0.2em 0.5em 0.2em 0.5em;
 }
 
 input,
 span.file-input {
     padding: 1rem;
 }
-
-
-
 
 /* special file input button handling */
 /* ala https://stackoverflow.com/a/25825731 */
@@ -196,14 +218,16 @@ input[type="file"] {
 * {
     border-width: 0;
     border-style: solid;
-    border-radius: 0.4rem;
+    border-radius: 0.8rem;
+    --box-shadow-border-width: 3px;
+    --box-shadow-border-blur: 0.5px;
 }
 
 a,
 section,
 input,
 span.file-input {
-    border-width: 2px;
+    border-width: 1.5px;
 }
 
 header section:nth-of-type(1) {
@@ -224,3 +248,4 @@ input:hover,
 span.file-input:hover {
     cursor: pointer;
 }
+
