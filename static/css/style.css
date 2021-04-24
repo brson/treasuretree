@@ -15,19 +15,10 @@
 }
 
 a,
-h1, h2 {
-    font-weight: bold;
-}
-
-input,
-span.file-input {
-    font-weight: bold;
-}
-
 h1, h2,
-a,
 input,
 span.file-input {
+    font-weight: bold;
     letter-spacing: 0.1em;
 }
 
@@ -36,51 +27,66 @@ span.file-input {
 
 * {
     color: inherit;
-    border-color: black;
+    border-color: rgb(50%, 50%, 50%);
     --action-color: hsl(300, 75%, 75%); /* magenta */
     --action-color-dark: hsl(300, 50%, 40%);
-}
-
-header section:nth-of-type(2) {
-    background-color: hsl(30, 75%, 75%);
-    color: white;
-    text-shadow:
-        0px 0px 1px hsla(30, 50%, 0%, 100%),
-        0px 0px 2px hsla(30, 50%, 50%, 100%),
-        0px 0px 2px hsla(30, 100%, 50%, 100%);
+    --logo-color: hsl(180, 75%, 75%); /* cyan */
+    --logo-color-dark: hsl(180, 50%, 40%);
+    --header-color: hsl(30, 75%, 75%); /* orange */
+    --header-color-dark: hsl(30, 50%, 40%);
 }
 
 body {
     background-color: white;
 }
 
-a {
-    background-color: var(--action-color);
-    color: white;
-    padding: 0.1em 0.4em 0.1em 0.4em;
-    border-color: var(--action-color-dark);
+p {
+    color: rgb(25%, 25%, 25%);
 }
 
 header h1 input {
-    border-color: hsl(180, 50%, 40%);
-    background-color: hsl(180, 75%, 75%);
+    background-color: var(--logo-color);
+    border-color: var(--logo-color-dark);
     text-shadow:
+        0px 0px 1px hsla(180, 50%, 25%, 100%),
+        0px 0px 1px hsla(180, 50%, 25%, 100%),
+        0px 0px 1px hsla(180, 50%, 25%, 100%),
+
         0px 0px 1px hsla(180, 50%, 0%, 100%),
         0px 0px 2px hsla(180, 50%, 50%, 100%),
         0px 0px 2px hsla(180, 100%, 50%, 100%);
 }
 
+header section:nth-of-type(2) {
+    background-color: var(--header-color);
+    border-color: var(--header-color-dark);
+    color: white;
+    text-shadow:
+        0px 0px 1px hsla(30, 50%, 25%, 100%),
+        0px 0px 1px hsla(30, 50%, 25%, 100%),
+        0px 0px 1px hsla(30, 50%, 25%, 100%),
+
+        0px 0px 1px hsla(30, 50%, 0%, 100%),
+        0px 0px 2px hsla(30, 50%, 50%, 100%),
+        0px 0px 2px hsla(30, 100%, 50%, 100%);
+}
+
+a,
 input,
 span.file-input {
     background-color: var(--action-color);
-    color: white;
     border-color: var(--action-color-dark);
+    color: white;
 }
 
 a,
 input,
 span.file-input {
     text-shadow:
+        0px 0px 1px hsla(300, 50%, 25%, 100%),
+        0px 0px 1px hsla(300, 50%, 25%, 100%),
+        0px 0px 1px hsla(300, 50%, 25%, 100%),
+
         0px 0px 1px hsla(300, 50%, 0%, 100%),
         0px 0px 2px hsla(300, 50%, 50%, 100%),
         0px 0px 2px hsla(300, 100%, 50%, 100%);
@@ -125,6 +131,10 @@ ul {
 
 li {
     margin: 1rem;
+}
+
+a {
+    padding: 0.1em 0.4em 0.1em 0.4em;
 }
 
 input,
