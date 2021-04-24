@@ -12,10 +12,12 @@ console.assert(plantButton);
 let imageUploadButton = document.getElementById("image-upload-button");
 let useTestImageButton = document.getElementById("use-test-image-button")
 let imageElt = document.getElementById("treasure-image");
+let fileSpinner = document.getElementById("file-spinner");
 
 console.assert(imageUploadButton);
 console.assert(useTestImageButton);
 console.assert(imageElt);
+console.assert(fileSpinner);
 
 imageUploadButton.addEventListener("change", async () => {
 
@@ -27,6 +29,8 @@ imageUploadButton.addEventListener("change", async () => {
 
     imageUploadButton.disabled = true;
     useTestImageButton.disabled = true;
+
+    fileSpinner.classList.remove("no-display");
 
     try {
 
@@ -47,6 +51,7 @@ imageUploadButton.addEventListener("change", async () => {
     } finally {
         imageUploadButton.disabled = false;
         useTestImageButton.disabled = false;
+        fileSpinner.classList.add("no-display");
     }
 });
 
@@ -60,6 +65,8 @@ useTestImageButton.addEventListener("click", async () => {
 
     imageUploadButton.disabled = true;
     useTestImageButton.disabled = true;
+
+    fileSpinner.classList.remove("no-display");
 
     try {
         let response = await fetch("images/coconut-tree.png");
@@ -79,6 +86,7 @@ useTestImageButton.addEventListener("click", async () => {
     } finally {
         imageUploadButton.disabled = false;
         useTestImageButton.disabled = false;
+        fileSpinner.classList.add("no-display");
     }
 });
 
@@ -214,10 +222,16 @@ secretKeyInput.addEventListener("input", async () => {
 
 plantButton.addEventListener("click", async () => {
 
+    let plantSpinner = document.getElementById("plant-spinner");
+
+    console.assert(plantSpinner);
+
     plantButton.disabled = true;
 
     console.assert(treasureImageEncoded);
     console.assert(secretKey);
+
+    plantSpinner.classList.remove("no-display");
 
     try {
         let treasureInfo = {
@@ -250,6 +264,7 @@ plantButton.addEventListener("click", async () => {
         plantedMessageElt.classList.remove("no-display");
     } finally {
         maybeEnablePlantButton();
+        plantSpinner.classList.add("no-display");
     }
 });
 

@@ -370,3 +370,8 @@ input[type="text"]:hover {
 .no-display {
     display: none;
 }
+
+span.spinner {
+    content: url("../images/spinner.svg");
+    vertical-align: middle;
+}
