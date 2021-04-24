@@ -8,6 +8,22 @@
 
 {% block body %}
 
-claim
+<header>
+
+  <section>
+    <h1>Treasure Hunt</h1>
+  </section>
+
+  <section>
+    <h2>Claim Treasure</h2>
+  </section>
+
+</header>
+
+<section>
+
+  <p>claim</p>
+
+</section>
 
 {% endblock body %}

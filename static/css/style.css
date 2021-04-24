@@ -1,12 +1,40 @@
+:root {
+    box-sizing: border-box;
+}
+
+
+/* fonts */
+
 * {
     font-size: 1rem;
     font-family: monospace;
     font-weight: normal;
     line-height: normal;
+    text-decoration: none;
 }
 
-:root {
-    box-sizing: border-box;
+h1, h2 {
+    font-weight: bold;
+}
+
+
+/* colors */
+
+* {
+    color: black;
+    border-color: black;
+}
+
+a {
+    color: skyblue;
+}
+
+
+/* layout */
+
+* {
+    margin: 0;
+    padding: 0;
 }
 
 body {
@@ -15,7 +43,8 @@ body {
 }
 
 section {
-    border: 2px solid black;
+    border-width: 2px;
+    border-style: solid;
     margin: 1rem;
 }
 
@@ -29,10 +58,18 @@ p, h1, h2 {
     margin: 1rem;    
 }
 
-h1, h2 {
-    font-weight: bold;
-}
-
 header h1 {
     text-align: right;
+}
+
+ul {
+    padding-left: 1rem;
+}
+
+li {
+    margin: 1rem;
+}
+
+input {
+    padding: 1rem;
 }
