@@ -3,6 +3,7 @@
 }
 
 body {
+    margin: 0;
     padding: 1rem;
 }
 
@@ -12,4 +13,8 @@ section {
 
 p {
     margin: 1rem;    
+}
+
+section {
+    margin: 1rem;
 }
