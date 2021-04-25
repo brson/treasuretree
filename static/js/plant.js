@@ -89,8 +89,8 @@ plantButton.addEventListener("click", async () => {
     console.log("click");
 
     let treasure_info = {
-        image: "foobarimage",
-        private_key: "testprivatekey"
+        image: document.getElementById("image-upload-button").value,
+        private_key: document.getElementById("secret-key").innerText
     };
     
     let response = await fetch("api/plant",
