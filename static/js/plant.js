@@ -222,27 +222,6 @@ secretKeyInput.addEventListener("input", async () => {
 
 plantButton.addEventListener("click", async () => {
 
-<<<<<<< HEAD
-    let treasure_info = {
-        image: document.getElementById("image-upload-button").value,
-        private_key: document.getElementById("secret-key").innerText
-    };
-    
-    let response = await fetch("api/plant",
-                               {
-                                   method: "POST",
-                                   headers: {
-                                       'Accept': 'application/json',
-                                       'Content-Type': 'application/json'
-                                   },
-                                   body: JSON.stringify(treasure_info)
-                               });
-    console.log(response);
-
-    // let jsonResponse = await response.json();
-    let jsonResponse = await response.text();
-    console.log(jsonResponse);
-=======
     let plantSpinner = document.getElementById("plant-spinner");
 
     console.assert(plantSpinner);
@@ -287,7 +266,6 @@ plantButton.addEventListener("click", async () => {
         maybeEnablePlantButton();
         plantSpinner.classList.add("no-display");
     }
->>>>>>> bc435d3147982271d583150b2df60f014cc33259
 });
 
 function maybeEnablePlantButton() {
