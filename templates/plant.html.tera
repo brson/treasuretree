@@ -22,32 +22,41 @@ Plant a Treasure
 
   <p>
     <span class="file-input">
-      <label for="image-upload-button">Upload Image</label>
       <input type="file" id="image-upload-button">
+      <label for="image-upload-button">Upload Image</label>
     </span>
+    <input type="button" id="use-test-image-button" value="Use Test Image">
+    <span id="file-spinner" class="spinner no-display"></span>
   </p>
 
-  <p><img id="treasure-image"></p>
+  <p><img id="treasure-image" class="no-display"></p>
 
 </section>
 
 <section>
 
-  <p><input type="button" id="qrscan-button" value="Scan QR Code"></p>
+  <p>
+    <input type="button" id="qrscan-button" value="Scan QR Code">
+    <input type="button" id="qrscan-cancel-button" value="Cancel Scan" disabled>
+  </p>
 
-  <p><video id="qr-video"></video></p>
+  <p><video id="qr-video" class="no-display"></video></p>
 
   <div>
-    <p><span>Treasure URL:</span><span id="treasure-claim-url"></span></p>
-    <p><span>Secret Key:</span><span id="secret-key"></span></p>
-    <p><span>Public Key:</span><span id="public-key"></span></p>
+    <p><span>Secret Key:</span> <input type="text" id="secret-key"></p>
+    <p><span>Public Key:</span> <span id="public-key" class="breakable"></span></p>
+    <p><span>Treasure URL:</span> <span id="treasure-claim-url" class="breakable"></span></p>
   </div>
 
 </section>
 
 <section>
 
-  <p><input type="button" id="plant-button" value="Plant Treasure"></p>
+  <p>
+    <input type="button" id="plant-button" value="Plant Treasure" disabled>
+    <span id="plant-spinner" class="spinner no-display"></span>
+  </p>
+  <p id="planted-message" class="success-message no-display">Treasure Planted<p>
 
 </section>
 

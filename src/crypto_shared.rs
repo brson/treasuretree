@@ -7,29 +7,29 @@ pub static SECRET_KEY_HRP: &'static str = "gs";
 pub static PUBLIC_KEY_HRP: &'static str = "gp";
 pub static URL_PREFIX: &'static str = "https://rib.rs?key=";
 
-pub fn key_pair_from_secret_key(key: &str) -> Result<Keypair> {
+pub fn keypair_from_secret_key(key: &str) -> Result<Keypair> {
     let secret_key = decode_secret_key(key)?;
     let public_key = PublicKey::from(&secret_key);
-    let key_pair = Keypair {
+    let keypair = Keypair {
         secret: secret_key,
         public: public_key,
     };
-    Ok(key_pair)
+    Ok(keypair)
 }
 
-pub fn keypair_to_url(keypair: &Keypair) -> Result<String> {
+pub fn keypair_to_secret_url(keypair: &Keypair) -> Result<String> {
     let secret_key_string = encode_secret_key(&keypair.secret)?;
     let url = format!("{}{}", URL_PREFIX, secret_key_string);
     Ok(url)
 }
 
-pub fn url_to_keypair(url: &str) -> Result<Keypair> {
+pub fn secret_url_to_keypair(url: &str) -> Result<Keypair> {
     if !url.starts_with(URL_PREFIX) {
         bail!("incorrect URL prefix for secret key");
     }
 
     let key = url.split_at(URL_PREFIX.len()).1;
-    key_pair_from_secret_key(key)
+    keypair_from_secret_key(key)
 }
 
 pub fn encode_secret_key(key: &SecretKey) -> Result<String> {

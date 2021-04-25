@@ -14,7 +14,7 @@
 }
 
 body {
-    font-size: 200%;
+    font-size: 150%;
 }
 
 * {
@@ -34,7 +34,6 @@ span.file-input > label {
 }
 
 
-
 /* ------ */
 /* colors */
 /* ------ */
@@ -42,6 +41,7 @@ span.file-input > label {
 * {
     color: inherit;
     border-color: rgb(70%, 70%, 70%);
+    --text-color: rgb(40%, 40%, 40%);
     --action-color: hsl(300, 75%, 75%); /* magenta */
     --action-color-dark: hsl(300, 50%, 60%);
     --action-color-light: hsl(300, 50%, 95%);
@@ -51,6 +51,9 @@ span.file-input > label {
     --header-color: hsl(30, 75%, 75%); /* orange */
     --header-color-dark: hsl(30, 50%, 60%);
     --header-color-light: hsl(30, 75%, 95%);
+    --success-color: hsl(90, 75%, 75%); /* orange */
+    --success-color-dark: hsl(90, 50%, 60%);
+    --success-color-light: hsl(90, 75%, 95%);
 }
 
 body {
@@ -58,10 +61,11 @@ body {
 }
 
 p, li {
-    color: rgb(40%, 40%, 40%);
+    color: var(--text-color);
 }
 
 header h1 input {
+    color: white;
     background-color: var(--logo-color);
     border-color: var(--logo-color-dark);
     box-shadow: 0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--logo-color-light) inset;
@@ -76,10 +80,10 @@ header h1 input {
 }
 
 header section:nth-of-type(2) {
+    color: white;
     background-color: var(--header-color);
     border-color: var(--header-color-dark);
     box-shadow: 0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--header-color-light) inset;
-    color: white;
     text-shadow:
         0px 0px 1px hsla(30, 50%, 25%, 100%),
         0px 0px 1px hsla(30, 50%, 25%, 100%),
@@ -99,13 +103,38 @@ section {
     box-shadow: 0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) rgb(95%, 95%, 95%) inset;
 }
 
+p.success-message {
+    color: white;
+    background-color: var(--success-color);
+    border-color: var(--success-color-dark);
+    box-shadow: 0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--success-color-light) inset;
+    text-shadow:
+        0px 0px 1px hsla(120, 50%, 25%, 100%),
+        0px 0px 1px hsla(120, 50%, 25%, 100%),
+        0px 0px 1px hsla(120, 50%, 25%, 100%),
+
+        0px 0px 1px hsla(120, 50%, 0%, 100%),
+        0px 0px 2px hsla(120, 50%, 50%, 100%),
+        0px 0px 2px hsla(120, 100%, 50%, 100%);
+}
+
 a,
 input,
 span.file-input > label {
+    color: white;
     background-color: var(--action-color);
     border-color: var(--action-color-dark);
     box-shadow: 0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--action-color-light) inset;
-    color: white;
+}
+
+input[type="text"] {
+    background-color: var(--action-color-light);
+    color: var(--text-color);
+    text-shadow: none;
+}
+
+input[type="text"]:focus {
+    outline: none;
 }
 
 a,
@@ -119,6 +148,46 @@ span.file-input > label {
         0px 0px 1px hsla(300, 50%, 0%, 100%),
         0px 0px 2px hsla(300, 50%, 50%, 100%),
         0px 0px 2px hsla(300, 100%, 50%, 100%);
+}
+
+header h1 input:hover:not(:disabled) {
+    box-shadow:
+        0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--logo-color-light) inset,
+        0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--logo-color-light),
+        0px 0px 1px 3px var(--logo-color-dark);
+}
+
+a:hover,
+input:hover:not(:disabled),
+input[type="text"]:focus,
+span.file-input > input:not(:disabled) label:hover {
+    box-shadow:
+        0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--action-color-light) inset,
+        0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--action-color-light),
+        0px 0px 1px 3px var(--action-color-dark);
+}
+
+header h1 input:active {
+    color: var(--logo-color);
+    background-color: var(--logo-color-light);
+    text-shadow: none;
+}
+
+a:active,
+input:active,
+span.file-input > label:active {
+    color: var(--action-color);
+    background-color: var(--action-color-light);
+    text-shadow: none;
+}
+
+/* TODO: disable file input? */
+input:disabled {
+    opacity: 50%;
+}
+
+span.file-input > input:disabled ~ label {
+    opacity: 50%;
 }
 
 footer p {
@@ -180,7 +249,7 @@ section {
 }
 
 section {
-    max-width: 60ch;
+    max-width: 80ch;
     margin-left: auto;
     margin-right: auto;
 }
@@ -209,8 +278,14 @@ a {
 }
 
 input,
-span.file-input > label {
+span.file-input > label,
+p.success-message {
     padding: 2rem;
+}
+
+img,
+video {
+    max-width: 100%;
 }
 
 /* special file input button handling */
@@ -241,7 +316,8 @@ input[type="file"] {
 a,
 section,
 input,
-span.file-input > label {
+span.file-input > label,
+p.success-message {
     border-width: 1.5px;
     border-radius: 0.8rem;
 }
@@ -263,8 +339,17 @@ footer section {
 
 a,
 input:hover,
-span.file-input:hover > label {
+span.file-input > label:hover {
     cursor: pointer;
+}
+
+input:hover:disabled,
+span.file-input > input:disabled ~ label:hover {
+    cursor: not-allowed;
+}
+
+input[type="text"]:hover {
+    cursor: text;
 }
 
 
@@ -274,10 +359,19 @@ span.file-input:hover > label {
 /* app-specific rules */
 /* ------------------ */
 
-.secret-key {
+.breakable {
     overflow-wrap: break-word;
 }
 
-.key-container {
+.qr-key-container {
     text-align: center;
+}
+
+.no-display {
+    display: none;
+}
+
+span.spinner {
+    content: url("../images/spinner.svg");
+    vertical-align: middle;
 }

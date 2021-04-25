@@ -1,48 +1,137 @@
-console.log("before click");
-
-let treasureImageBin = null;
+let treasureImageEncoded = null;
 let treasureClaimUrl = null;
 let secretKey = null;
 let publicKey = null;
+let treasurePlanted = false;
+
+let plantButton = document.getElementById("plant-button");
+
+console.assert(plantButton);
+
 
 let imageUploadButton = document.getElementById("image-upload-button");
+let useTestImageButton = document.getElementById("use-test-image-button")
+let imageElt = document.getElementById("treasure-image");
+let fileSpinner = document.getElementById("file-spinner");
+
+console.assert(imageUploadButton);
+console.assert(useTestImageButton);
+console.assert(imageElt);
+console.assert(fileSpinner);
 
 imageUploadButton.addEventListener("change", async () => {
-    let imgElt = document.getElementById("treasure-image");
 
-    if (imageUploadButton.files.length == 0) {
-        treasureImageBin = null;
-        imgElt.src = "";
-        return;
+    plantButton.disabled = true;
+
+    treasureImageEncoded = null;
+    imageElt.src = "";
+    imageElt.classList.add("no-display");
+
+    imageUploadButton.disabled = true;
+    useTestImageButton.disabled = true;
+
+    fileSpinner.classList.remove("no-display");
+
+    try {
+
+        if (imageUploadButton.files.length == 0) {
+            return;
+        }
+
+        let file = imageUploadButton.files[0];
+        let bin = await file.arrayBuffer();
+        let blob = new Blob([bin], { type: file.type });
+
+        imageElt.src = URL.createObjectURL(blob);
+        imageElt.classList.remove("no-display");
+
+        treasureImageEncoded = btoa(blob);
+
+        maybeEnablePlantButton();
+    } finally {
+        imageUploadButton.disabled = false;
+        useTestImageButton.disabled = false;
+        fileSpinner.classList.add("no-display");
     }
-
-    let file = imageUploadButton.files[0];
-    let bin = await file.arrayBuffer();
-    let blob = new Blob([bin], { type: file.type });
-
-    imgElt.src = URL.createObjectURL(blob);
 });
 
+useTestImageButton.addEventListener("click", async () => {
+
+    plantButton.disabled = true;
+
+    treasureImageEncoded = null;
+    imageElt.scr = "";
+    imageElt.classList.add("no-display");
+
+    imageUploadButton.disabled = true;
+    useTestImageButton.disabled = true;
+
+    fileSpinner.classList.remove("no-display");
+
+    try {
+        let response = await fetch("images/coconut-tree.png");
+
+        if (!response.ok) {
+            // TODO
+        }
+
+        let blob = await response.blob();
+
+        imageElt.src = URL.createObjectURL(blob);
+        imageElt.classList.remove("no-display");
+
+        treasureImageEncoded = btoa(blob);
+
+        maybeEnablePlantButton();
+    } finally {
+        imageUploadButton.disabled = false;
+        useTestImageButton.disabled = false;
+        fileSpinner.classList.add("no-display");
+    }
+});
+
+
+
+
 let qrScanButton = document.getElementById("qrscan-button");
+let qrCancelButton = document.getElementById("qrscan-cancel-button");
+let secretKeyInput = document.getElementById("secret-key");
+let treasureClaimUrlElt = document.getElementById("treasure-claim-url");
+let publicKeyElt = document.getElementById("public-key");
+
+console.assert(qrScanButton);
+console.assert(qrCancelButton);
+console.assert(secretKeyInput);
+console.assert(treasureClaimUrlElt);
+console.assert(publicKeyElt);
 
 QrScanner.WORKER_PATH = "js/lib/qr-scanner-worker.min.js";
 
-qrScanButton.addEventListener("click", async () => {
-    let treasureClaimUrlElt = document.getElementById("treasure-claim-url");
-    let secretKeyElt = document.getElementById("secret-key");
-    let publicKeyElt = document.getElementById("public-key");
+let stopScanning = null;
 
-    treasureClaimUrlElt.innerText = null;
-    secretKeyElt.innerText = null;
-    publicKeyElt.innerText = null;
+qrScanButton.addEventListener("click", async () => {
 
     let video = document.getElementById("qr-video");
-    let stopScanning = null;
-    const qrScanner = new QrScanner(video, async (result) => {
-        console.log(result);
-        stopScanning();
 
-        let wasm = await initWasm();
+    console.assert(video);    
+
+    plantButton.disabled = true;
+
+    treasureClaimUrlElt.innerText = null;
+    secretKeyInput.value = null;
+    publicKeyElt.innerText = null;
+
+    treasureClaimUrl = null;
+    secretKey = null;
+    publicKey = null;
+
+    let wasm = await initWasm();
+
+    const qrScanner = new QrScanner(video, (result) => {
+        console.log(result);
+
+        // Don't do async work after this to avoid races updated the UI
+        stopScanning();
 
         let url = result;
         let sanityCheck = wasm.sanity_check_url(url);
@@ -63,7 +152,7 @@ qrScanButton.addEventListener("click", async () => {
         }
 
         treasureClaimUrlElt.innerText = url;
-        secretKeyElt.innerText = secretKey_;
+        secretKeyInput.value = secretKey_;
         publicKeyElt.innerText = publicKey_;
 
         treasureClaimUrl = url;
@@ -72,22 +161,68 @@ qrScanButton.addEventListener("click", async () => {
         
     }, (error) => {
         console.error(error);
-        //stopScanning();
     });
+
+    
+    qrScanButton.disabled = true;
+    qrCancelButton.disabled = false;
+    secretKeyInput.disabled = true;
+    video.classList.remove("no-display");
+
     stopScanning = () => {
         qrScanner.stop();
         qrScanner.destroy();
         qrScanButton.disabled = false;
+        qrCancelButton.disabled = true;
+        secretKeyInput.disabled = false;
+        video.classList.add("no-display");
+        maybeEnablePlantButton();
     }
-    qrScanButton.disabled = true;
+
     qrScanner.start();
 });
 
-let plantButton = document.getElementById("plant-button");
+qrCancelButton.addEventListener("click", async () => {
+    stopScanning();
+});
+
+secretKeyInput.addEventListener("input", async () => {
+
+    let wasm = await initWasm();
+
+    plantButton.disabled = true;
+
+    treasureClaimUrlElt.innerText = null;
+    publicKeyElt.innerText = null;
+
+    treasureClaimUrl = null;
+    secretKey = null;
+    publicKey = null;
+
+    let secretKey_ = secretKeyInput.value;
+    let publicKey_ = wasm.secret_key_to_public_key(secretKey_);
+    let treasureClaimUrl_ = wasm.secret_key_to_secret_url(secretKey_);
+
+    if (publicKey_ == null || treasureClaimUrl_ == null) {
+        console.error("unable to decode key");
+        // TODO
+        return;
+    }
+
+    publicKeyElt.innerText = publicKey_;
+    treasureClaimUrlElt.innerText = treasureClaimUrl_;
+
+    treasureClaimUrl = treasureClaimUrl_;
+    secretKey = secretKey_;
+    publicKey = publicKey_;
+
+    maybeEnablePlantButton();
+});
+
 
 plantButton.addEventListener("click", async () => {
-    console.log("click");
 
+<<<<<<< HEAD
     let treasure_info = {
         image: document.getElementById("image-upload-button").value,
         private_key: document.getElementById("secret-key").innerText
@@ -107,4 +242,62 @@ plantButton.addEventListener("click", async () => {
     // let jsonResponse = await response.json();
     let jsonResponse = await response.text();
     console.log(jsonResponse);
+=======
+    let plantSpinner = document.getElementById("plant-spinner");
+
+    console.assert(plantSpinner);
+
+    plantButton.disabled = true;
+
+    console.assert(treasureImageEncoded);
+    console.assert(secretKey);
+
+    plantSpinner.classList.remove("no-display");
+
+    try {
+        let treasureInfo = {
+            image: treasureImageEncoded,
+            private_key: secretKey
+        };
+
+        let response = await fetch("api/plant", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(treasureInfo)
+        });
+        console.log(response);
+
+        if (!response.ok) {
+            // TODO
+        }
+
+        // let jsonResponse = await response.json();
+        let jsonResponse = await response.json();
+        console.log(jsonResponse);
+
+        treasurePlanted = true;
+
+        let plantedMessageElt = document.getElementById("planted-message");
+        console.assert(plantedMessageElt);
+        plantedMessageElt.classList.remove("no-display");
+    } finally {
+        maybeEnablePlantButton();
+        plantSpinner.classList.add("no-display");
+    }
+>>>>>>> bc435d3147982271d583150b2df60f014cc33259
 });
+
+function maybeEnablePlantButton() {
+    let dataReady =
+        treasureImageEncoded &&
+        treasureClaimUrl &&
+        secretKey &&
+        publicKey;
+
+    if (dataReady && !treasurePlanted) {
+        plantButton.disabled = false;
+    }
+}

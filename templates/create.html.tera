@@ -19,10 +19,13 @@ Create a Treasure Key
 
 <section>
 
-  <p><input type="button" id="create-button" value="Create QR Code"></p>
+  <p>
+    <input type="button" id="create-button" value="Create QR Code">
+    <span id="create-spinner" class="spinner no-display"></span>
+  </p>
 
-  <div class="key-container">
-    <p><span id="secret-key" class="secret-key"></span></p>
+  <div class="qr-key-container">
+    <p><span id="secret-key" class="breakable"></span></p>
     <p id="display-qrcode"></p>
   </div>
 

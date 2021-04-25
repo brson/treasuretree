@@ -47,11 +47,12 @@ fn create_treasure_key() -> Result<Json<UniqueCodeJson>> {
 
 #[derive(Serialize, Deserialize, Debug)]
 struct PlantInfoRequest {
-    /// An image, bech32 encoded
+    /// An image, base64 encoded
     image: String,
     /// A private key, bech32 encoded
     ///
     /// FIXME: Should be a pub-key, derived on the client
+    /// FIXME: Rename to secret_key
     private_key: String,
 }
 
@@ -144,11 +145,13 @@ fn static_page(page: String) -> Template {
 fn main() {
     let css_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/static/css");
     let js_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/static/js");
+    let images_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/static/images");
     let wasm_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/wasm/pkg");
     rocket::ignite()
         .attach(Template::fairing())
         .mount("/css", StaticFiles::from(css_dir))
         .mount("/js", StaticFiles::from(js_dir))
+        .mount("/images", StaticFiles::from(images_dir))
         .mount("/wasm/pkg", StaticFiles::from(wasm_dir))
         .mount("/", routes![
             root,
