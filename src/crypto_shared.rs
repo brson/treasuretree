@@ -1,5 +1,5 @@
 use anyhow::{Result, bail};
-use ed25519_dalek::{PublicKey, SecretKey, Keypair};
+use ed25519_dalek::{PublicKey, SecretKey, Keypair, Signature};
 
 use bech32::{FromBase32, ToBase32, Variant};
 
@@ -74,6 +74,11 @@ pub fn decode_public_key(key: &str) -> Result<PublicKey> {
     let bytes = Vec::<u8>::from_base32(&data).e()?;
     let key = PublicKey::from_bytes(&bytes).e()?;
     Ok(key)
+}
+
+// Decodes a base64 encoded signature
+pub fn decode_signature(sig: &str) -> Result<Signature> {
+    panic!()
 }
 
 trait ResultWrapper<T> {

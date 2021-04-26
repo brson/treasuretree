@@ -49,11 +49,10 @@ fn create_treasure_key() -> Result<Json<UniqueCodeJson>> {
 struct PlantInfoRequest {
     /// An image, base64 encoded
     image: String,
-    /// A private key, bech32 encoded
-    ///
-    /// FIXME: Should be a pub-key, derived on the client
-    /// FIXME: Rename to secret_key
-    private_key: String,
+    /// A public key, bech32 encoded
+    public_key: String,
+    /// A signature against the base64 encoded image by the corresponding private key
+    signature: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -64,11 +63,16 @@ struct PlantInfoResponse {
 /// Stores a treasure and associated key
 ///
 /// Stores the json to disk,
-/// with the private key (pubkey in the future) as the name of the file.
+/// with the encoded pubkey as the name of the file.
 /// The key can be used later to retrieve (or claim) the treasure.
+///
+/// # Errors
+///
+/// If the signature is not a valid signature of the provided image with
+/// the provided public key.
 #[post("/api/plant", format = "json", data = "<plant_info>")]
 fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Result<Json<PlantInfoResponse>> {
-    let treasure_key = &plant_info.private_key;
+    let treasure_key = &plant_info.public_key;
     let filename = format!("treasure/{key}", key = treasure_key);
     let return_url = format!("{host}/api/plant/{key}\n", host = "http://localhost:8000", key = treasure_key);
 
