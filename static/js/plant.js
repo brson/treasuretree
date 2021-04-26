@@ -2,6 +2,7 @@ let treasureImageEncoded = null;
 let treasureClaimUrl = null;
 let secretKey = null;
 let publicKey = null;
+let signature = null;
 let treasurePlanted = false;
 
 let plantButton = document.getElementById("plant-button");
@@ -91,19 +92,19 @@ useTestImageButton.addEventListener("click", async () => {
 });
 
 
-
-
 let qrScanButton = document.getElementById("qrscan-button");
 let qrCancelButton = document.getElementById("qrscan-cancel-button");
 let secretKeyInput = document.getElementById("secret-key");
 let treasureClaimUrlElt = document.getElementById("treasure-claim-url");
 let publicKeyElt = document.getElementById("public-key");
+let signatureElt = document.getElementById("signature");
 
 console.assert(qrScanButton);
 console.assert(qrCancelButton);
 console.assert(secretKeyInput);
 console.assert(treasureClaimUrlElt);
 console.assert(publicKeyElt);
+console.assert(signature);
 
 QrScanner.WORKER_PATH = "js/lib/qr-scanner-worker.min.js";
 
@@ -120,10 +121,12 @@ qrScanButton.addEventListener("click", async () => {
     treasureClaimUrlElt.innerText = null;
     secretKeyInput.value = null;
     publicKeyElt.innerText = null;
+    signatureElt.value = null;
 
     treasureClaimUrl = null;
     secretKey = null;
     publicKey = null;
+    signature = null;
 
     let wasm = await initWasm();
 
@@ -236,7 +239,8 @@ plantButton.addEventListener("click", async () => {
     try {
         let treasureInfo = {
             image: treasureImageEncoded,
-            private_key: secretKey
+            public_key: publicKey,
+            signature: "test_signature"
         };
 
         let response = await fetch("api/plant", {
