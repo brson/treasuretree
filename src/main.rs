@@ -49,7 +49,7 @@ fn create_treasure_key() -> Result<Json<UniqueCodeJson>> {
 struct PlantInfoRequest {
     /// An image, base64 encoded
     image: String,
-    /// A public key, bech32 encoded
+    /// A public key to represent the treasure, bech32 encoded
     public_key: String,
     /// A signature against the base64 encoded image by the corresponding private key
     signature: String,
@@ -114,9 +114,22 @@ fn retrieve_treasure_pic(public_key: &RawStr) -> Result<File> {
     panic!()
 }
 
-#[post("/api/claim")]
-fn claim_treasure_with_key() -> String {
-    "claim".to_string()
+#[derive(Serialize, Deserialize, Debug)]
+struct ClaimInfoRequest {
+    /// A random string signed by the private key as evidence of ownership
+    nonce: String,
+    /// The public key of the treasure, bech32 encoded
+    public_key: String,
+    /// A signature against the nonce by the corresponding private key
+    signature: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct ClaimInfoResponse;
+
+#[post("/api/claim", format = "json", data = "<claim_info>")]
+fn claim_treasure_with_key(claim_info: Json<ClaimInfoRequest>) -> Result<Json<ClaimInfoResponse>> {
+    panic!()
 }
 
 #[get("/")]
