@@ -3,7 +3,7 @@ console.assert(typeof secretKey != "undefined");
 console.assert(typeof publicKey != "undefined");
 
 
-let treasureImageEncoded = null;
+let treasureImageBlob = null;
 let treasurePlanted = false;
 
 let plantButton = document.getElementById("plant-button");
@@ -24,7 +24,7 @@ imageUploadButton.addEventListener("change", async () => {
 
     plantButton.disabled = true;
 
-    treasureImageEncoded = null;
+    treasureImageBlob = null;
     imageElt.src = "";
     imageElt.classList.add("no-display");
 
@@ -46,7 +46,7 @@ imageUploadButton.addEventListener("change", async () => {
         imageElt.src = URL.createObjectURL(blob);
         imageElt.classList.remove("no-display");
 
-        treasureImageEncoded = btoa(blob);
+        treasureImageBlob = blob;
 
         maybeEnablePlantButton();
     } finally {
@@ -60,7 +60,7 @@ useTestImageButton.addEventListener("click", async () => {
 
     plantButton.disabled = true;
 
-    treasureImageEncoded = null;
+    treasureImageBlob = null;
     imageElt.scr = "";
     imageElt.classList.add("no-display");
 
@@ -81,7 +81,7 @@ useTestImageButton.addEventListener("click", async () => {
         imageElt.src = URL.createObjectURL(blob);
         imageElt.classList.remove("no-display");
 
-        treasureImageEncoded = btoa(blob);
+        treasureImageBlob = blob;
 
         maybeEnablePlantButton();
     } finally {
@@ -99,13 +99,24 @@ plantButton.addEventListener("click", async () => {
 
     plantButton.disabled = true;
 
-    console.assert(treasureImageEncoded);
+    console.assert(treasureImageBlob);
     console.assert(secretKey);
 
     plantSpinner.classList.remove("no-display");
 
     try {
-        let treasureInfo = {
+        let encoder = new Promise((resolve) => {
+            let reader = new FileReader();
+            reader.readAsBinaryString(treasureImageBlob);
+            reader.addEventListener("loadend", () => {
+                let encoded = btoa(reader.result);
+                resolve(encoded);
+            });
+        });
+
+        let treasureImageEncoded = await encoder;
+
+        let requestInfo = {
             image: treasureImageEncoded,
             public_key: publicKey,
             signature: "test_signature"
@@ -117,7 +128,7 @@ plantButton.addEventListener("click", async () => {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(treasureInfo)
+            body: JSON.stringify(requestInfo)
         });
         console.log(response);
 
@@ -142,7 +153,7 @@ plantButton.addEventListener("click", async () => {
 
 function maybeEnablePlantButton() {
     let dataReady =
-        treasureImageEncoded &&
+        treasureImageBlob &&
         treasureClaimUrl &&
         secretKey &&
         publicKey;
