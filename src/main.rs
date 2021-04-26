@@ -110,23 +110,6 @@ fn retrieve_treasure_pic(private_key: &RawStr) -> Result<File> {
     panic!()
 }
 
-#[post("/api/upload-test", data = "<paste>")]
-fn upload_test(paste: Data) -> Result<String, std::io::Error> {
-    let new_treasure = Treasure::new(12);
-    let filename = format!("treasure/{treasure_id}", treasure_id = new_treasure);
-    let url = format!("{host}/treasure/{treasure_id}\n", host = "http://localhost:8000", treasure_id = new_treasure);
-    println!("{}", &url);
-    paste.stream_to_file(Path::new(&filename))?;
-
-    Ok(url)
-}
-
-#[get("/treasure-test/<treasure_id>")]
-fn retrieve_treasure_test(treasure_id: &RawStr) -> Option<File> {
-    let filename = format!("treasure/{treasure_id}", treasure_id = treasure_id);
-    File::open(&filename).ok()
-}
-
 #[post("/api/claim")]
 fn claim_treasure_with_key() -> String {
     "claim".to_string()
@@ -160,8 +143,6 @@ fn main() {
             plant_treasure_with_key,
             retrieve_treasure,
             retrieve_treasure_pic,
-            upload_test,
-            retrieve_treasure_test,
             claim_treasure_with_key,
         ])
         .launch();
