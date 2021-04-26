@@ -32,6 +32,8 @@ console.assert(secretKeyInput);
 console.assert(treasureClaimUrlElt);
 console.assert(publicKeyElt);
 
+console.assert(initWasm);
+
 QrScanner.WORKER_PATH = "js/lib/qr-scanner-worker.min.js";
 
 let stopScanning = null;

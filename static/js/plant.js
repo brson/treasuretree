@@ -125,8 +125,8 @@ plantButton.addEventListener("click", async () => {
         let response = await fetch("api/plant", {
             method: "POST",
             headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                "Accept": "application/json",
+                "Content-Type": "application/json"
             },
             body: JSON.stringify(requestInfo)
         });

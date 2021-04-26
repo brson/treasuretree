@@ -58,5 +58,5 @@ pub fn secret_key_to_secret_url(key: &str) -> Option<String> {
 
 #[wasm_bindgen]
 pub fn sign_with_secret_key(key: &str, data: &str) -> Option<String> {
-    panic!()
+    Some("fixme bogus signature".to_string())
 }
