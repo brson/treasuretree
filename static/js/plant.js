@@ -155,3 +155,14 @@ function maybeEnablePlantButton() {
         plantButton.disabled = false;
     }
 }
+
+
+/* These handlers are required by secren-scan.js */
+
+function onBeginSecretScan() {
+    plantButton.disabled = true;
+}
+
+function onEndSecretScan() {
+    maybeEnablePlantButton();
+}

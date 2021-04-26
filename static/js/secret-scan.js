@@ -1,6 +1,24 @@
+/*
+
+Companion script to secret-scan.html
+
+This file expects two global non-async functions to be defined elsewhere:
+
+- onBeginSecretScan
+- onEndSecretScan
+
+*/
+
+
+/* These three globals are for access outside this file */
+
 let treasureClaimUrl = null;
 let secretKey = null;
 let publicKey = null;
+
+
+
+/* The rest of the globals are implementation details */
 
 let qrScanButton = document.getElementById("qrscan-button");
 let qrCancelButton = document.getElementById("qrscan-cancel-button");
@@ -24,7 +42,8 @@ qrScanButton.addEventListener("click", async () => {
 
     console.assert(video);    
 
-    plantButton.disabled = true;
+    console.assert(onBeginSecretScan);
+    onBeginSecretScan();
 
     treasureClaimUrlElt.innerText = null;
     secretKeyInput.value = null;
@@ -85,7 +104,8 @@ qrScanButton.addEventListener("click", async () => {
         qrCancelButton.disabled = true;
         secretKeyInput.disabled = false;
         video.classList.add("no-display");
-        maybeEnablePlantButton();
+        console.assert(onEndSecretScan);
+        onEndSecretScan();
     }
 
     qrScanner.start();
@@ -99,7 +119,8 @@ secretKeyInput.addEventListener("input", async () => {
 
     let wasm = await initWasm();
 
-    plantButton.disabled = true;
+    console.assert(onBeginSecretScan);
+    onBeginSecretScan();
 
     treasureClaimUrlElt.innerText = null;
     publicKeyElt.innerText = null;
@@ -125,5 +146,6 @@ secretKeyInput.addEventListener("input", async () => {
     secretKey = secretKey_;
     publicKey = publicKey_;
 
-    maybeEnablePlantButton();
+    console.assert(onEndSecretScan);
+    onEndSecretScan();
 });
