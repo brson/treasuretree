@@ -127,6 +127,15 @@ struct ClaimInfoRequest {
 #[derive(Serialize, Deserialize, Debug)]
 struct ClaimInfoResponse;
 
+/// Claim a treasure.
+///
+/// Checks that a treasure exists,
+/// then verifies the signature with the public key and the nonce.
+///
+/// If the checks pass then store a record indicating
+/// the treasure was claimed by the logged in user.
+///
+/// TODO: Add a user concept
 #[post("/api/claim", format = "json", data = "<claim_info>")]
 fn claim_treasure_with_key(claim_info: Json<ClaimInfoRequest>) -> Result<Json<ClaimInfoResponse>> {
     panic!()
