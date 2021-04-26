@@ -90,7 +90,7 @@ fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Result<Json<Pl
 
 /// Return an html page displaying a treasure
 ///
-/// `private_key` is bech32 encoded.
+/// `public_key` is bech32 encoded.
 ///
 /// The page includes an `img` tag with the url of the treasure image,
 /// and displays the private (public) key of the treasure.
@@ -98,19 +98,19 @@ fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Result<Json<Pl
 /// Remember to percent-decode the rawstr.
 ///
 /// Load the template from templates/treasure/template.html.tera.
-#[get("/treasure/<private_key>")]
-fn retrieve_treasure(private_key: &RawStr) -> Result<Template> {
+#[get("/treasure/<public_key>")]
+fn retrieve_treasure(public_key: &RawStr) -> Result<Template> {
     panic!()
 }
 
 /// A treasure's pic.
 ///
-/// The `private_key` is bech32 encoded.
+/// The `public_key` is bech32 encoded.
 ///
 /// Need to set the mime/type.
 /// For now set to image/jpeg.
-#[get("/treasure-pics/<private_key>")]
-fn retrieve_treasure_pic(private_key: &RawStr) -> Result<File> {
+#[get("/treasure-pics/<public_key>")]
+fn retrieve_treasure_pic(public_key: &RawStr) -> Result<File> {
     panic!()
 }
 
