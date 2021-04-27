@@ -143,31 +143,23 @@ fn claim_treasure_with_key(claim_info: Json<ClaimInfoRequest>) -> Result<Json<Cl
     // verify if it's a valid Public key
     let public_key_decode = crypto::decode_public_key(&claim_info.public_key)?;
     let public_key_encode = crypto::encode_public_key(&public_key_decode)?;
-    
-    if !Path::new(&public_key_encode).is_file() {
-        Ok(Json(ClaimInfoResponse {
-            message: format!("Treasure doesn't exist"),
-        }))
+
+    let filename = format!("treasure/{}", public_key_encode);
+    if !Path::new(&filename).is_file() {
+        bail!("Treasure doesn't exist")
     } else {
-        let message = &claim_info.nonce.as_bytes();
+        let message = claim_info.nonce.as_bytes();
         let signature = crypto::decode_signature(&claim_info.signature)?;
 
-        let res = crypto::verify_signature(&message, &signature, &public_key_decode);
-        match res {
-            Err(e) => {
-                Ok(Json(ClaimInfoResponse {
-                    message: format!("Invalid signature: {}", e),
-                }))
-            },            
-            Ok(_) => {
-                // todo:
-                // claim success and transfer assert, disable secret_key
-                // and sync to blockchain
-                Ok(Json(ClaimInfoResponse {
-                    message: format!("Congrats! Treasure received!"),
-                }))
-            }
-        }
+        crypto::verify_signature(message, &signature, &public_key_decode)?;
+
+        // todo:
+        // claim success and transfer assert, disable secret_key
+        // and sync to blockchain
+        
+        Ok(Json(ClaimInfoResponse {
+            message: format!("Congrats! Treasure received!"),
+        }))
     }
 }
 
