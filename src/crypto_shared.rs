@@ -85,6 +85,14 @@ pub fn decode_signature(sig: &str) -> Result<Signature> {
     panic!()
 }
 
+pub fn verify_signature(
+    message: &[u8], 
+    signature: &Signature, 
+    public_key: &PublicKey
+) -> Result<()> {
+    Ok(public_key.verify_strict(message, signature)?)
+}
+
 trait ResultWrapper<T> {
     fn e(self) -> Result<T>;
 }
