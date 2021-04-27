@@ -103,13 +103,13 @@ fn retrieve_treasure(public_key: &RawStr) -> Result<Template> {
     panic!()
 }
 
-/// A treasure's pic.
+/// A treasure's image.
 ///
 /// The `public_key` is bech32 encoded.
 ///
 /// Need to set the mime/type.
 /// For now set to image/jpeg.
-#[get("/treasure-pics/<public_key>")]
+#[get("/treasure-images/<public_key>")]
 fn retrieve_treasure_pic(public_key: &RawStr) -> Result<File> {
     panic!()
 }
@@ -173,6 +173,42 @@ fn static_page(page: String) -> Template {
     Template::render(page, json!({}))
 }
 
+#[get("/recent", )]
+fn recent_page() -> Template {
+
+    #[derive(Serialize)]
+    struct TemplateData {
+        treasures: Vec<Treasure>,
+    }
+
+    #[derive(Serialize)]
+    struct Treasure {
+        public_key: String,
+        image_url: String,
+    }
+
+    let data = TemplateData {
+        treasures: vec![
+            Treasure {
+                public_key: "foo".to_string(),
+                image_url: "treasure-images/foo".to_string(),
+            },
+            Treasure {
+                public_key: "bar".to_string(),
+                image_url: "treasure-images/foo".to_string(),
+            },
+            Treasure {
+                public_key: "baz".to_string(),
+                image_url: "treasure-images/foo".to_string(),
+            },
+        ],
+    };
+
+    println!("{}", serde_json::to_string(&data).unwrap());
+
+    Template::render("recent", data)
+}
+
 fn main() {
     let css_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/static/css");
     let js_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/static/js");
@@ -187,6 +223,7 @@ fn main() {
         .mount("/", routes![
             root,
             static_page,
+            recent_page,
             create_treasure_key,
             plant_treasure_with_key,
             retrieve_treasure,
