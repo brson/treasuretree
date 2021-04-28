@@ -17,7 +17,9 @@ Recently Planted Treasure
 
 <section>
 
-  <p>{{ treasure.public_key }}</p>
+  <p><span class="breakable">{{ treasure.public_key }}</span></p>
+
+  <p>{{ treasure.date_time }}</p>
 
   <p><img src="{{ treasure.image_url }}"></p>
 
