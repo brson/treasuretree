@@ -90,7 +90,7 @@ pub fn verify_signature(
     signature: &Signature, 
     public_key: &PublicKey
 ) -> Result<()> {
-    Ok(public_key.verify_strict(message, signature)?)
+    Ok(public_key.verify_strict(message, signature).e()?)
 }
 
 trait ResultWrapper<T> {
