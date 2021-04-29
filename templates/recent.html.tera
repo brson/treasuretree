@@ -1,0 +1,30 @@
+{% extends "lib/base" %}
+
+
+{% block title %}
+
+Recently Planted Treasure
+
+{% endblock title %}
+
+{% block scripts %}
+{% endblock scripts %}
+
+
+{% block body %}
+
+{% for treasure in treasures %}
+
+<section>
+
+  <p><span class="breakable">{{ treasure.public_key }}</span></p>
+
+  <p>{{ treasure.date_time }}</p>
+
+  <p><img src="{{ treasure.image_url }}"></p>
+
+</section>
+
+{% endfor %}
+
+{% endblock body %}

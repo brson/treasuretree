@@ -455,6 +455,7 @@ dependencies = [
  "anyhow",
  "base64 0.13.0",
  "bech32",
+ "chrono",
  "ed25519-dalek",
  "qrcodegen",
  "rand 0.7.3",
