@@ -2,6 +2,7 @@ use anyhow::{Result, bail};
 use ed25519_dalek::{PublicKey, SecretKey, Keypair, Signature};
 
 use bech32::{FromBase32, ToBase32, Variant};
+use base64;
 
 pub static SECRET_KEY_HRP: &'static str = "gs";
 pub static PUBLIC_KEY_HRP: &'static str = "gp";
@@ -77,12 +78,19 @@ pub fn decode_public_key(key: &str) -> Result<PublicKey> {
 }
 
 pub fn encode_signature(sig: &Signature) -> Result<String> {
-    panic!()
+    let bytes = sig.to_bytes();
+    let encoded = base64::encode(bytes);
+    Ok(encoded)    
 }
 
 // Decodes a base64 encoded signature
 pub fn decode_signature(sig: &str) -> Result<Signature> {
-    panic!()
+    let decoded = base64::decode(sig.as_bytes())?;
+    let mut decoded_array = [0; 64];
+    decoded_array.clone_from_slice(decoded.as_slice());
+
+    let signature = Signature::new(decoded_array);
+    Ok(signature)
 }
 
 pub fn verify_signature(
