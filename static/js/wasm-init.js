@@ -1,24 +1,37 @@
 export { initWasm };
 
-let wasmInited = false;
+import init, {
+    set_panic_hook,
+    sanity_check_url,
+    secret_url_to_secret_key,
+    secret_url_to_public_key,
+    secret_key_to_public_key,
+    secret_key_to_secret_url,
+    sign_with_secret_key
+} from "../wasm/pkg/geonft_wasm.js";
+
+let wasm = null;
 
 async function initWasm() {
-    if (wasmInited === true) {
-        return wasm_bindgen;
+    if (wasm != null) {
+        return wasm;
     }
 
-    if (typeof wasm_bindgen === "undefined") {
-        console.error("no wasm_bindgen loaded - build with 'bash ./build-wasm.sh'");
-        return;
-    }
+    await init();
 
-    await wasm_bindgen("wasm/pkg/geonft_wasm_bg.wasm");
+    wasm = {
+        set_panic_hook,
+        sanity_check_url,
+        secret_url_to_secret_key,
+        secret_url_to_public_key,
+        secret_key_to_public_key,
+        secret_key_to_secret_url,
+        sign_with_secret_key
+    };
 
-    wasm_bindgen.set_panic_hook();
+    wasm.set_panic_hook();
 
-    wasmInited = true;
-
-    return wasm_bindgen;
+    return wasm;
 }
 
 initWasm().then((wasm) => {
