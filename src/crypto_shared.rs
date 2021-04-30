@@ -87,7 +87,7 @@ pub fn encode_signature(sig: &Signature) -> Result<String> {
 pub fn decode_signature(sig: &str) -> Result<Signature> {
     let decoded = base64::decode(sig.as_bytes())?;
     let mut decoded_array = [0; 64];
-    decoded_array.clone_from_slice(decoded.as_slice());
+    decoded_array.copy_from_slice(decoded.as_slice());
 
     let signature = Signature::new(decoded_array);
     Ok(signature)
