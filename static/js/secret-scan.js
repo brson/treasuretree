@@ -16,6 +16,7 @@ export {
     publicKey
 };
 
+import QrScanner from "./lib/qr-scanner.min.js";
 
 /* These three globals are for access outside this file */
 
