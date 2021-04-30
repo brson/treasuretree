@@ -1,3 +1,4 @@
+import { initWasm } from "./wasm-init.js";
 import {
     initSecretScanner,
     treasureClaimUrl,

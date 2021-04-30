@@ -1,3 +1,5 @@
+export { initWasm };
+
 let wasmInited = false;
 
 async function initWasm() {

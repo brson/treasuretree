@@ -9,7 +9,6 @@
     <link rel="shortcut icon" href="#" />
 
     <script src="wasm/pkg/geonft_wasm.js" defer></script>
-    <script src="js/wasm-init.js" defer></script>
 
     {% block scripts %}
     {% endblock scripts %}
