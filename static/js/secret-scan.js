@@ -9,6 +9,13 @@ This file expects two global non-async functions to be defined elsewhere:
 
 */
 
+export {
+    initSecretScanner,
+    treasureClaimUrl,
+    secretKey,
+    publicKey
+};
+
 
 /* These three globals are for access outside this file */
 

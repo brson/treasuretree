@@ -1,3 +1,10 @@
+import {
+    initSecretScanner,
+    treasureClaimUrl,
+    secretKey,
+    publicKey
+} from "./secret-scan.js";
+
 console.assert(typeof treasureClaimUrl != "undefined");
 console.assert(typeof secretKey != "undefined");
 console.assert(typeof publicKey != "undefined");
