@@ -75,10 +75,10 @@ struct PlantInfoResponse {
 #[post("/api/plant", format = "json", data = "<plant_info>")]
 fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Result<Json<PlantInfoResponse>> {
     let treasure_key = &plant_info.public_key;
-    let filename = format!("treasure/{key}", key = treasure_key);
+    let filename = format!("data/treasure/{key}", key = treasure_key);
     let return_url = format!("{host}/api/plant/{key}\n", host = "http://localhost:8000", key = treasure_key);
 
-    fs::create_dir_all("treasure")?;
+    fs::create_dir_all("data/treasure")?;
 
     let mut file = File::create(filename)?;
     serde_json::to_writer(file, &plant_info.0)?;
@@ -117,7 +117,7 @@ fn retrieve_treasure_image(public_key: &RawStr) -> Result<Content<Vec<u8>>> {
     let public_key = crypto::decode_public_key(&public_key)?;
     let public_key = crypto::encode_public_key(&public_key)?;
 
-    let path = format!("treasure/{}", public_key);
+    let path = format!("data/treasure/{}", public_key);
     let file = BufReader::new(File::open(path)?);
     let record: PlantInfoRequest = serde_json::from_reader(file)?;
     let encoded_image = record.image;
@@ -157,7 +157,7 @@ fn claim_treasure_with_key(claim_info: Json<ClaimInfoRequest>) -> Result<Json<Cl
     let public_key_decode = crypto::decode_public_key(&claim_info.public_key)?;
     let public_key_encode = crypto::encode_public_key(&public_key_decode)?;
 
-    let filename = format!("treasure/{}", public_key_encode);
+    let filename = format!("data/treasure/{}", public_key_encode);
     if !Path::new(&filename).is_file() {
         bail!("Treasure doesn't exist")
     } else {
