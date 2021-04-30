@@ -4,6 +4,11 @@ console.assert(typeof publicKey != "undefined");
 
 console.assert(initWasm);
 
+initSecretScanner({
+    onBeginSecretScan: onBeginSecretScan,
+    onEndSecretScan: onEndSecretScan
+});
+
 let treasureClaimed = false;
 
 let claimButton = document.getElementById("claim-button");

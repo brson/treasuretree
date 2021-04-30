@@ -12,7 +12,7 @@ Claim a Treasure
 
 <script src="js/lib/qr-scanner.umd.min.js" defer></script>
 <script src="js/secret-scan.js" defer></script>
-<script src="js/claim.js" defer></script>
+<script src="js/claim.js" type="module"></script>
 
 {% endblock scripts %}
 

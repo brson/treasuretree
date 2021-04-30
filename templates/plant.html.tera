@@ -12,7 +12,7 @@ Plant a Treasure
 
 <script src="js/lib/qr-scanner.umd.min.js" defer></script>
 <script src="js/secret-scan.js" defer></script>
-<script src="js/plant.js" defer></script>
+<script src="js/plant.js" type="module"></script>
 
 {% endblock scripts %}
 

@@ -16,7 +16,16 @@ let treasureClaimUrl = null;
 let secretKey = null;
 let publicKey = null;
 
+let onBeginSecretScan = null;
+let onEndSecretScan = null;
 
+function initSecretScanner(callbacks) {
+    console.assert(callbacks.onBeginSecretScan);
+    console.assert(callbacks.onEndSecretScan);
+
+    onBeginSecretScan = callbacks.onBeginSecretScan;
+    onEndSecretScan = callbacks.onEndSecretScan;
+}
 
 /* The rest of the globals are implementation details */
 

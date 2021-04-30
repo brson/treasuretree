@@ -10,7 +10,7 @@ Create a Treasure Key
 
 {% block scripts %}
 
-<script src="js/create.js" defer></script>
+<script src="js/create.js" type="module"></script>
 
 {% endblock scripts %}
 
