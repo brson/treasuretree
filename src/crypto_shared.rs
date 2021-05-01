@@ -85,13 +85,15 @@ pub fn encode_signature(sig: &Signature) -> Result<String> {
 
 // Decodes a base64 encoded signature
 pub fn decode_signature(sig: &str) -> Result<Signature> {
-    let decoded = base64::decode(sig.as_bytes())?;
+    let decoded = base64::decode(sig.as_bytes()).e()?;
     let mut decoded_array = [0; 64];
     decoded_array.copy_from_slice(decoded.as_slice());
 
     let signature = Signature::new(decoded_array);
     Ok(signature)
 }
+
+pub fn create_signature() 
 
 pub fn verify_signature(
     message: &[u8], 
@@ -120,6 +122,12 @@ mod err {
             Ok(self?)
         }
     }
+
+    impl<T> ResultWrapper<T> for Result<T, base64::DecodeError> {
+        fn e(self) -> Result<T, anyhow::Error> {
+            Ok(self?)
+        }
+    }
 }
 
 #[cfg(not(feature = "std-errors"))]
@@ -137,4 +145,11 @@ mod err {
             self.map_err(|e| anyhow::anyhow!("{}", e))
         }
     }
+    
+    impl<T> ResultWrapper<T> for Result<T, base64::DecodeError> {
+        fn e(self) -> Result<T, anyhow::Error> {
+            self.map_err(|e| anyhow::anyhow!("{}", e))
+        }
+    }
 }
+

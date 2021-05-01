@@ -31,6 +31,7 @@ claimButton.addEventListener("click", async () => {
 
         if (signature == null) {
             // TODO
+            console.log("signature == null");
         }
 
         let requestInfo = {
@@ -47,10 +48,12 @@ claimButton.addEventListener("click", async () => {
             },
             body: JSON.stringify(requestInfo)
         });
+        console.log("log geonft response:");
         console.log(response);
 
         if (!response.ok) {
             // TODO
+            console.log("something wrong with response");
         }
 
         let jsonResponse = await response.json();
@@ -59,6 +62,7 @@ claimButton.addEventListener("click", async () => {
         treasureClaimed = true;
 
         let claimedMessageElt = document.getElementById("claimed-message");
+        console.log(claimedMessageElt);
         console.assert(claimedMessageElt);
         claimedMessageElt.classList.remove("no-display");
     } finally {

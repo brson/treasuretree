@@ -140,6 +140,8 @@ struct ClaimInfoRequest {
 #[derive(Serialize, Deserialize, Debug)]
 struct ClaimInfoResponse {
     message: String,
+    return_url: String,
+
 }
 
 /// Claim a treasure.
@@ -153,27 +155,48 @@ struct ClaimInfoResponse {
 /// TODO: Add a user concept
 #[post("/api/claim", format = "json", data = "<claim_info>")]
 fn claim_treasure_with_key(claim_info: Json<ClaimInfoRequest>) -> Result<Json<ClaimInfoResponse>> {
-    // verify if it's a valid Public key
-    let public_key_decode = crypto::decode_public_key(&claim_info.public_key)?;
-    let public_key_encode = crypto::encode_public_key(&public_key_decode)?;
 
-    let filename = format!("data/treasure/{}", public_key_encode);
-    if !Path::new(&filename).is_file() {
-        bail!("Treasure doesn't exist")
-    } else {
-        let message = claim_info.nonce.as_bytes();
-        let signature = crypto::decode_signature(&claim_info.signature)?;
+    let res = (|| {
+        // verify if it's a valid Public key
+        let public_key_decode = crypto::decode_public_key(&claim_info.public_key)?;
+        let public_key_encode = crypto::encode_public_key(&public_key_decode)?;
 
-        crypto::verify_signature(message, &signature, &public_key_decode)?;
-
-        // todo:
-        // claim success and transfer assert, disable secret_key
-        // and sync to blockchain
+        dbg!(&claim_info);
         
-        Ok(Json(ClaimInfoResponse {
-            message: format!("Congrats! Treasure received!"),
-        }))
-    }
+        let filename = format!("data/treasure/{}", public_key_encode);
+        if !Path::new(&filename).is_file() {
+            bail!("Treasure doesn't exist")
+        } else {
+            let message = claim_info.nonce.as_bytes();
+            let signature = crypto::decode_signature(&claim_info.signature)?;
+
+            crypto::verify_signature(message, &signature, &public_key_decode)?;
+            
+            
+            // todo:
+            // - claim success and transfer asset 
+            // - disable secret_key
+            // - sync to blockchain
+
+            let filename = format!("data/claim/{key}", key = public_key_encode);
+            fs::create_dir_all("data/treasure")?;
+
+            println!("hihihi filename: {}", &filename);
+            println!("hihihi claim info: {:?}", &claim_info.0);
+            
+            let mut file = File::create(filename)?;
+            serde_json::to_writer(file, &claim_info.0)?;
+
+            let return_url = format!("{host}/api/plant/{key}\n", host = "http://localhost:8000", key = public_key_encode);
+
+            Ok(Json(ClaimInfoResponse {
+                message: format!("Congrats! Treasure received!"),
+                return_url,
+            }))
+        }
+    })();
+    dbg!(res)
+    
 }
 
 #[get("/")]
