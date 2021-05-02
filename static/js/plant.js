@@ -1,13 +1,13 @@
 import {
     initSecretScanner,
     treasureClaimUrl,
-    secretKey,
-    publicKey
+    treasureSecretKey,
+    treasurePublicKey
 } from "./secret-scan.js";
 
 console.assert(typeof treasureClaimUrl != "undefined");
-console.assert(typeof secretKey != "undefined");
-console.assert(typeof publicKey != "undefined");
+console.assert(typeof treasureSecretKey != "undefined");
+console.assert(typeof treasurePublicKey != "undefined");
 
 initSecretScanner({
     onBeginSecretScan: onBeginSecretScan,
@@ -111,7 +111,7 @@ plantButton.addEventListener("click", async () => {
     plantButton.disabled = true;
 
     console.assert(treasureImageBlob);
-    console.assert(secretKey);
+    console.assert(treasureSecretKey);
 
     plantSpinner.classList.remove("no-display");
 
@@ -129,7 +129,7 @@ plantButton.addEventListener("click", async () => {
 
         let requestInfo = {
             image: treasureImageEncoded,
-            public_key: publicKey,
+            public_key: treasurePublicKey,
             signature: "test_signature"
         };
 
@@ -166,8 +166,8 @@ function maybeEnablePlantButton() {
     let dataReady =
         treasureImageBlob &&
         treasureClaimUrl &&
-        secretKey &&
-        publicKey;
+        treasureSecretKey &&
+        treasurePublicKey;
 
     if (dataReady && !treasurePlanted) {
         plantButton.disabled = false;

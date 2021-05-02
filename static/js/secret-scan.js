@@ -12,8 +12,8 @@ This file expects two global non-async functions to be defined elsewhere:
 export {
     initSecretScanner,
     treasureClaimUrl,
-    secretKey,
-    publicKey
+    treasureSecretKey,
+    treasurePublicKey
 };
 
 import { initWasm } from "./wasm-init.js";
@@ -22,8 +22,8 @@ import QrScanner from "./lib/qr-scanner.min.js";
 /* These three globals are for access outside this file */
 
 let treasureClaimUrl = null;
-let secretKey = null;
-let publicKey = null;
+let treasureSecretKey = null;
+let treasurePublicKey = null;
 
 let onBeginSecretScan = null;
 let onEndSecretScan = null;
@@ -40,9 +40,9 @@ function initSecretScanner(callbacks) {
 
 let qrScanButton = document.getElementById("qrscan-button");
 let qrCancelButton = document.getElementById("qrscan-cancel-button");
-let secretKeyInput = document.getElementById("secret-key");
 let treasureClaimUrlElt = document.getElementById("treasure-claim-url");
-let publicKeyElt = document.getElementById("public-key");
+let secretKeyInput = document.getElementById("treasure-secret-key");
+let publicKeyElt = document.getElementById("treasure-public-key");
 
 console.assert(qrScanButton);
 console.assert(qrCancelButton);
@@ -70,8 +70,8 @@ qrScanButton.addEventListener("click", async () => {
     publicKeyElt.innerText = null;
 
     treasureClaimUrl = null;
-    secretKey = null;
-    publicKey = null;
+    treasureSecretKey = null;
+    treasurePublicKey = null;
 
     let wasm = await initWasm();
 
@@ -104,8 +104,8 @@ qrScanButton.addEventListener("click", async () => {
         publicKeyElt.innerText = publicKey_;
 
         treasureClaimUrl = url;
-        secretKey = secretKey_;
-        publicKey = publicKey_;
+        treasureSecretKey = secretKey_;
+        treasurePublicKey = publicKey_;
         
     }, (error) => {
         console.error(error);
@@ -146,8 +146,8 @@ secretKeyInput.addEventListener("input", async () => {
     publicKeyElt.innerText = null;
 
     treasureClaimUrl = null;
-    secretKey = null;
-    publicKey = null;
+    treasureSecretKey = null;
+    treasurePublicKey = null;
 
     let secretKey_ = secretKeyInput.value;
     let publicKey_ = wasm.secret_key_to_public_key(secretKey_);
@@ -163,8 +163,8 @@ secretKeyInput.addEventListener("input", async () => {
     treasureClaimUrlElt.innerText = treasureClaimUrl_;
 
     treasureClaimUrl = treasureClaimUrl_;
-    secretKey = secretKey_;
-    publicKey = publicKey_;
+    treasureSecretKey = secretKey_;
+    treasurePublicKey = publicKey_;
 
     console.assert(onEndSecretScan);
     onEndSecretScan();

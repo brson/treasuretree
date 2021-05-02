@@ -2,8 +2,8 @@ import { initWasm } from "./wasm-init.js";
 import {
     initSecretScanner,
     treasureClaimUrl,
-    secretKey,
-    publicKey
+    treasureSecretKey,
+    treasurePublicKey
 } from "./secret-scan.js";
 
 console.assert(initWasm);
@@ -27,8 +27,8 @@ claimButton.addEventListener("click", async () => {
 
     claimButton.disabled = true;
 
-    console.assert(secretKey);
-    console.assert(publicKey);
+    console.assert(treasureSecretKey);
+    console.assert(treasurePublicKey);
 
     claimSpinner.classList.remove("no-display");
 
@@ -36,7 +36,7 @@ claimButton.addEventListener("click", async () => {
         let wasm = await initWasm();
 
         let nonce = createNonce();
-        let signature = wasm.sign_with_secret_key(secretKey, nonce);
+        let signature = wasm.sign_with_secret_key(treasureSecretKey, nonce);
 
         if (signature == null) {
             // TODO
@@ -45,7 +45,7 @@ claimButton.addEventListener("click", async () => {
 
         let requestInfo = {
             nonce: nonce,
-            public_key: publicKey,
+            public_key: treasurePublicKey,
             signature: signature
         };
 
@@ -88,8 +88,8 @@ function createNonce() {
 function maybeEnableClaimButton() {
     let dataReady =
         treasureClaimUrl &&
-        secretKey &&
-        publicKey;
+        treasureSecretKey &&
+        treasurePublicKey;
 
     if (dataReady && !treasureClaimed) {
         claimButton.disabled = false;

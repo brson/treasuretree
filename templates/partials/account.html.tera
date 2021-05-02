@@ -1,0 +1,9 @@
+<section>
+
+  <p><span>Account Secret Key:</span> <input type="text" id="account-secret-key"></p>
+
+  <p>
+    <input type="button" id="new-account-button" value="New Account">
+  </p>
+
+</section>

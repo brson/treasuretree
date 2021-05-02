@@ -19,6 +19,8 @@ Claim a Treasure
 
 {% include "partials/secret-scan" %}
 
+{% include "partials/account" %}
+
 <section>
 
   <p>
