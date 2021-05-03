@@ -179,7 +179,7 @@ fn claim_treasure_with_key(claim_info: Json<ClaimInfoRequest>) -> Result<Json<Cl
             // - sync to blockchain
 
             let filename = format!("data/claim/{key}", key = public_key_encode);
-            fs::create_dir_all("data/treasure")?;
+            fs::create_dir_all("data/claim")?;
 
             println!("hihihi filename: {}", &filename);
             println!("hihihi claim info: {:?}", &claim_info.0);
