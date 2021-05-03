@@ -124,7 +124,7 @@ fn retrieve_treasure_image(public_key: &RawStr) -> Result<Content<Vec<u8>>> {
 
     let path = format!("data/treasure/{}", public_key);
     let file = BufReader::new(File::open(path)?);
-    let record: api::PlantInfoRequest = serde_json::from_reader(file)?;
+    let record: api::PlantRequest = serde_json::from_reader(file)?;
     let encoded_image = record.image;
     let decoded_image = base64::decode(&encoded_image)?;
 

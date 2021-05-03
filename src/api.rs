@@ -10,18 +10,18 @@ use crate::crypto;
 use crate::treasure_qrcode;
 
 #[derive(Debug, Serialize)]
-pub struct CreateInfoResponse {
+pub struct CreateResponse {
     secret_key: String,
     qrcode: String,
     url: String,
 }
 
 #[get("/api/create")]
-pub fn create_treasure_key() -> Result<Json<CreateInfoResponse>> {
+pub fn create_treasure_key() -> Result<Json<CreateResponse>> {
     let init_keys = create_qr_code()?;
     let first_key = &init_keys[0];
 
-    let first_key = CreateInfoResponse {
+    let first_key = CreateResponse {
         secret_key: first_key.secret_key.clone(),
         // Argument is the size, bigger number means smaller size on the page
         qrcode: first_key.qrcode.to_svg_string(0), 
@@ -32,7 +32,7 @@ pub fn create_treasure_key() -> Result<Json<CreateInfoResponse>> {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct PlantInfoRequest {
+pub struct PlantRequest {
     /// An image, base64 encoded
     pub image: String,
     /// A public key to represent the treasure, bech32 encoded
@@ -42,7 +42,7 @@ pub struct PlantInfoRequest {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct PlantInfoResponse {
+pub struct PlantResponse {
     return_url: String,
 }
 
@@ -57,7 +57,7 @@ pub struct PlantInfoResponse {
 /// If the signature is not a valid signature of the provided image with
 /// the provided public key.
 #[post("/api/plant", format = "json", data = "<plant_info>")]
-pub fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Result<Json<PlantInfoResponse>> {
+pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<PlantResponse>> {
     let treasure_key = &plant_info.public_key;
     let filename = format!("data/treasure/{key}", key = treasure_key);
     let return_url = format!("{host}/api/plant/{key}\n", host = "http://localhost:8000", key = treasure_key);
@@ -67,7 +67,7 @@ pub fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Result<Jso
     let mut file = File::create(filename)?;
     serde_json::to_writer(file, &plant_info.0)?;
     
-    let res = PlantInfoResponse {
+    let res = PlantResponse {
         return_url,
     };
     
@@ -75,7 +75,7 @@ pub fn plant_treasure_with_key(plant_info: Json<PlantInfoRequest>) -> Result<Jso
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ClaimInfoRequest {
+pub struct ClaimRequest {
     /// A random string signed by the private key as evidence of ownership
     nonce: String,
     /// The public key of the treasure, bech32 encoded
@@ -85,7 +85,7 @@ pub struct ClaimInfoRequest {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ClaimInfoResponse {
+pub struct ClaimResponse {
     message: String,
     return_url: String,
 
@@ -101,7 +101,7 @@ pub struct ClaimInfoResponse {
 ///
 /// TODO: Add a user concept
 #[post("/api/claim", format = "json", data = "<claim_info>")]
-pub fn claim_treasure_with_key(claim_info: Json<ClaimInfoRequest>) -> Result<Json<ClaimInfoResponse>> {
+pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<ClaimResponse>> {
 
     let res = (|| {
         // verify if it's a valid Public key
@@ -136,7 +136,7 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimInfoRequest>) -> Result<Jso
 
             let return_url = format!("{host}/api/plant/{key}\n", host = "http://localhost:8000", key = public_key_encode);
 
-            Ok(Json(ClaimInfoResponse {
+            Ok(Json(ClaimResponse {
                 message: format!("Congrats! Treasure received!"),
                 return_url,
             }))
