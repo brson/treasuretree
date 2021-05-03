@@ -110,7 +110,6 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
 
         crypto::verify_signature(message, &signature, &public_key_decode)?;
         
-        
         // todo:
         // - claim success and transfer asset 
         // - disable secret_key
