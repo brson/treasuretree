@@ -93,6 +93,13 @@ pub fn decode_signature(sig: &str) -> Result<Signature> {
     Ok(signature)
 }
 
+pub fn create_signature(
+    message: &[u8],
+    secret_key: &SecretKey,
+) -> Result<()> {
+    panic!()
+}
+
 pub fn verify_signature(
     message: &[u8], 
     signature: &Signature, 
