@@ -26,7 +26,7 @@ mod treasure_qrcode;
 mod treasure;
 
 #[get("/")]
-fn root() -> Template {
+fn root_page() -> Template {
     Template::render("index", json!({}))
 }
 
@@ -106,7 +106,7 @@ fn recent_page() -> Result<Template> {
 ///
 /// Load the template from templates/treasure/template.html.tera.
 #[get("/treasure/<public_key>")]
-fn retrieve_treasure(public_key: &RawStr) -> Result<Template> {
+fn treasure_page(public_key: &RawStr) -> Result<Template> {
     panic!()
 }
 
@@ -117,7 +117,7 @@ fn retrieve_treasure(public_key: &RawStr) -> Result<Template> {
 /// Need to set the mime/type.
 /// For now set to image/jpeg.
 #[get("/treasure-images/<public_key>")]
-fn retrieve_treasure_image(public_key: &RawStr) -> Result<Content<Vec<u8>>> {
+fn treasure_image(public_key: &RawStr) -> Result<Content<Vec<u8>>> {
     let public_key = public_key.percent_decode()?;
     let public_key = crypto::decode_public_key(&public_key)?;
     let public_key = crypto::encode_public_key(&public_key)?;
@@ -144,11 +144,11 @@ fn main() {
         .mount("/images", StaticFiles::from(images_dir))
         .mount("/wasm/pkg", StaticFiles::from(wasm_dir))
         .mount("/", routes![
-            root,
+            root_page,
             static_page,
             recent_page,
-            retrieve_treasure,
-            retrieve_treasure_image,
+            treasure_page,
+            treasure_image,
             api::create_treasure_key,
             api::plant_treasure_with_key,
             api::claim_treasure_with_key,
