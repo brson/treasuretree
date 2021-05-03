@@ -21,14 +21,12 @@ pub fn create_treasure_key() -> Result<Json<CreateResponse>> {
     let init_keys = create_qr_code()?;
     let first_key = &init_keys[0];
 
-    let first_key = CreateResponse {
+    Ok(Json(CreateResponse {
         secret_key: first_key.secret_key.clone(),
         // Argument is the size, bigger number means smaller size on the page
         qrcode: first_key.qrcode.to_svg_string(0), 
         url: first_key.url.clone(),
-    };
-
-    Ok(Json(first_key))
+    }))
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -67,11 +65,9 @@ pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<Pl
     let mut file = File::create(filename)?;
     serde_json::to_writer(file, &plant_info.0)?;
     
-    let res = PlantResponse {
+    Ok(Json(PlantResponse {
         return_url,
-    };
-    
-    Ok(Json(res))
+    }))
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -88,7 +84,6 @@ pub struct ClaimRequest {
 pub struct ClaimResponse {
     message: String,
     return_url: String,
-
 }
 
 /// Claim a treasure.
