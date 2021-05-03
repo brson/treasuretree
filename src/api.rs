@@ -10,18 +10,18 @@ use crate::crypto;
 use crate::treasure_qrcode;
 
 #[derive(Debug, Serialize)]
-pub struct UniqueCodeJson {
+pub struct CreateInfoResponse {
     secret_key: String,
     qrcode: String,
     url: String,
 }
 
 #[get("/api/create")]
-pub fn create_treasure_key() -> Result<Json<UniqueCodeJson>> {
+pub fn create_treasure_key() -> Result<Json<CreateInfoResponse>> {
     let init_keys = create_qr_code()?;
     let first_key = &init_keys[0];
 
-    let first_key = UniqueCodeJson {
+    let first_key = CreateInfoResponse {
         secret_key: first_key.secret_key.clone(),
         // Argument is the size, bigger number means smaller size on the page
         qrcode: first_key.qrcode.to_svg_string(0), 
