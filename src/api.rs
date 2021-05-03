@@ -95,6 +95,8 @@ pub struct ClaimResponse {
 /// the treasure was claimed by the logged in user.
 ///
 /// TODO: Add a user concept
+///
+/// - check that the nonce is the expected size
 #[post("/api/claim", format = "json", data = "<claim_info>")]
 pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<ClaimResponse>> {
     // verify if it's a valid Public key
