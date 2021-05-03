@@ -101,7 +101,7 @@ pub fn verify_signature(
     Ok(public_key.verify_strict(message, signature).e()?)
 }
 
-trait ResultWrapper<T> {
+pub trait ResultWrapper<T> {
     fn e(self) -> Result<T>;
 }
 

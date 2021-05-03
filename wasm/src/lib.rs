@@ -2,8 +2,13 @@ mod utils;
 
 use wasm_bindgen::prelude::*;
 use anyhow::Result;
-use ed25519_dalek::{PublicKey, SecretKey, Keypair};
+use ed25519_dalek::{PublicKey, SecretKey, Keypair, Signer};
 use bech32::{FromBase32, ToBase32, Variant};
+
+#[path = "../../src/crypto_shared.rs"]
+mod crypto_shared;
+use crypto_shared as crypto;
+use crypto::ResultWrapper;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -15,10 +20,6 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 pub fn set_panic_hook() {
     utils::set_panic_hook();
 }
-
-#[path = "../../src/crypto_shared.rs"]
-mod crypto_shared;
-use crypto_shared as crypto;
 
 #[wasm_bindgen]
 pub fn sanity_check_url(url: &str) -> bool {
@@ -58,6 +59,16 @@ pub fn secret_key_to_secret_url(key: &str) -> Option<String> {
 
 #[wasm_bindgen]
 pub fn sign_with_secret_key(key: &str, data: &str) -> Option<String> {
-    
-    Some("fixme bogus signature".to_string())
+    let res = sign_with_secret_key2(key, data);
+    match res {
+        Ok(res) => Some(res),
+        Err(e) => None,
+    }
 }
+
+fn sign_with_secret_key2(key: &str, data: &str) -> Result<String> {
+    let kpair = crypto::keypair_from_secret_key(&key)?;
+    let signed = kpair.try_sign(data.as_bytes()).e()?;
+    crypto::encode_signature(&signed)
+}
+
