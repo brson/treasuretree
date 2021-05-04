@@ -97,13 +97,13 @@ pub fn create_signature(
     message: &[u8],
     secret_key: &SecretKey,
 ) -> Result<Signature> {
-    let secret_key = SecretKey::from_bytes(&secret_key.to_bytes())?;      let public_key = PublicKey::from(&secret_key);    
+    let secret_key = SecretKey::from_bytes(&secret_key.to_bytes()).e()?;      let public_key = PublicKey::from(&secret_key);    
     let keypair = Keypair {
         secret: secret_key,
         public: public_key,
     };
 
-    let signature = keypair.try_sign(message)?;
+    let signature = keypair.try_sign(message).e()?;
     Ok(signature)
 }
 
