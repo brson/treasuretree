@@ -1,8 +1,8 @@
-use anyhow::{Result, bail};
-use ed25519_dalek::{PublicKey, SecretKey, Keypair, Signature, Signer};
+use anyhow::{bail, Result};
+use ed25519_dalek::{Keypair, PublicKey, SecretKey, Signature, Signer};
 
-use bech32::{FromBase32, ToBase32, Variant};
 use base64;
+use bech32::{FromBase32, ToBase32, Variant};
 
 pub static SECRET_KEY_HRP: &'static str = "gs";
 pub static PUBLIC_KEY_HRP: &'static str = "gp";
@@ -80,7 +80,7 @@ pub fn decode_public_key(key: &str) -> Result<PublicKey> {
 pub fn encode_signature(sig: &Signature) -> Result<String> {
     let bytes = sig.to_bytes();
     let encoded = base64::encode(bytes);
-    Ok(encoded)    
+    Ok(encoded)
 }
 
 // Decodes a base64 encoded signature
@@ -93,11 +93,9 @@ pub fn decode_signature(sig: &str) -> Result<Signature> {
     Ok(signature)
 }
 
-pub fn create_signature(
-    message: &[u8],
-    secret_key: &SecretKey,
-) -> Result<Signature> {
-    let secret_key = SecretKey::from_bytes(&secret_key.to_bytes()).e()?;      let public_key = PublicKey::from(&secret_key);    
+pub fn create_signature(message: &[u8], secret_key: &SecretKey) -> Result<Signature> {
+    let secret_key = SecretKey::from_bytes(&secret_key.to_bytes()).e()?;
+    let public_key = PublicKey::from(&secret_key);
     let keypair = Keypair {
         secret: secret_key,
         public: public_key,
@@ -108,9 +106,9 @@ pub fn create_signature(
 }
 
 pub fn verify_signature(
-    message: &[u8], 
-    signature: &Signature, 
-    public_key: &PublicKey
+    message: &[u8],
+    signature: &Signature,
+    public_key: &PublicKey,
 ) -> Result<()> {
     Ok(public_key.verify_strict(message, signature).e()?)
 }
@@ -157,11 +155,10 @@ mod err {
             self.map_err(|e| anyhow::anyhow!("{}", e))
         }
     }
-    
+
     impl<T> ResultWrapper<T> for Result<T, base64::DecodeError> {
         fn e(self) -> Result<T, anyhow::Error> {
             self.map_err(|e| anyhow::anyhow!("{}", e))
         }
     }
 }
-

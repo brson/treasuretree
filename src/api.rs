@@ -1,13 +1,13 @@
-use anyhow::{Result, bail};
-use rocket_contrib::{templates::Template, json::Json};
-use serde::{Serialize, Deserialize};
-use serde_json::json;
-use std::fs::{self, File, DirEntry, Metadata};
-use std::path::{Path, PathBuf};
-use std::fmt;
-use treasure_qrcode::create_qr_code;
 use crate::crypto;
 use crate::treasure_qrcode;
+use anyhow::{bail, Result};
+use rocket_contrib::{json::Json, templates::Template};
+use serde::{Deserialize, Serialize};
+use serde_json::json;
+use std::fmt;
+use std::fs::{self, DirEntry, File, Metadata};
+use std::path::{Path, PathBuf};
+use treasure_qrcode::create_qr_code;
 
 #[derive(Debug, Serialize)]
 pub struct CreateResponse {
@@ -24,7 +24,7 @@ pub fn create_treasure_key() -> Result<Json<CreateResponse>> {
     Ok(Json(CreateResponse {
         secret_key: first_key.secret_key.clone(),
         // Argument is the size, bigger number means smaller size on the page
-        qrcode: first_key.qrcode.to_svg_string(0), 
+        qrcode: first_key.qrcode.to_svg_string(0),
         url: first_key.url.clone(),
     }))
 }
@@ -58,16 +58,18 @@ pub struct PlantResponse {
 pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<PlantResponse>> {
     let treasure_key = &plant_info.public_key;
     let filename = format!("data/treasure/{key}", key = treasure_key);
-    let return_url = format!("{host}/api/plant/{key}\n", host = "http://localhost:8000", key = treasure_key);
+    let return_url = format!(
+        "{host}/api/plant/{key}\n",
+        host = "http://localhost:8000",
+        key = treasure_key
+    );
 
     fs::create_dir_all("data/treasure")?;
 
     let mut file = File::create(filename)?;
     serde_json::to_writer(file, &plant_info.0)?;
-    
-    Ok(Json(PlantResponse {
-        return_url,
-    }))
+
+    Ok(Json(PlantResponse { return_url }))
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -111,19 +113,23 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
         let signature = crypto::decode_signature(&claim_info.signature)?;
 
         crypto::verify_signature(message, &signature, &public_key_decode)?;
-        
+
         // todo:
-        // - claim success and transfer asset 
+        // - claim success and transfer asset
         // - disable secret_key
         // - sync to blockchain
 
         let filename = format!("data/claim/{key}", key = public_key_encode);
         fs::create_dir_all("data/claim")?;
-        
+
         let mut file = File::create(filename)?;
         serde_json::to_writer(file, &claim_info.0)?;
 
-        let return_url = format!("{host}/api/plant/{key}\n", host = "http://localhost:8000", key = public_key_encode);
+        let return_url = format!(
+            "{host}/api/plant/{key}\n",
+            host = "http://localhost:8000",
+            key = public_key_encode
+        );
 
         Ok(Json(ClaimResponse {
             message: format!("Congrats! Treasure received!"),
@@ -131,4 +137,3 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
         }))
     }
 }
-

@@ -1,6 +1,6 @@
-use std::fmt;
 use rand::{self, Rng};
 use std::borrow::Cow;
+use std::fmt;
 
 const BASE62: &[u8] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 

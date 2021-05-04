@@ -5,25 +5,25 @@
 extern crate rocket;
 
 use anyhow::{anyhow, bail, Result};
-use rocket::response::{content::Html, Responder, Content};
-use rocket_contrib::{templates::Template, json::Json};
-use rocket_contrib::serve::StaticFiles;
-use serde::{Serialize, Deserialize};
-use serde_json::json;
-use std::path::{Path, PathBuf};
-use std::fmt;
-use treasure::Treasure;
+use rocket::http::{ContentType, Method, RawStr};
+use rocket::response::{content::Html, Content, Responder};
 use rocket::Data;
-use std::fs::{self, File, DirEntry, Metadata};
+use rocket_contrib::serve::StaticFiles;
+use rocket_contrib::{json::Json, templates::Template};
+use serde::{Deserialize, Serialize};
+use serde_json::json;
+use std::fmt;
+use std::fs::{self, DirEntry, File, Metadata};
 use std::io::prelude::*;
 use std::io::BufReader;
-use rocket::http::{RawStr, Method, ContentType};
+use std::path::{Path, PathBuf};
 use std::time::SystemTime;
+use treasure::Treasure;
 
 mod api;
 mod crypto;
-mod treasure_qrcode;
 mod treasure;
+mod treasure_qrcode;
 
 #[get("/")]
 fn root_page() -> Template {
@@ -35,9 +35,8 @@ fn static_page(page: String) -> Template {
     Template::render(page, json!({}))
 }
 
-#[get("/recent", )]
+#[get("/recent")]
 fn recent_page() -> Result<Template> {
-
     fs::create_dir_all("treasure")?;
 
     // This nightmare expression collects DirEntrys for every
@@ -47,15 +46,15 @@ fn recent_page() -> Result<Template> {
     // It does the "collect Iter<Item = Result> into Result<Vec>" trick.
     let mut files = fs::read_dir("treasure")?
         // Get the file metadata
-        .map(|dent: Result<DirEntry, _>| {
-            dent.and_then(|dent| Ok((dent.metadata()?, dent)))
-        })
+        .map(|dent: Result<DirEntry, _>| dent.and_then(|dent| Ok((dent.metadata()?, dent))))
         // Only keep entries that are files or errors
         .filter(|dent: &Result<(Metadata, DirEntry), _>| {
-            dent.as_ref().map(|(meta, _)| meta.is_file()).unwrap_or(true)
+            dent.as_ref()
+                .map(|(meta, _)| meta.is_file())
+                .unwrap_or(true)
         })
         // Keep modify time for sorting
-        .map(|dent: Result<(Metadata, DirEntry), _> | {
+        .map(|dent: Result<(Metadata, DirEntry), _>| {
             dent.and_then(|(meta, dent)| Ok((meta.modified()?, dent)))
         })
         // Collect iter of Result into Result<Vec>,
@@ -71,26 +70,28 @@ fn recent_page() -> Result<Template> {
         date_time: String,
     }
 
-    let treasures = files.into_iter().take(10).map(|(time, dent)| {
-        let public_key = dent.file_name().into_string().expect("utf-8");
-        let image_url = format!("treasure-images/{}", public_key);
-        let date_time = chrono::DateTime::<chrono::Local>::from(time);
-        let date_time = date_time.to_rfc2822();
-        Treasure {
-            public_key,
-            image_url,
-            date_time,
-        }
-    }).collect();
+    let treasures = files
+        .into_iter()
+        .take(10)
+        .map(|(time, dent)| {
+            let public_key = dent.file_name().into_string().expect("utf-8");
+            let image_url = format!("treasure-images/{}", public_key);
+            let date_time = chrono::DateTime::<chrono::Local>::from(time);
+            let date_time = date_time.to_rfc2822();
+            Treasure {
+                public_key,
+                image_url,
+                date_time,
+            }
+        })
+        .collect();
 
     #[derive(Serialize)]
     struct TemplateData {
         treasures: Vec<Treasure>,
     }
 
-    let data = TemplateData {
-        treasures,
-    };
+    let data = TemplateData { treasures };
 
     Ok(Template::render("recent", data))
 }
@@ -143,15 +144,18 @@ fn main() {
         .mount("/js", StaticFiles::from(js_dir))
         .mount("/images", StaticFiles::from(images_dir))
         .mount("/wasm/pkg", StaticFiles::from(wasm_dir))
-        .mount("/", routes![
-            root_page,
-            static_page,
-            recent_page,
-            treasure_page,
-            treasure_image,
-            api::create_treasure_key,
-            api::plant_treasure_with_key,
-            api::claim_treasure_with_key,
-        ])
+        .mount(
+            "/",
+            routes![
+                root_page,
+                static_page,
+                recent_page,
+                treasure_page,
+                treasure_image,
+                api::create_treasure_key,
+                api::plant_treasure_with_key,
+                api::claim_treasure_with_key,
+            ],
+        )
         .launch();
 }
