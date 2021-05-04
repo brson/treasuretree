@@ -59,16 +59,10 @@ pub fn secret_key_to_secret_url(key: &str) -> Option<String> {
 
 #[wasm_bindgen]
 pub fn sign_with_secret_key(key: &str, data: &str) -> Option<String> {
-    let res = sign_with_secret_key2(key, data);
-    match res {
-        Ok(res) => Some(res),
-        Err(e) => None,
-    }
-}
-
-fn sign_with_secret_key2(key: &str, data: &str) -> Result<String> {
-    let kpair = crypto::keypair_from_secret_key(&key)?;
-    let signed = kpair.try_sign(data.as_bytes()).e()?;
-    crypto::encode_signature(&signed)
+    crypto::keypair_from_secret_key(&key).ok()
+        .map(|kp| kp.try_sign(data.as_bytes()).ok())
+        .flatten()
+        .map(|key| crypto::encode_signature(&key).ok())
+        .flatten()
 }
 
