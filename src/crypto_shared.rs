@@ -1,5 +1,5 @@
 use anyhow::{Result, bail};
-use ed25519_dalek::{PublicKey, SecretKey, Keypair, Signature};
+use ed25519_dalek::{PublicKey, SecretKey, Keypair, Signature, Signer};
 
 use bech32::{FromBase32, ToBase32, Variant};
 use base64;
@@ -96,8 +96,15 @@ pub fn decode_signature(sig: &str) -> Result<Signature> {
 pub fn create_signature(
     message: &[u8],
     secret_key: &SecretKey,
-) -> Result<()> {
-    panic!()
+) -> Result<Signature> {
+    let secret_key = SecretKey::from_bytes(&secret_key.to_bytes())?;      let public_key = PublicKey::from(&secret_key);    
+    let keypair = Keypair {
+        secret: secret_key,
+        public: public_key,
+    };
+
+    let signature = keypair.try_sign(message)?;
+    Ok(signature)
 }
 
 pub fn verify_signature(
