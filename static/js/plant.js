@@ -1,3 +1,4 @@
+import { initWasm } from "./wasm-init.js";
 import {
     initSecretScanner,
     treasureClaimUrl,
@@ -5,6 +6,7 @@ import {
     treasurePublicKey
 } from "./secret-scan.js";
 
+console.assert(initWasm);
 console.assert(typeof treasureClaimUrl != "undefined");
 console.assert(typeof treasureSecretKey != "undefined");
 console.assert(typeof treasurePublicKey != "undefined");
@@ -126,12 +128,17 @@ plantButton.addEventListener("click", async () => {
         });
 
         let treasureImageEncoded = await encoder;
+        let wasm = await initWasm();
+        let signature = wasm.sign_with_secret_key(treasureSecretKey, treasureImageEncoded);
 
         let requestInfo = {
             image: treasureImageEncoded,
             public_key: treasurePublicKey,
-            signature: "test_signature"
+            signature: signature
         };
+
+        console.log("requestInfoooooo:");
+        console.log(requestInfo);
 
         let response = await fetch("api/plant", {
             method: "POST",

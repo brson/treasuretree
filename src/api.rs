@@ -57,6 +57,8 @@ pub struct PlantResponse {
 #[post("/api/plant", format = "json", data = "<plant_info>")]
 pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<PlantResponse>> {
     let treasure_key = &plant_info.public_key;
+    // todo:
+    // decode and then encode the public_key?
     let filename = format!("data/treasure/{key}", key = treasure_key);
     let return_url = format!(
         "{host}/api/plant/{key}\n",
