@@ -34,9 +34,15 @@ pub struct PlantRequest {
     /// An image, base64 encoded
     pub image: String,
     /// A public key to represent the treasure, bech32 encoded
-    pub public_key: String,
-    /// A signature against the base64 encoded image by the corresponding private key
-    pub signature: String,
+    pub treasure_public_key: String,
+    /// The public key of the account that is planting the treasure
+    pub account_public_key: String,
+    /// A signature by the treasure key of
+    /// the account public key + the sha256 hash of the image
+    pub treasure_signature: String,
+    /// A signature by the account of
+    /// the treasure public key.
+    pub account_signature: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -45,6 +51,9 @@ pub struct PlantResponse {
 }
 
 /// Stores a treasure and associated key
+///
+/// Validates the treasure signature and the account signature.
+/// Validates that the account public key is an authorized treasure planter.
 ///
 /// Stores the json to disk,
 /// with the encoded pubkey as the name of the file.
@@ -56,7 +65,7 @@ pub struct PlantResponse {
 /// the provided public key.
 #[post("/api/plant", format = "json", data = "<plant_info>")]
 pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<PlantResponse>> {
-    let treasure_key = crypto::decode_public_key(&plant_info.public_key)?;
+    let treasure_key = crypto::decode_public_key(&plant_info.treasure_public_key)?;
     let treasure_key = crypto::encode_public_key(&treasure_key)?;
 
     let filename = format!("data/treasure/{key}", key = treasure_key);
