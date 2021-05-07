@@ -112,9 +112,6 @@ plantButton.addEventListener("click", async () => {
 
     plantButton.disabled = true;
 
-    console.assert(treasureImageBlob);
-    console.assert(treasureSecretKey);
-
     plantSpinner.classList.remove("no-display");
 
     try {
@@ -136,9 +133,6 @@ plantButton.addEventListener("click", async () => {
             public_key: treasurePublicKey,
             signature: signature
         };
-
-        console.log("requestInfoooooo:");
-        console.log(requestInfo);
 
         let response = await fetch("api/plant", {
             method: "POST",
