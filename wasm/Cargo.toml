@@ -32,6 +32,7 @@ bech32 = "0.8.0"
 anyhow = { version = "1.0.40", default-features = false }
 
 rand = { version = "0.7.3", default-features = false, features = ["getrandom"] }
+getrandom = { version = "0.1.16", features = ["wasm-bindgen"] }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"
