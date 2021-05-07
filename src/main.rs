@@ -37,14 +37,14 @@ fn static_page(page: String) -> Template {
 
 #[get("/recent")]
 fn recent_page() -> Result<Template> {
-    fs::create_dir_all("treasure")?;
+    fs::create_dir_all("data/treasure")?;
 
     // This nightmare expression collects DirEntrys for every
     // thing in the directory that is a file,
     // and extracting the modify time,
     // while also bubbling any possible errors.
     // It does the "collect Iter<Item = Result> into Result<Vec>" trick.
-    let mut files = fs::read_dir("treasure")?
+    let mut files = fs::read_dir("data/treasure")?
         // Get the file metadata
         .map(|dent: Result<DirEntry, _>| dent.and_then(|dent| Ok((dent.metadata()?, dent))))
         // Only keep entries that are files or errors
