@@ -124,15 +124,23 @@ plantButton.addEventListener("click", async () => {
             let reader = new FileReader();
             reader.readAsBinaryString(treasureImageBlob);
             reader.addEventListener("loadend", () => {
-                let encoded = btoa(reader.result);
-                resolve(encoded);
+                resolve(reader.result);
             });
         });
 
-        let treasureImageEncoded = await encoder;
+        let treasureImageBuffer = await encoder;
+        let treasureImageEncoded = btoa(treasureImageBuffer);
+        
         let wasm = await initWasm();
-        let signature = wasm.sign_with_secret_key(treasureSecretKey, treasureImageEncoded);
 
+        let treasureHash = wasm.get_hash(treasureImageBuffer);
+        let signature = wasm.sign_with_secret_key(treasureSecretKey, treasureHash);
+
+        console.log("hihihi");
+        console.log(treasureImageEncoded);
+        console.log(treasureHash);
+        console.log(signature);
+        
         let requestInfo = {
             image: treasureImageEncoded,
             public_key: treasurePublicKey,
