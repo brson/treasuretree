@@ -5,6 +5,7 @@ use anyhow::Result;
 use ed25519_dalek::{PublicKey, SecretKey, Keypair, Signer};
 use bech32::{FromBase32, ToBase32, Variant};
 use rand::rngs::OsRng;
+use sha256::digest_bytes;
 
 #[path = "../../src/crypto_shared.rs"]
 mod crypto_shared;
@@ -75,4 +76,9 @@ pub fn new_account_secret_key() -> Option<String> {
 
 fn new_keypair() -> Keypair {
     Keypair::generate(&mut OsRng)
+}
+
+#[wasm_bindgen]
+pub fn get_hash(data: &[u8]) -> Option<String> {
+    Some(digest_bytes(data))
 }
