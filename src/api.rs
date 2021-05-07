@@ -58,7 +58,7 @@ pub struct PlantResponse {
 pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<PlantResponse>> {
     let treasure_key = crypto::decode_public_key(&plant_info.public_key)?;
     let treasure_key = crypto::encode_public_key(&treasure_key)?;
-    
+
     let filename = format!("data/treasure/{key}", key = treasure_key);
     let return_url = format!(
         "{host}/api/plant/{key}\n",
