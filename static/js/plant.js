@@ -1,4 +1,5 @@
 import { initWasm } from "./wasm-init.js";
+import { accountSecretKey } from "./account.js";
 import {
     initSecretScanner,
     treasureClaimUrl,
