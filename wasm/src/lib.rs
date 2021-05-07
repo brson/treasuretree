@@ -4,6 +4,7 @@ use wasm_bindgen::prelude::*;
 use anyhow::Result;
 use ed25519_dalek::{PublicKey, SecretKey, Keypair, Signer};
 use bech32::{FromBase32, ToBase32, Variant};
+use rand::rngs::OsRng;
 
 #[path = "../../src/crypto_shared.rs"]
 mod crypto_shared;
@@ -66,3 +67,12 @@ pub fn sign_with_secret_key(key: &str, data: &str) -> Option<String> {
         .flatten()
 }
 
+#[wasm_bindgen]
+pub fn new_account_secret_key() -> Option<String> {
+    let keypair = new_keypair();
+    crypto::encode_account_secret_key(&keypair.secret).ok()
+}
+
+fn new_keypair() -> Keypair {
+    Keypair::generate(&mut OsRng)
+}

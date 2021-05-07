@@ -10,6 +10,7 @@
 - sign hashes, not full blobs
 - remove unused info from response types
 - implement treasure_page route, share treasure code with the recent_page route
+- move create_treasure api to client side
 
 # notes
 

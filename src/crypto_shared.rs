@@ -4,6 +4,8 @@ use ed25519_dalek::{Keypair, PublicKey, SecretKey, Signature, Signer};
 use base64;
 use bech32::{FromBase32, ToBase32, Variant};
 
+pub static ACCOUNT_SECRET_KEY_HRP: &'static str = "gas";
+pub static ACCOUNT_PUBLIC_KEY_HRP: &'static str = "gap";
 pub static SECRET_KEY_HRP: &'static str = "gs";
 pub static PUBLIC_KEY_HRP: &'static str = "gp";
 pub static URL_PREFIX: &'static str = "https://rib.rs?key=";
@@ -31,6 +33,28 @@ pub fn secret_url_to_keypair(url: &str) -> Result<Keypair> {
 
     let key = url.split_at(URL_PREFIX.len()).1;
     keypair_from_secret_key(key)
+}
+
+pub fn encode_account_secret_key(key: &SecretKey) -> Result<String> {
+    let bytes = key.as_bytes();
+    let encoded = bech32::encode(ACCOUNT_SECRET_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
+    Ok(encoded)
+}
+
+pub fn decode_account_secret_key(key: &str) -> Result<SecretKey> {
+    let (hrp, data, variant) = bech32::decode(key).e()?;
+
+    if hrp != ACCOUNT_SECRET_KEY_HRP {
+        bail!("wrong HRP in secret key decoding");
+    }
+
+    if variant != Variant::Bech32m {
+        bail!("wrong bech32 variant in secret key decoding");
+    }
+
+    let bytes = Vec::<u8>::from_base32(&data).e()?;
+    let key = SecretKey::from_bytes(&bytes).e()?;
+    Ok(key)
 }
 
 pub fn encode_secret_key(key: &SecretKey) -> Result<String> {

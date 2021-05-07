@@ -29,6 +29,8 @@ let onBeginSecretScan = null;
 let onEndSecretScan = null;
 
 function initSecretScanner(callbacks) {
+    console.assert(!onBeginSecretScan);
+    console.assert(!onEndSecretScan);
     console.assert(callbacks.onBeginSecretScan);
     console.assert(callbacks.onEndSecretScan);
 
