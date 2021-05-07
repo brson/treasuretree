@@ -1,5 +1,5 @@
 import { initWasm } from "./wasm-init.js";
-import { accountSecretKey } from "./account.js";
+import { accountSecretKey, initAccount } from "./account.js";
 import {
     initSecretScanner,
     treasureClaimUrl,
@@ -11,6 +11,10 @@ console.assert(initWasm);
 console.assert(typeof treasureClaimUrl != "undefined");
 console.assert(typeof treasureSecretKey != "undefined");
 console.assert(typeof treasurePublicKey != "undefined");
+
+initAccount({
+    onAccountSecretKeyChanged: onAccountSecretKeyChanged,
+});
 
 initSecretScanner({
     onBeginSecretScan: onBeginSecretScan,
@@ -169,13 +173,17 @@ function maybeEnablePlantButton() {
         treasureImageBlob &&
         treasureClaimUrl &&
         treasureSecretKey &&
-        treasurePublicKey;
+        treasurePublicKey &&
+        accountSecretKey;
 
     if (dataReady && !treasurePlanted) {
         plantButton.disabled = false;
     }
 }
 
+function onAccountSecretKeyChanged() {
+    maybeEnablePlantButton();
+}
 
 function onBeginSecretScan() {
     plantButton.disabled = true;

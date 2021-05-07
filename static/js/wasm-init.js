@@ -2,6 +2,7 @@ export { initWasm };
 
 import init, {
     set_panic_hook,
+    account_secret_key_to_public_key,
     new_account_secret_key,
     sanity_check_url,
     secret_url_to_secret_key,
@@ -22,6 +23,7 @@ async function initWasm() {
 
     wasm = {
         set_panic_hook,
+        account_secret_key_to_public_key,
         new_account_secret_key,
         sanity_check_url,
         secret_url_to_secret_key,

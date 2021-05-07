@@ -10,6 +10,16 @@ pub static SECRET_KEY_HRP: &'static str = "gs";
 pub static PUBLIC_KEY_HRP: &'static str = "gp";
 pub static URL_PREFIX: &'static str = "https://rib.rs?key=";
 
+pub fn keypair_from_account_secret_key(key: &str) -> Result<Keypair> {
+    let secret_key = decode_account_secret_key(key)?;
+    let public_key = PublicKey::from(&secret_key);
+    let keypair = Keypair {
+        secret: secret_key,
+        public: public_key,
+    };
+    Ok(keypair)
+}
+
 pub fn keypair_from_secret_key(key: &str) -> Result<Keypair> {
     let secret_key = decode_secret_key(key)?;
     let public_key = PublicKey::from(&secret_key);
@@ -79,10 +89,32 @@ pub fn decode_secret_key(key: &str) -> Result<SecretKey> {
     Ok(key)
 }
 
+pub fn encode_account_public_key(key: &PublicKey) -> Result<String> {
+    let bytes = key.as_bytes();
+    let encoded = bech32::encode(ACCOUNT_PUBLIC_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
+    Ok(encoded)
+}
+
 pub fn encode_public_key(key: &PublicKey) -> Result<String> {
     let bytes = key.as_bytes();
     let encoded = bech32::encode(PUBLIC_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
     Ok(encoded)
+}
+
+pub fn decode_account_public_key(key: &str) -> Result<PublicKey> {
+    let (hrp, data, variant) = bech32::decode(key).e()?;
+
+    if hrp != ACCOUNT_PUBLIC_KEY_HRP {
+        bail!("wrong HRP in public key decoding");
+    }
+
+    if variant != Variant::Bech32m {
+        bail!("wrong bech32 variant in public key decoding");
+    }
+
+    let bytes = Vec::<u8>::from_base32(&data).e()?;
+    let key = PublicKey::from_bytes(&bytes).e()?;
+    Ok(key)
 }
 
 pub fn decode_public_key(key: &str) -> Result<PublicKey> {

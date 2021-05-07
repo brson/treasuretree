@@ -73,6 +73,14 @@ pub fn new_account_secret_key() -> Option<String> {
     crypto::encode_account_secret_key(&keypair.secret).ok()
 }
 
+#[wasm_bindgen]
+pub fn account_secret_key_to_public_key(key: &str) -> Option<String> {
+    crypto::keypair_from_account_secret_key(key).ok()
+        .map(|kp| kp.public)
+        .map(|key| crypto::encode_account_public_key(&key).ok())
+        .flatten()
+}
+
 fn new_keypair() -> Keypair {
     Keypair::generate(&mut OsRng)
 }
