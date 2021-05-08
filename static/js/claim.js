@@ -1,4 +1,5 @@
 import { initWasm } from "./wasm-init.js";
+import { accountSecretKey, initAccount } from "./account.js";
 import {
     initSecretScanner,
     treasureClaimUrl,
@@ -6,7 +7,9 @@ import {
     treasurePublicKey
 } from "./secret-scan.js";
 
-console.assert(initWasm);
+initAccount({
+    onAccountSecretKeyChanged: onAccountSecretKeyChanged
+});
 
 initSecretScanner({
     onBeginSecretScan: onBeginSecretScan,
@@ -89,15 +92,17 @@ function maybeEnableClaimButton() {
     let dataReady =
         treasureClaimUrl &&
         treasureSecretKey &&
-        treasurePublicKey;
+        treasurePublicKey &&
+        accountSecretKey;
 
     if (dataReady && !treasureClaimed) {
         claimButton.disabled = false;
     }
 }
 
-
-/* These handlers are required by secren-scan.js */
+function onAccountSecretKeyChanged() {
+    maybeEnableClaimButton();
+}
 
 function onBeginSecretScan() {
     claimButton.disabled = true;

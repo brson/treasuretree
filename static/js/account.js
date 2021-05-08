@@ -1,10 +1,13 @@
 export {
-    accountSecretKey,
     initAccount,
+    accountSecretKey,
+    accountPublicKey,
 };
 import { initWasm } from "./wasm-init.js";
 
 let accountSecretKey = null;
+let accountPublicKey = null;
+
 let onAccountSecretKeyChanged = null;
 
 function initAccount(callbacks) {
@@ -29,8 +32,13 @@ newAccountButton.addEventListener("click", async () => {
         let wasm = await initWasm();
 
         let accountSecretKey_ = wasm.new_account_secret_key();
+        let publicKey = wasm.account_secret_key_to_public_key(accountSecretKey_);
+
+        console.assert(publicKey);
+
         secretKeyInput.value = accountSecretKey_;
         accountSecretKey = accountSecretKey_;
+        accountPublicKey = publicKey;
 
         console.assert(onAccountSecretKeyChanged);
         onAccountSecretKeyChanged();
@@ -42,6 +50,7 @@ newAccountButton.addEventListener("click", async () => {
 
 secretKeyInput.addEventListener("input", async () => {
     accountSecretKey = null;
+    accountPublicKey = null;
     console.assert(onAccountSecretKeyChanged);
     onAccountSecretKeyChanged();
 
@@ -53,6 +62,7 @@ secretKeyInput.addEventListener("input", async () => {
     if (publicKey != null) {
         console.log("secret key decoded");
         accountSecretKey = secretKeyInputValue;
+        accountPublicKey = publicKey;
 
         console.assert(onAccountSecretKeyChanged);
         onAccountSecretKeyChanged();

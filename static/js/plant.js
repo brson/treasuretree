@@ -1,16 +1,15 @@
 import { initWasm } from "./wasm-init.js";
-import { accountSecretKey, initAccount } from "./account.js";
+import {
+    initAccount,
+    accountSecretKey,
+    accountPublicKey,
+} from "./account.js";
 import {
     initSecretScanner,
     treasureClaimUrl,
     treasureSecretKey,
     treasurePublicKey
 } from "./secret-scan.js";
-
-console.assert(initWasm);
-console.assert(typeof treasureClaimUrl != "undefined");
-console.assert(typeof treasureSecretKey != "undefined");
-console.assert(typeof treasurePublicKey != "undefined");
 
 initAccount({
     onAccountSecretKeyChanged: onAccountSecretKeyChanged,
@@ -134,17 +133,16 @@ plantButton.addEventListener("click", async () => {
         let wasm = await initWasm();
 
         let treasureHash = wasm.get_hash(treasureImageBuffer);
-        let signature = wasm.sign_with_secret_key(treasureSecretKey, treasureHash);
+        let treasureSignature = wasm.sign_with_secret_key(treasureSecretKey, treasureHash);
 
-        console.log("hihihi");
-        console.log(treasureImageEncoded);
-        console.log(treasureHash);
-        console.log(signature);
-        
+        let accountSignature = "todo";
+
         let requestInfo = {
             image: treasureImageEncoded,
-            public_key: treasurePublicKey,
-            signature: signature
+            treasure_public_key: treasurePublicKey,
+            account_public_key: accountPublicKey,
+            treasure_signature: treasureSignature,
+            account_signature: accountSignature,
         };
 
         let response = await fetch("api/plant", {
