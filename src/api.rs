@@ -31,18 +31,20 @@ pub fn create_treasure_key() -> Result<Json<CreateResponse>> {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PlantRequest {
-    /// An image, base64 encoded
-    pub image: String,
-    /// A public key to represent the treasure, bech32 encoded
-    pub treasure_public_key: String,
     /// The public key of the account that is planting the treasure
     pub account_public_key: String,
-    /// A signature by the treasure key of
-    /// the account public key + the sha256 hash of the image
-    pub treasure_signature: String,
-    /// A signature by the account of
-    /// the treasure public key.
+    /// A public key to represent the treasure, bech32 encoded
+    pub treasure_public_key: String,
+    /// An image, base64 encoded
+    pub image: String,
+    /// A base64-encoded signature by the account of
+    /// the string "plant",
+    /// appended by the encoded treasure public key.
     pub account_signature: String,
+    /// A base64-encoded signature by the treasure key of
+    /// the encoded account public key,
+    /// appended by the binary sha256 hash of the image.
+    pub treasure_signature: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -52,17 +54,18 @@ pub struct PlantResponse {
 
 /// Stores a treasure and associated key
 ///
-/// Validates the treasure signature and the account signature.
-/// Validates that the account public key is an authorized treasure planter.
+/// Validation:
+///
+/// - The account key is valid.
+/// - The treasure key is valid.
+/// - The account signature.
+/// - The treasure signature.
+/// - The account public key is an authorized treasure planter.
 ///
 /// Stores the json to disk,
 /// with the encoded pubkey as the name of the file.
-/// The key can be used later to retrieve (or claim) the treasure.
-///
-/// # Errors
-///
-/// If the signature is not a valid signature of the provided image with
-/// the provided public key.
+/// The pubkey can be used later to retrieve (or claim) the treasure.
+
 #[post("/api/plant", format = "json", data = "<plant_info>")]
 pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<PlantResponse>> {
     let treasure_key = crypto::decode_public_key(&plant_info.treasure_public_key)?;
@@ -85,12 +88,17 @@ pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<Pl
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ClaimRequest {
-    /// A random string signed by the private key as evidence of ownership
-    nonce: String,
+    /// The public key of the claiming account, bech32 encoded
+    account_public_key: String,
     /// The public key of the treasure, bech32 encoded
-    public_key: String,
-    /// A signature against the nonce by the corresponding private key
-    signature: String,
+    treasure_public_key: String,
+    /// A base64-encoded signature by the account key of
+    /// the string "claim",
+    /// appended by the encoded treasure public key,
+    account_signature: String,
+    /// A base64-encoded signature by the treasure key of
+    /// the encoded account public key.
+    treasure_signature: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -101,27 +109,29 @@ pub struct ClaimResponse {
 
 /// Claim a treasure.
 ///
-/// Checks that a treasure exists,
-/// then verifies the signature with the public key and the nonce.
+/// Validation:
+///
+/// - The account key is valid.
+/// - The treasure key is valid.
+/// - The treasure exists,
+/// - The account signature.
+/// - The treasure signature.
 ///
 /// If the checks pass then store a record indicating
 /// the treasure was claimed by the logged in user.
-///
-/// TODO: Add a user concept
-///
-/// - check that the nonce is the expected size
+
 #[post("/api/claim", format = "json", data = "<claim_info>")]
 pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<ClaimResponse>> {
     // verify if it's a valid Public key
-    let public_key_decode = crypto::decode_public_key(&claim_info.public_key)?;
+    let public_key_decode = crypto::decode_public_key(&claim_info.treasure_public_key)?;
     let public_key_encode = crypto::encode_public_key(&public_key_decode)?;
 
     let filename = format!("data/treasure/{}", public_key_encode);
     if !Path::new(&filename).is_file() {
         bail!("Treasure doesn't exist")
     } else {
-        let message = claim_info.nonce.as_bytes();
-        let signature = crypto::decode_signature(&claim_info.signature)?;
+        let message = public_key_decode.as_bytes();
+        let signature = crypto::decode_signature(&claim_info.treasure_signature)?;
 
         crypto::verify_signature(message, &signature, &public_key_decode)?;
 

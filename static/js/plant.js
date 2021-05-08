@@ -138,11 +138,11 @@ plantButton.addEventListener("click", async () => {
         let accountSignature = "todo";
 
         let requestInfo = {
-            image: treasureImageEncoded,
-            treasure_public_key: treasurePublicKey,
             account_public_key: accountPublicKey,
-            treasure_signature: treasureSignature,
+            treasure_public_key: treasurePublicKey,
+            image: treasureImageEncoded,
             account_signature: accountSignature,
+            treasure_signature: treasureSignature,
         };
 
         let response = await fetch("api/plant", {

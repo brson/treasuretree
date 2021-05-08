@@ -1,5 +1,9 @@
 import { initWasm } from "./wasm-init.js";
-import { accountSecretKey, initAccount } from "./account.js";
+import {
+    initAccount,
+    accountSecretKey,
+    accountPublicKey
+} from "./account.js";
 import {
     initSecretScanner,
     treasureClaimUrl,
@@ -38,7 +42,6 @@ claimButton.addEventListener("click", async () => {
     try {
         let wasm = await initWasm();
 
-        let nonce = createNonce();
         let signature = wasm.sign_with_secret_key(treasureSecretKey, nonce);
 
         if (signature == null) {
@@ -47,9 +50,10 @@ claimButton.addEventListener("click", async () => {
         }
 
         let requestInfo = {
-            nonce: nonce,
-            public_key: treasurePublicKey,
-            signature: signature
+            account_public_key: accountPublicKey,
+            treasure_public_key: treasurePublicKey,
+            account_signature: "todo",
+            treasure_signature: signature
         };
 
         let response = await fetch("api/claim", {
@@ -82,11 +86,6 @@ claimButton.addEventListener("click", async () => {
         claimSpinner.classList.add("no-display");
     }
 });
-
-function createNonce() {
-    // TODO
-    return "hello world";
-}
 
 function maybeEnableClaimButton() {
     let dataReady =
