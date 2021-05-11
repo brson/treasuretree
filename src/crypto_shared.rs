@@ -121,6 +121,38 @@ fn decode_public_key(key: &str, hrp: &str) -> Result<PublicKey> {
     Ok(key)
 }
 
+pub fn sign_plant_request_for_account() -> Result<Signature> {
+    panic!()
+}
+
+pub fn verify_plant_request_for_account() -> Result<()> {
+    panic!()
+}
+
+pub fn sign_plant_request_for_treasure() -> Result<Signature> {
+    panic!()
+}
+
+pub fn verify_plant_request_for_treasure() -> Result<()> {
+    panic!()
+}
+
+pub fn sign_claim_request_for_account() -> Result<Signature> {
+    panic!()
+}
+
+pub fn verify_claim_request_for_account() -> Result<()> {
+    panic!()
+}
+
+pub fn sign_claim_request_for_treasure() -> Result<Signature> {
+    panic!()
+}
+
+pub fn verify_claim_request_for_treasure() -> Result<()> {
+    panic!()
+}
+
 pub fn encode_signature(sig: &Signature) -> Result<String> {
     let bytes = sig.to_bytes();
     let encoded = base64::encode(bytes);
