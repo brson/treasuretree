@@ -46,37 +46,31 @@ pub fn treasure_secret_url_to_keypair(url: &str) -> Result<Keypair> {
 }
 
 pub fn encode_account_secret_key(key: &SecretKey) -> Result<String> {
-    let bytes = key.as_bytes();
-    let encoded = bech32::encode(ACCOUNT_SECRET_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
-    Ok(encoded)
+    encode_secret_key(key, ACCOUNT_SECRET_KEY_HRP)
 }
 
 pub fn encode_treasure_secret_key(key: &SecretKey) -> Result<String> {
+    encode_secret_key(key, TREASURE_SECRET_KEY_HRP)
+}
+
+fn encode_secret_key(key: &SecretKey, hrp: &str) -> Result<String> {
     let bytes = key.as_bytes();
-    let encoded = bech32::encode(TREASURE_SECRET_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
+    let encoded = bech32::encode(hrp, bytes.to_base32(), Variant::Bech32m).e()?;
     Ok(encoded)
 }
 
 pub fn decode_account_secret_key(key: &str) -> Result<SecretKey> {
-    let (hrp, data, variant) = bech32::decode(key).e()?;
-
-    if hrp != ACCOUNT_SECRET_KEY_HRP {
-        bail!("wrong HRP in secret key decoding");
-    }
-
-    if variant != Variant::Bech32m {
-        bail!("wrong bech32 variant in secret key decoding");
-    }
-
-    let bytes = Vec::<u8>::from_base32(&data).e()?;
-    let key = SecretKey::from_bytes(&bytes).e()?;
-    Ok(key)
+    decode_secret_key(key, ACCOUNT_SECRET_KEY_HRP)
 }
 
 pub fn decode_treasure_secret_key(key: &str) -> Result<SecretKey> {
-    let (hrp, data, variant) = bech32::decode(key).e()?;
+    decode_secret_key(key, TREASURE_SECRET_KEY_HRP)
+}
 
-    if hrp != TREASURE_SECRET_KEY_HRP {
+pub fn decode_secret_key(key: &str, hrp: &str) -> Result<SecretKey> {
+    let (actual_hrp, data, variant) = bech32::decode(key).e()?;
+
+    if actual_hrp != hrp {
         bail!("wrong HRP in secret key decoding");
     }
 
@@ -90,37 +84,31 @@ pub fn decode_treasure_secret_key(key: &str) -> Result<SecretKey> {
 }
 
 pub fn encode_account_public_key(key: &PublicKey) -> Result<String> {
-    let bytes = key.as_bytes();
-    let encoded = bech32::encode(ACCOUNT_PUBLIC_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
-    Ok(encoded)
+    encode_public_key(key, ACCOUNT_PUBLIC_KEY_HRP)
 }
 
 pub fn encode_treasure_public_key(key: &PublicKey) -> Result<String> {
+    encode_public_key(key, TREASURE_PUBLIC_KEY_HRP)
+}
+
+fn encode_public_key(key: &PublicKey, hrp: &str) -> Result<String> {
     let bytes = key.as_bytes();
-    let encoded = bech32::encode(TREASURE_PUBLIC_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
+    let encoded = bech32::encode(hrp, bytes.to_base32(), Variant::Bech32m).e()?;
     Ok(encoded)
 }
 
 pub fn decode_account_public_key(key: &str) -> Result<PublicKey> {
-    let (hrp, data, variant) = bech32::decode(key).e()?;
-
-    if hrp != ACCOUNT_PUBLIC_KEY_HRP {
-        bail!("wrong HRP in public key decoding");
-    }
-
-    if variant != Variant::Bech32m {
-        bail!("wrong bech32 variant in public key decoding");
-    }
-
-    let bytes = Vec::<u8>::from_base32(&data).e()?;
-    let key = PublicKey::from_bytes(&bytes).e()?;
-    Ok(key)
+    decode_public_key(key, ACCOUNT_PUBLIC_KEY_HRP)
 }
 
 pub fn decode_treasure_public_key(key: &str) -> Result<PublicKey> {
-    let (hrp, data, variant) = bech32::decode(key).e()?;
+    decode_public_key(key, TREASURE_PUBLIC_KEY_HRP)
+}
 
-    if hrp != TREASURE_PUBLIC_KEY_HRP {
+fn decode_public_key(key: &str, hrp: &str) -> Result<PublicKey> {
+    let (actual_hrp, data, variant) = bech32::decode(key).e()?;
+
+    if actual_hrp != hrp {
         bail!("wrong HRP in public key decoding");
     }
 
