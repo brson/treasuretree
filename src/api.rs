@@ -68,8 +68,8 @@ pub struct PlantResponse {
 
 #[post("/api/plant", format = "json", data = "<plant_info>")]
 pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<PlantResponse>> {
-    let treasure_key = crypto::decode_public_key(&plant_info.treasure_public_key)?;
-    let treasure_key = crypto::encode_public_key(&treasure_key)?;
+    let treasure_key = crypto::decode_treasure_public_key(&plant_info.treasure_public_key)?;
+    let treasure_key = crypto::encode_treasure_public_key(&treasure_key)?;
 
     let filename = format!("data/treasure/{key}", key = treasure_key);
     let return_url = format!(
@@ -123,8 +123,8 @@ pub struct ClaimResponse {
 #[post("/api/claim", format = "json", data = "<claim_info>")]
 pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<ClaimResponse>> {
     // verify if it's a valid Public key
-    let public_key_decode = crypto::decode_public_key(&claim_info.treasure_public_key)?;
-    let public_key_encode = crypto::encode_public_key(&public_key_decode)?;
+    let public_key_decode = crypto::decode_treasure_public_key(&claim_info.treasure_public_key)?;
+    let public_key_encode = crypto::encode_treasure_public_key(&public_key_decode)?;
 
     let filename = format!("data/treasure/{}", public_key_encode);
     if !Path::new(&filename).is_file() {

@@ -20,8 +20,8 @@ pub fn keypair_from_account_secret_key(key: &str) -> Result<Keypair> {
     Ok(keypair)
 }
 
-pub fn keypair_from_secret_key(key: &str) -> Result<Keypair> {
-    let secret_key = decode_secret_key(key)?;
+pub fn keypair_from_treasure_secret_key(key: &str) -> Result<Keypair> {
+    let secret_key = decode_treasure_secret_key(key)?;
     let public_key = PublicKey::from(&secret_key);
     let keypair = Keypair {
         secret: secret_key,
@@ -30,19 +30,19 @@ pub fn keypair_from_secret_key(key: &str) -> Result<Keypair> {
     Ok(keypair)
 }
 
-pub fn keypair_to_secret_url(keypair: &Keypair) -> Result<String> {
-    let secret_key_string = encode_secret_key(&keypair.secret)?;
+pub fn keypair_to_treasure_secret_url(keypair: &Keypair) -> Result<String> {
+    let secret_key_string = encode_treasure_secret_key(&keypair.secret)?;
     let url = format!("{}{}", URL_PREFIX, secret_key_string);
     Ok(url)
 }
 
-pub fn secret_url_to_keypair(url: &str) -> Result<Keypair> {
+pub fn treasure_secret_url_to_keypair(url: &str) -> Result<Keypair> {
     if !url.starts_with(URL_PREFIX) {
         bail!("incorrect URL prefix for secret key");
     }
 
     let key = url.split_at(URL_PREFIX.len()).1;
-    keypair_from_secret_key(key)
+    keypair_from_treasure_secret_key(key)
 }
 
 pub fn encode_account_secret_key(key: &SecretKey) -> Result<String> {
@@ -67,13 +67,13 @@ pub fn decode_account_secret_key(key: &str) -> Result<SecretKey> {
     Ok(key)
 }
 
-pub fn encode_secret_key(key: &SecretKey) -> Result<String> {
+pub fn encode_treasure_secret_key(key: &SecretKey) -> Result<String> {
     let bytes = key.as_bytes();
     let encoded = bech32::encode(SECRET_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
     Ok(encoded)
 }
 
-pub fn decode_secret_key(key: &str) -> Result<SecretKey> {
+pub fn decode_treasure_secret_key(key: &str) -> Result<SecretKey> {
     let (hrp, data, variant) = bech32::decode(key).e()?;
 
     if hrp != SECRET_KEY_HRP {
@@ -95,7 +95,7 @@ pub fn encode_account_public_key(key: &PublicKey) -> Result<String> {
     Ok(encoded)
 }
 
-pub fn encode_public_key(key: &PublicKey) -> Result<String> {
+pub fn encode_treasure_public_key(key: &PublicKey) -> Result<String> {
     let bytes = key.as_bytes();
     let encoded = bech32::encode(PUBLIC_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
     Ok(encoded)
@@ -117,7 +117,7 @@ pub fn decode_account_public_key(key: &str) -> Result<PublicKey> {
     Ok(key)
 }
 
-pub fn decode_public_key(key: &str) -> Result<PublicKey> {
+pub fn decode_treasure_public_key(key: &str) -> Result<PublicKey> {
     let (hrp, data, variant) = bech32::decode(key).e()?;
 
     if hrp != PUBLIC_KEY_HRP {

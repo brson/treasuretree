@@ -120,8 +120,8 @@ fn treasure_page(public_key: &RawStr) -> Result<Template> {
 #[get("/treasure-images/<public_key>")]
 fn treasure_image(public_key: &RawStr) -> Result<Content<Vec<u8>>> {
     let public_key = public_key.percent_decode()?;
-    let public_key = crypto::decode_public_key(&public_key)?;
-    let public_key = crypto::encode_public_key(&public_key)?;
+    let public_key = crypto::decode_treasure_public_key(&public_key)?;
+    let public_key = crypto::encode_treasure_public_key(&public_key)?;
 
     let path = format!("data/treasure/{}", public_key);
     let file = BufReader::new(File::open(path)?);
