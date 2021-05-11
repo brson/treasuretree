@@ -25,7 +25,7 @@ pub fn set_panic_hook() {
 
 #[wasm_bindgen]
 pub fn sanity_check_treasure_secret_url(url: &str) -> bool {
-    url.starts_with(crypto::URL_PREFIX)
+    url.starts_with(crypto::TREASURE_SECRET_URL_PREFIX)
 }
 
 #[wasm_bindgen]
