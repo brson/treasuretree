@@ -42,7 +42,8 @@ claimButton.addEventListener("click", async () => {
     try {
         let wasm = await initWasm();
 
-        let signature = wasm.sign_with_secret_key(treasureSecretKey, nonce);
+        let nonce = "todo";
+        let signature = wasm.sign_with_treasure_secret_key(treasureSecretKey, nonce);
 
         if (signature == null) {
             // TODO

@@ -133,7 +133,7 @@ plantButton.addEventListener("click", async () => {
         let wasm = await initWasm();
 
         let treasureHash = wasm.get_hash(treasureImageBuffer);
-        let treasureSignature = wasm.sign_with_secret_key(treasureSecretKey, treasureHash);
+        let treasureSignature = wasm.sign_with_treasure_secret_key(treasureSecretKey, treasureHash);
 
         let accountSignature = "todo";
 

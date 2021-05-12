@@ -133,7 +133,8 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
         let message = public_key_decode.as_bytes();
         let signature = crypto::decode_signature(&claim_info.treasure_signature)?;
 
-        crypto::verify_signature(message, &signature, &public_key_decode)?;
+        // fixme
+        //crypto::verify_signature(message, &signature, &public_key_decode)?;
 
         // todo:
         // - claim success and transfer asset
