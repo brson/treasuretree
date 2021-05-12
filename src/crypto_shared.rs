@@ -3,6 +3,7 @@ use ed25519_dalek::{Keypair, PublicKey, SecretKey, Signature, Signer};
 
 use base64;
 use bech32::{FromBase32, ToBase32, Variant};
+use sha256::digest_bytes;
 
 pub static ACCOUNT_SECRET_KEY_HRP: &'static str = "gas";
 pub static ACCOUNT_PUBLIC_KEY_HRP: &'static str = "gap";
@@ -47,7 +48,8 @@ pub fn secret_url_to_keypair(url: &str) -> Result<Keypair> {
 
 pub fn encode_account_secret_key(key: &SecretKey) -> Result<String> {
     let bytes = key.as_bytes();
-    let encoded = bech32::encode(ACCOUNT_SECRET_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
+    let encoded =
+        bech32::encode(ACCOUNT_SECRET_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
     Ok(encoded)
 }
 
@@ -91,7 +93,8 @@ pub fn decode_secret_key(key: &str) -> Result<SecretKey> {
 
 pub fn encode_account_public_key(key: &PublicKey) -> Result<String> {
     let bytes = key.as_bytes();
-    let encoded = bech32::encode(ACCOUNT_PUBLIC_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
+    let encoded =
+        bech32::encode(ACCOUNT_PUBLIC_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
     Ok(encoded)
 }
 
@@ -168,6 +171,16 @@ pub fn verify_signature(
 ) -> Result<()> {
     Ok(public_key.verify_strict(message, signature).e()?)
 }
+
+pub fn get_hash(data: &str) -> Result<String> {
+    Ok(digest_bytes(data.as_bytes()))
+}
+
+/*
+pub fn decode_image(image: &str) -> Result<Vec<u8>> {
+    Ok(base64::decode(image.as_bytes()).e()?)
+}
+*/
 
 pub trait ResultWrapper<T> {
     fn e(self) -> Result<T>;

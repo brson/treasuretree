@@ -132,7 +132,10 @@ plantButton.addEventListener("click", async () => {
         
         let wasm = await initWasm();
 
-        let treasureHash = wasm.get_hash(treasureImageBuffer);
+        // todo:
+        // let treasureHash = wasm.get_hash(treasureImageBuffer);
+
+        let treasureHash = wasm.get_hash(treasureImageEncoded);
         let treasureSignature = wasm.sign_with_secret_key(treasureSecretKey, treasureHash);
 
         let accountSignature = "todo";
@@ -159,7 +162,6 @@ plantButton.addEventListener("click", async () => {
             // TODO
         }
 
-        // let jsonResponse = await response.json();
         let jsonResponse = await response.json();
         console.log(jsonResponse);
 
