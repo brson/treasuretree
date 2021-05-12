@@ -86,14 +86,32 @@ useTestImageButton.addEventListener("click", async () => {
 
     fileSpinner.classList.remove("no-display");
 
+    function randomPathColor() {
+        let choices = [
+            0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330
+        ];
+        let idx = Math.floor(Math.random() * choices.length);
+        let hue = choices[idx];
+        let color = `hsl(${hue}, 75%, 75%)`;
+        return color;
+    }
+
     try {
-        let response = await fetch("images/coconut-tree.png");
+        let response = await fetch("images/coconut-tree.svg");
 
         if (!response.ok) {
             // TODO
         }
 
-        let blob = await response.blob();
+        let svgText = await response.text();
+
+        let color = randomPathColor();
+        let pathReplacement = `path fill="${color}"`;
+        let svgText2 = svgText.replaceAll("path", pathReplacement);
+        console.log(pathReplacement);
+        console.log(svgText2);
+
+        let blob = new Blob([svgText2], {type : 'image/svg+xml'});
 
         imageElt.src = URL.createObjectURL(blob);
         imageElt.classList.remove("no-display");

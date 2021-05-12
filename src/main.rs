@@ -162,7 +162,7 @@ fn treasure_image(public_key: &RawStr) -> Result<Content<Vec<u8>>> {
     let decoded_image = base64::decode(&encoded_image)?;
 
     // TODO: Correct content type
-    Ok(Content(ContentType::JPEG, decoded_image))
+    Ok(Content(ContentType::SVG, decoded_image))
 }
 
 fn main() {

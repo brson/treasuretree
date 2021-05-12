@@ -57,6 +57,7 @@ pub struct PlantResponse {
 ///
 /// Validation:
 ///
+/// - The treasure has not already been planted.
 /// - The account key is valid.
 /// - The treasure key is valid.
 /// - The account signature.
@@ -71,6 +72,8 @@ pub struct PlantResponse {
 pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<PlantResponse>> {
     let treasure_key_decode = crypto::decode_treasure_public_key(&plant_info.treasure_public_key)?;
     let treasure_key_encode = crypto::encode_treasure_public_key(&treasure_key_decode)?;
+
+    // todo check the treasure doesn't exist
 
     let signature = crypto::decode_signature(&plant_info.treasure_signature)?;
 
