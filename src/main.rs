@@ -129,10 +129,12 @@ fn treasure_page(public_key: &RawStr) -> Result<Template> {
 
     #[derive(Serialize)]
     struct TemplateData {
+        base_href: &'static str,
         treasure: Treasure,
     }
 
     let data = TemplateData {
+        base_href: "..",
         treasure: Treasure {
             public_key,
             image_url,
