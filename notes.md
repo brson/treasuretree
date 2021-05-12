@@ -1,5 +1,6 @@
 # todo
 
+- add newtypes for treasure/account keys/signatures
 - run rustfmt and clippy
 - remove allow(unused) and clean up warnings
 - clean up warnings in wasm build

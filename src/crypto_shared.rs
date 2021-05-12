@@ -121,35 +121,90 @@ fn decode_public_key(key: &str, hrp: &str) -> Result<PublicKey> {
     Ok(key)
 }
 
-pub fn sign_plant_request_for_account() -> Result<Signature> {
+/// With the account secret key, sign
+///
+/// - "plant", appended with
+/// - the treasure public key
+pub fn sign_plant_request_for_account(
+    account_secret_key: SecretKey,
+    treasure_public_key: PublicKey,
+) -> Result<Signature> {
     panic!()
 }
 
-pub fn verify_plant_request_for_account() -> Result<()> {
+/// With the account public key, verify
+/// the plant request signature.
+pub fn verify_plant_request_for_account(
+    account_public_key: PublicKey,
+    treasure_public_key: PublicKey,
+    signature: Signature,
+) -> Result<()> {
     panic!()
 }
 
-pub fn sign_plant_request_for_treasure() -> Result<Signature> {
+/// With the treasure secret key, sign
+///
+/// - "plant", appended with
+/// - the account public key, appended with
+/// - the hash of the treasure image
+pub fn sign_plant_request_for_treasure(
+    treasure_secret_key: SecretKey,
+    account_public_key: PublicKey,
+    treasure_hash: &[u8],
+) -> Result<Signature> {
     panic!()
 }
 
-pub fn verify_plant_request_for_treasure() -> Result<()> {
+/// With the treasure public key, verify
+/// the plant request signature.
+pub fn verify_plant_request_for_treasure(
+    treasure_public_key: PublicKey,
+    account_public_key: PublicKey,
+    treasure_hash: &[u8],
+    signature: Signature,
+) -> Result<()> {
     panic!()
 }
 
-pub fn sign_claim_request_for_account() -> Result<Signature> {
+/// With the account secret key, sign
+///
+/// - "claim", appended with
+/// - the treasure public key
+pub fn sign_claim_request_for_account(
+    account_secret_key: SecretKey,
+    treasure_public_key: PublicKey,
+) -> Result<Signature> {
     panic!()
 }
 
-pub fn verify_claim_request_for_account() -> Result<()> {
+/// With the account public key, verify
+/// the claim request signature.
+pub fn verify_claim_request_for_account(
+    account_public_key: PublicKey,
+    treasure_public_key: PublicKey,
+    signature: Signature,
+) -> Result<()> {
     panic!()
 }
 
-pub fn sign_claim_request_for_treasure() -> Result<Signature> {
+/// With the treasure secret key, sign
+///
+/// - "claim", appended with
+/// - the account public key
+pub fn sign_claim_request_for_treasure(
+    treasure_secret_key: SecretKey,
+    account_public_key: PublicKey,
+) -> Result<Signature> {
     panic!()
 }
 
-pub fn verify_claim_request_for_treasure() -> Result<()> {
+/// With the treasure public key, verify
+/// the claim request signature.
+pub fn verify_claim_request_for_treasure(
+    treasure_public_key: PublicKey,
+    account_public_key: PublicKey,
+    signature: Signature,
+) -> Result<()> {
     panic!()
 }
 

@@ -42,7 +42,8 @@ pub struct PlantRequest {
     /// appended by the encoded treasure public key.
     pub account_signature: String,
     /// A base64-encoded signature by the treasure key of
-    /// the encoded account public key,
+    /// the string "plant",
+    /// appended by the encoded account public key,
     /// appended by the binary sha256 hash of the image.
     pub treasure_signature: String,
 }
@@ -97,7 +98,8 @@ pub struct ClaimRequest {
     /// appended by the encoded treasure public key,
     account_signature: String,
     /// A base64-encoded signature by the treasure key of
-    /// the encoded account public key.
+    /// the string "claim",
+    /// appended by the encoded account public key.
     treasure_signature: String,
 }
 
