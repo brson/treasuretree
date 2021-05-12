@@ -3,7 +3,7 @@
 
 {% block title %}
 
-Recently Planted Treasure
+Recently Planted Treasures
 
 {% endblock title %}
 

@@ -68,11 +68,13 @@ fn recent_page() -> Result<Template> {
         .take(10)
         .map(|(time, dent)| {
             let public_key = dent.file_name().into_string().expect("utf-8");
+            let public_url = format!("treasure/{}", public_key);
             let image_url = format!("treasure-images/{}", public_key);
             let date_time = chrono::DateTime::<chrono::Local>::from(time);
             let date_time = date_time.to_rfc2822();
             TreasureTemplateData {
                 public_key,
+                public_url,
                 image_url,
                 date_time,
             }
@@ -111,6 +113,7 @@ fn treasure_page(public_key: &RawStr) -> Result<Template> {
     let date_time = chrono::DateTime::<chrono::Local>::from(time);
     let date_time = date_time.to_rfc2822();
 
+    let public_url = format!("treasure/{}", public_key);
     let image_url = format!("treasure-images/{}", public_key);
 
     #[derive(Serialize)]
@@ -123,6 +126,7 @@ fn treasure_page(public_key: &RawStr) -> Result<Template> {
         base_href: "..",
         treasure: TreasureTemplateData {
             public_key,
+            public_url,
             image_url,
             date_time,
         },
@@ -134,6 +138,7 @@ fn treasure_page(public_key: &RawStr) -> Result<Template> {
 #[derive(Serialize)]
 struct TreasureTemplateData {
     public_key: String,
+    public_url: String,
     image_url: String,
     date_time: String,
 }

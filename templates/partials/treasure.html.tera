@@ -1,6 +1,10 @@
 <section>
 
-  <p><span class="breakable">{{ treasure.public_key }}</span></p>
+  <p>
+    <a href="{{ treasure.public_url }}">
+      <span class="breakable">{{ treasure.public_key }}</span>
+    </a>
+  </p>
 
   <p>{{ treasure.date_time }}</p>
 
