@@ -63,13 +63,6 @@ fn recent_page() -> Result<Template> {
 
     files.sort_by_key(|&(time, _)| time);
 
-    #[derive(Serialize)]
-    struct Treasure {
-        public_key: String,
-        image_url: String,
-        date_time: String,
-    }
-
     let treasures = files
         .into_iter()
         .take(10)
@@ -78,7 +71,7 @@ fn recent_page() -> Result<Template> {
             let image_url = format!("treasure-images/{}", public_key);
             let date_time = chrono::DateTime::<chrono::Local>::from(time);
             let date_time = date_time.to_rfc2822();
-            Treasure {
+            TreasureTemplateData {
                 public_key,
                 image_url,
                 date_time,
@@ -88,7 +81,7 @@ fn recent_page() -> Result<Template> {
 
     #[derive(Serialize)]
     struct TemplateData {
-        treasures: Vec<Treasure>,
+        treasures: Vec<TreasureTemplateData>,
     }
 
     let data = TemplateData { treasures };
@@ -121,21 +114,14 @@ fn treasure_page(public_key: &RawStr) -> Result<Template> {
     let image_url = format!("treasure-images/{}", public_key);
 
     #[derive(Serialize)]
-    struct Treasure {
-        public_key: String,
-        image_url: String,
-        date_time: String,
-    }
-
-    #[derive(Serialize)]
     struct TemplateData {
         base_href: &'static str,
-        treasure: Treasure,
+        treasure: TreasureTemplateData,
     }
 
     let data = TemplateData {
         base_href: "..",
-        treasure: Treasure {
+        treasure: TreasureTemplateData {
             public_key,
             image_url,
             date_time,
@@ -143,6 +129,13 @@ fn treasure_page(public_key: &RawStr) -> Result<Template> {
     };
 
     Ok(Template::render("treasure", data))
+}
+
+#[derive(Serialize)]
+struct TreasureTemplateData {
+    public_key: String,
+    image_url: String,
+    date_time: String,
 }
 
 /// A treasure's image.
