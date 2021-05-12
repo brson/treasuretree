@@ -108,7 +108,39 @@ fn recent_page() -> Result<Template> {
 /// Load the template from templates/treasure/template.html.tera.
 #[get("/treasure/<public_key>")]
 fn treasure_page(public_key: &RawStr) -> Result<Template> {
-    panic!()
+    let public_key = public_key.percent_decode()?;
+    let public_key = crypto::decode_treasure_public_key(&public_key)?;
+    let public_key = crypto::encode_treasure_public_key(&public_key)?;
+
+    let path = format!("data/treasure/{}", public_key);
+    let file = fs::metadata(path)?;
+    let time = file.modified()?;
+    let date_time = chrono::DateTime::<chrono::Local>::from(time);
+    let date_time = date_time.to_rfc2822();
+
+    let image_url = format!("treasure-images/{}", public_key);
+
+    #[derive(Serialize)]
+    struct Treasure {
+        public_key: String,
+        image_url: String,
+        date_time: String,
+    }
+
+    #[derive(Serialize)]
+    struct TemplateData {
+        treasure: Treasure,
+    }
+
+    let data = TemplateData {
+        treasure: Treasure {
+            public_key,
+            image_url,
+            date_time,
+        },
+    };
+
+    Ok(Template::render("treasure", data))
 }
 
 /// A treasure's image.

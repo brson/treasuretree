@@ -1,0 +1,19 @@
+{% extends "lib/base" %}
+
+
+{% block title %}
+
+It's a Treasure!
+
+{% endblock title %}
+
+
+{% block scripts %}
+{% endblock scripts %}
+
+
+{% block body %}
+
+{% include "partials/treasure" %}
+
+{% endblock body %}
