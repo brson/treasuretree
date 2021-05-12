@@ -69,20 +69,31 @@ pub struct PlantResponse {
 
 #[post("/api/plant", format = "json", data = "<plant_info>")]
 pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<PlantResponse>> {
-    let treasure_key = crypto::decode_treasure_public_key(&plant_info.treasure_public_key)?;
-    let treasure_key = crypto::encode_treasure_public_key(&treasure_key)?;
+    let treasure_key_decode = crypto::decode_treasure_public_key(&plant_info.treasure_public_key)?;
+    let treasure_key_encode = crypto::encode_treasure_public_key(&treasure_key_decode)?;
 
-    let filename = format!("data/treasure/{key}", key = treasure_key);
+    let signature = crypto::decode_signature(&plant_info.treasure_signature)?;
+
+    // todo: get_hash from decoded_image
+    let message = crypto::get_hash(&plant_info.image)?;
+
+    crypto::verify_signature(message.as_bytes(), &signature, &treasure_key_decode)?;
+
+    // todo: verify account_signature
+
+    let filename = format!("data/treasure/{key}", key = treasure_key_encode);
+    fs::create_dir_all("data/treasure")?;
+    dbg!(&filename);
+
+    let mut file = File::create(filename)?;
+    dbg!(&file);
+    serde_json::to_writer(file, &plant_info.0)?;
+
     let return_url = format!(
         "{host}/api/plant/{key}\n",
         host = "http://localhost:8000",
-        key = treasure_key
+        key = treasure_key_encode
     );
-
-    fs::create_dir_all("data/treasure")?;
-
-    let mut file = File::create(filename)?;
-    serde_json::to_writer(file, &plant_info.0)?;
 
     Ok(Json(PlantResponse { return_url }))
 }
