@@ -19,6 +19,7 @@ bech32 = "0.8.0"
 base64 = "0.13.0"
 chrono = "0.4.19"
 sha256 = "1.0.2"
+image = "0.23.14"
 
 [dependencies.serde]
 version = "1.0.125"

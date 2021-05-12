@@ -22,6 +22,7 @@ use treasure::Treasure;
 
 mod api;
 mod crypto;
+mod images;
 mod treasure;
 mod treasure_qrcode;
 
@@ -161,8 +162,10 @@ fn treasure_image(public_key: &RawStr) -> Result<Content<Vec<u8>>> {
     let encoded_image = record.image;
     let decoded_image = base64::decode(&encoded_image)?;
 
-    // TODO: Correct content type
-    Ok(Content(ContentType::SVG, decoded_image))
+    let content_type = images::detect_image_type(&decoded_image)
+        .unwrap_or(ContentType::Binary);
+
+    Ok(Content(content_type, decoded_image))
 }
 
 fn main() {
