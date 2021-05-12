@@ -1,0 +1,2 @@
+[global.limits]
+json = 4000000

@@ -3,9 +3,10 @@
 
 {% block title %}
 
-Recently Planted Treasures
+It's a Treasure!
 
 {% endblock title %}
+
 
 {% block scripts %}
 {% endblock scripts %}
@@ -13,10 +14,6 @@ Recently Planted Treasures
 
 {% block body %}
 
-{% for treasure in treasures %}
-
 {% include "partials/treasure" %}
-
-{% endfor %}
 
 {% endblock body %}

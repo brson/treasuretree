@@ -22,6 +22,7 @@ use treasure::Treasure;
 
 mod api;
 mod crypto;
+mod images;
 mod treasure;
 mod treasure_qrcode;
 
@@ -63,23 +64,18 @@ fn recent_page() -> Result<Template> {
 
     files.sort_by_key(|&(time, _)| time);
 
-    #[derive(Serialize)]
-    struct Treasure {
-        public_key: String,
-        image_url: String,
-        date_time: String,
-    }
-
     let treasures = files
         .into_iter()
         .take(10)
         .map(|(time, dent)| {
             let public_key = dent.file_name().into_string().expect("utf-8");
+            let public_url = format!("treasure/{}", public_key);
             let image_url = format!("treasure-images/{}", public_key);
             let date_time = chrono::DateTime::<chrono::Local>::from(time);
             let date_time = date_time.to_rfc2822();
-            Treasure {
+            TreasureTemplateData {
                 public_key,
+                public_url,
                 image_url,
                 date_time,
             }
@@ -88,7 +84,7 @@ fn recent_page() -> Result<Template> {
 
     #[derive(Serialize)]
     struct TemplateData {
-        treasures: Vec<Treasure>,
+        treasures: Vec<TreasureTemplateData>,
     }
 
     let data = TemplateData { treasures };
@@ -108,7 +104,44 @@ fn recent_page() -> Result<Template> {
 /// Load the template from templates/treasure/template.html.tera.
 #[get("/treasure/<public_key>")]
 fn treasure_page(public_key: &RawStr) -> Result<Template> {
-    panic!()
+    let public_key = public_key.percent_decode()?;
+    let public_key = crypto::decode_treasure_public_key(&public_key)?;
+    let public_key = crypto::encode_treasure_public_key(&public_key)?;
+
+    let path = format!("data/treasure/{}", public_key);
+    let file = fs::metadata(path)?;
+    let time = file.modified()?;
+    let date_time = chrono::DateTime::<chrono::Local>::from(time);
+    let date_time = date_time.to_rfc2822();
+
+    let public_url = format!("treasure/{}", public_key);
+    let image_url = format!("treasure-images/{}", public_key);
+
+    #[derive(Serialize)]
+    struct TemplateData {
+        base_href: &'static str,
+        treasure: TreasureTemplateData,
+    }
+
+    let data = TemplateData {
+        base_href: "..",
+        treasure: TreasureTemplateData {
+            public_key,
+            public_url,
+            image_url,
+            date_time,
+        },
+    };
+
+    Ok(Template::render("treasure", data))
+}
+
+#[derive(Serialize)]
+struct TreasureTemplateData {
+    public_key: String,
+    public_url: String,
+    image_url: String,
+    date_time: String,
 }
 
 /// A treasure's image.
@@ -129,8 +162,10 @@ fn treasure_image(public_key: &RawStr) -> Result<Content<Vec<u8>>> {
     let encoded_image = record.image;
     let decoded_image = base64::decode(&encoded_image)?;
 
-    // TODO: Correct content type
-    Ok(Content(ContentType::JPEG, decoded_image))
+    let content_type = images::detect_image_type(&decoded_image)
+        .unwrap_or(ContentType::Binary);
+
+    Ok(Content(content_type, decoded_image))
 }
 
 fn main() {

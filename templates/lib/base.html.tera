@@ -3,6 +3,11 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+
+    {% if base_href %}
+    <base href="{{base_href}}">
+    {% endif %}
+
     <link rel="stylesheet" href="css/style.css">
 
     <!-- don't ask for a favicon -->

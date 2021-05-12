@@ -1,0 +1,13 @@
+<section>
+
+  <p>
+    <a href="{{ treasure.public_url }}">
+      <span class="breakable">{{ treasure.public_key }}</span>
+    </a>
+  </p>
+
+  <p>{{ treasure.date_time }}</p>
+
+  <p><img src="{{ treasure.image_url }}"></p>
+
+</section>
