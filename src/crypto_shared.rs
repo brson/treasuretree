@@ -7,9 +7,9 @@ use sha256::digest_bytes;
 
 pub static ACCOUNT_SECRET_KEY_HRP: &'static str = "gas";
 pub static ACCOUNT_PUBLIC_KEY_HRP: &'static str = "gap";
-pub static SECRET_KEY_HRP: &'static str = "gs";
-pub static PUBLIC_KEY_HRP: &'static str = "gp";
-pub static URL_PREFIX: &'static str = "https://rib.rs?key=";
+pub static TREASURE_SECRET_KEY_HRP: &'static str = "gs";
+pub static TREASURE_PUBLIC_KEY_HRP: &'static str = "gp";
+pub static TREASURE_SECRET_URL_PREFIX: &'static str = "https://rib.rs?key=";
 
 pub fn keypair_from_account_secret_key(key: &str) -> Result<Keypair> {
     let secret_key = decode_account_secret_key(key)?;
@@ -21,8 +21,8 @@ pub fn keypair_from_account_secret_key(key: &str) -> Result<Keypair> {
     Ok(keypair)
 }
 
-pub fn keypair_from_secret_key(key: &str) -> Result<Keypair> {
-    let secret_key = decode_secret_key(key)?;
+pub fn keypair_from_treasure_secret_key(key: &str) -> Result<Keypair> {
+    let secret_key = decode_treasure_secret_key(key)?;
     let public_key = PublicKey::from(&secret_key);
     let keypair = Keypair {
         secret: secret_key,
@@ -31,54 +31,47 @@ pub fn keypair_from_secret_key(key: &str) -> Result<Keypair> {
     Ok(keypair)
 }
 
-pub fn keypair_to_secret_url(keypair: &Keypair) -> Result<String> {
-    let secret_key_string = encode_secret_key(&keypair.secret)?;
-    let url = format!("{}{}", URL_PREFIX, secret_key_string);
+pub fn keypair_to_treasure_secret_url(keypair: &Keypair) -> Result<String> {
+    let secret_key_string = encode_treasure_secret_key(&keypair.secret)?;
+    let url = format!("{}{}", TREASURE_SECRET_URL_PREFIX, secret_key_string);
     Ok(url)
 }
 
-pub fn secret_url_to_keypair(url: &str) -> Result<Keypair> {
-    if !url.starts_with(URL_PREFIX) {
+pub fn treasure_secret_url_to_keypair(url: &str) -> Result<Keypair> {
+    if !url.starts_with(TREASURE_SECRET_URL_PREFIX) {
         bail!("incorrect URL prefix for secret key");
     }
 
-    let key = url.split_at(URL_PREFIX.len()).1;
-    keypair_from_secret_key(key)
+    let key = url.split_at(TREASURE_SECRET_URL_PREFIX.len()).1;
+    keypair_from_treasure_secret_key(key)
 }
 
 pub fn encode_account_secret_key(key: &SecretKey) -> Result<String> {
+    encode_secret_key(key, ACCOUNT_SECRET_KEY_HRP)
+}
+
+pub fn encode_treasure_secret_key(key: &SecretKey) -> Result<String> {
+    encode_secret_key(key, TREASURE_SECRET_KEY_HRP)
+}
+
+fn encode_secret_key(key: &SecretKey, hrp: &str) -> Result<String> {
     let bytes = key.as_bytes();
-    let encoded =
-        bech32::encode(ACCOUNT_SECRET_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
+    let encoded = bech32::encode(hrp, bytes.to_base32(), Variant::Bech32m).e()?;
     Ok(encoded)
 }
 
 pub fn decode_account_secret_key(key: &str) -> Result<SecretKey> {
-    let (hrp, data, variant) = bech32::decode(key).e()?;
-
-    if hrp != ACCOUNT_SECRET_KEY_HRP {
-        bail!("wrong HRP in secret key decoding");
-    }
-
-    if variant != Variant::Bech32m {
-        bail!("wrong bech32 variant in secret key decoding");
-    }
-
-    let bytes = Vec::<u8>::from_base32(&data).e()?;
-    let key = SecretKey::from_bytes(&bytes).e()?;
-    Ok(key)
+    decode_secret_key(key, ACCOUNT_SECRET_KEY_HRP)
 }
 
-pub fn encode_secret_key(key: &SecretKey) -> Result<String> {
-    let bytes = key.as_bytes();
-    let encoded = bech32::encode(SECRET_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
-    Ok(encoded)
+pub fn decode_treasure_secret_key(key: &str) -> Result<SecretKey> {
+    decode_secret_key(key, TREASURE_SECRET_KEY_HRP)
 }
 
-pub fn decode_secret_key(key: &str) -> Result<SecretKey> {
-    let (hrp, data, variant) = bech32::decode(key).e()?;
+pub fn decode_secret_key(key: &str, hrp: &str) -> Result<SecretKey> {
+    let (actual_hrp, data, variant) = bech32::decode(key).e()?;
 
-    if hrp != SECRET_KEY_HRP {
+    if actual_hrp != hrp {
         bail!("wrong HRP in secret key decoding");
     }
 
@@ -92,22 +85,31 @@ pub fn decode_secret_key(key: &str) -> Result<SecretKey> {
 }
 
 pub fn encode_account_public_key(key: &PublicKey) -> Result<String> {
-    let bytes = key.as_bytes();
-    let encoded =
-        bech32::encode(ACCOUNT_PUBLIC_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
-    Ok(encoded)
+    encode_public_key(key, ACCOUNT_PUBLIC_KEY_HRP)
 }
 
-pub fn encode_public_key(key: &PublicKey) -> Result<String> {
+pub fn encode_treasure_public_key(key: &PublicKey) -> Result<String> {
+    encode_public_key(key, TREASURE_PUBLIC_KEY_HRP)
+}
+
+fn encode_public_key(key: &PublicKey, hrp: &str) -> Result<String> {
     let bytes = key.as_bytes();
-    let encoded = bech32::encode(PUBLIC_KEY_HRP, bytes.to_base32(), Variant::Bech32m).e()?;
+    let encoded = bech32::encode(hrp, bytes.to_base32(), Variant::Bech32m).e()?;
     Ok(encoded)
 }
 
 pub fn decode_account_public_key(key: &str) -> Result<PublicKey> {
-    let (hrp, data, variant) = bech32::decode(key).e()?;
+    decode_public_key(key, ACCOUNT_PUBLIC_KEY_HRP)
+}
 
-    if hrp != ACCOUNT_PUBLIC_KEY_HRP {
+pub fn decode_treasure_public_key(key: &str) -> Result<PublicKey> {
+    decode_public_key(key, TREASURE_PUBLIC_KEY_HRP)
+}
+
+fn decode_public_key(key: &str, hrp: &str) -> Result<PublicKey> {
+    let (actual_hrp, data, variant) = bech32::decode(key).e()?;
+
+    if actual_hrp != hrp {
         bail!("wrong HRP in public key decoding");
     }
 
@@ -120,20 +122,36 @@ pub fn decode_account_public_key(key: &str) -> Result<PublicKey> {
     Ok(key)
 }
 
-pub fn decode_public_key(key: &str) -> Result<PublicKey> {
-    let (hrp, data, variant) = bech32::decode(key).e()?;
+pub fn sign_plant_request_for_account() -> Result<Signature> {
+    panic!()
+}
 
-    if hrp != PUBLIC_KEY_HRP {
-        bail!("wrong HRP in public key decoding");
-    }
+pub fn verify_plant_request_for_account() -> Result<()> {
+    panic!()
+}
 
-    if variant != Variant::Bech32m {
-        bail!("wrong bech32 variant in public key decoding");
-    }
+pub fn sign_plant_request_for_treasure() -> Result<Signature> {
+    panic!()
+}
 
-    let bytes = Vec::<u8>::from_base32(&data).e()?;
-    let key = PublicKey::from_bytes(&bytes).e()?;
-    Ok(key)
+pub fn verify_plant_request_for_treasure() -> Result<()> {
+    panic!()
+}
+
+pub fn sign_claim_request_for_account() -> Result<Signature> {
+    panic!()
+}
+
+pub fn verify_claim_request_for_account() -> Result<()> {
+    panic!()
+}
+
+pub fn sign_claim_request_for_treasure() -> Result<Signature> {
+    panic!()
+}
+
+pub fn verify_claim_request_for_treasure() -> Result<()> {
+    panic!()
 }
 
 pub fn encode_signature(sig: &Signature) -> Result<String> {

@@ -84,7 +84,7 @@ qrScanButton.addEventListener("click", async () => {
         stopScanning();
 
         let url = result;
-        let sanityCheck = wasm.sanity_check_url(url);
+        let sanityCheck = wasm.sanity_check_treasure_secret_url(url);
 
         if (sanityCheck === false) {
             console.error("QR code looks bogus");
@@ -92,8 +92,8 @@ qrScanButton.addEventListener("click", async () => {
             return;
         }
 
-        let secretKey_ = wasm.secret_url_to_secret_key(url);
-        let publicKey_ = wasm.secret_url_to_public_key(url);
+        let secretKey_ = wasm.treasure_secret_url_to_secret_key(url);
+        let publicKey_ = wasm.treasure_secret_url_to_public_key(url);
 
         if (secretKey_ == null || publicKey_ == null) {
             console.error("unable to decode key from URL");
@@ -152,8 +152,8 @@ secretKeyInput.addEventListener("input", async () => {
     treasurePublicKey = null;
 
     let secretKey_ = secretKeyInput.value;
-    let publicKey_ = wasm.secret_key_to_public_key(secretKey_);
-    let treasureClaimUrl_ = wasm.secret_key_to_secret_url(secretKey_);
+    let publicKey_ = wasm.treasure_secret_key_to_public_key(secretKey_);
+    let treasureClaimUrl_ = wasm.treasure_secret_key_to_secret_url(secretKey_);
 
     if (publicKey_ == null || treasureClaimUrl_ == null) {
         console.error("unable to decode key");

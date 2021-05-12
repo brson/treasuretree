@@ -23,44 +23,44 @@ pub fn set_panic_hook() {
 }
 
 #[wasm_bindgen]
-pub fn sanity_check_url(url: &str) -> bool {
-    url.starts_with(crypto::URL_PREFIX)
+pub fn sanity_check_treasure_secret_url(url: &str) -> bool {
+    url.starts_with(crypto::TREASURE_SECRET_URL_PREFIX)
 }
 
 #[wasm_bindgen]
-pub fn secret_url_to_secret_key(url: &str) -> Option<String> {
-    crypto::secret_url_to_keypair(url).ok()
+pub fn treasure_secret_url_to_secret_key(url: &str) -> Option<String> {
+    crypto::treasure_secret_url_to_keypair(url).ok()
         .map(|kp| kp.secret)
-        .map(|key| crypto::encode_secret_key(&key).ok())
+        .map(|key| crypto::encode_treasure_secret_key(&key).ok())
         .flatten()
 }
 
 #[wasm_bindgen]
-pub fn secret_url_to_public_key(url: &str) -> Option<String> {
-    crypto::secret_url_to_keypair(url).ok()
+pub fn treasure_secret_url_to_public_key(url: &str) -> Option<String> {
+    crypto::treasure_secret_url_to_keypair(url).ok()
         .map(|kp| kp.public)
-        .map(|key| crypto::encode_public_key(&key).ok())
+        .map(|key| crypto::encode_treasure_public_key(&key).ok())
         .flatten()
 }
 
 #[wasm_bindgen]
-pub fn secret_key_to_public_key(key: &str) -> Option<String> {
-    crypto::keypair_from_secret_key(key).ok()
+pub fn treasure_secret_key_to_public_key(key: &str) -> Option<String> {
+    crypto::keypair_from_treasure_secret_key(key).ok()
         .map(|kp| kp.public)
-        .map(|key| crypto::encode_public_key(&key).ok())
+        .map(|key| crypto::encode_treasure_public_key(&key).ok())
         .flatten()
 }
 
 #[wasm_bindgen]
-pub fn secret_key_to_secret_url(key: &str) -> Option<String> {
-    crypto::keypair_from_secret_key(key).ok()
-        .map(|kp| crypto::keypair_to_secret_url(&kp).ok())
+pub fn treasure_secret_key_to_secret_url(key: &str) -> Option<String> {
+    crypto::keypair_from_treasure_secret_key(key).ok()
+        .map(|kp| crypto::keypair_to_treasure_secret_url(&kp).ok())
         .flatten()
 }
 
 #[wasm_bindgen]
-pub fn sign_with_secret_key(key: &str, data: &str) -> Option<String> {
-    crypto::keypair_from_secret_key(&key).ok()
+pub fn sign_with_treasure_secret_key(key: &str, data: &str) -> Option<String> {
+    crypto::keypair_from_treasure_secret_key(&key).ok()
         .map(|kp| kp.try_sign(data.as_bytes()).ok())
         .flatten()
         .map(|key| crypto::encode_signature(&key).ok())
