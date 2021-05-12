@@ -118,6 +118,9 @@ plantButton.addEventListener("click", async () => {
 
     plantSpinner.classList.remove("no-display");
 
+    console.log("accountSecretKey-----------------");
+    console.log(accountSecretKey);
+
     try {
         let encoder = new Promise((resolve) => {
             let reader = new FileReader();
@@ -138,8 +141,8 @@ plantButton.addEventListener("click", async () => {
         let treasureHash = wasm.get_hash(treasureImageEncoded);
         let treasureSignature = wasm.sign_with_treasure_secret_key(treasureSecretKey, treasureHash);
 
-        let accountSignature = "todo";
-
+        let accountSignature = wasm.sign_with_account_secret_key(accountSecretKey, treasurePublicKey);
+        
         let requestInfo = {
             account_public_key: accountPublicKey,
             treasure_public_key: treasurePublicKey,
@@ -147,7 +150,7 @@ plantButton.addEventListener("click", async () => {
             account_signature: accountSignature,
             treasure_signature: treasureSignature,
         };
-
+        
         let response = await fetch("api/plant", {
             method: "POST",
             headers: {

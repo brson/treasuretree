@@ -9,7 +9,7 @@ pub static ACCOUNT_SECRET_KEY_HRP: &'static str = "gas";
 pub static ACCOUNT_PUBLIC_KEY_HRP: &'static str = "gap";
 pub static TREASURE_SECRET_KEY_HRP: &'static str = "gs";
 pub static TREASURE_PUBLIC_KEY_HRP: &'static str = "gp";
-pub static TREASURE_SECRET_URL_PREFIX: &'static str = "https://rib.rs?key=";
+pub static TREASURE_SECRET_URL_PREFIX: &'static str = "http://localhost:8000/claim?key=";
 
 pub fn keypair_from_account_secret_key(key: &str) -> Result<Keypair> {
     let secret_key = decode_account_secret_key(key)?;
@@ -130,7 +130,10 @@ pub fn sign_plant_request_for_account(
     account_secret_key: SecretKey,
     treasure_public_key: PublicKey,
 ) -> Result<Signature> {
-    panic!()
+    let mut message = Vec::from("plant");
+    message.extend_from_slice(&treasure_public_key.to_bytes());
+
+    create_signature(&message, &account_secret_key)
 }
 
 /// With the account public key, verify

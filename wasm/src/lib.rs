@@ -81,6 +81,19 @@ pub fn account_secret_key_to_public_key(key: &str) -> Option<String> {
         .flatten()
 }
 
+#[wasm_bindgen]
+pub fn sign_with_account_secret_key(account_secret_key: &str, treasure_public_key: &str) -> Option<String> {
+    let account_secret_key = crypto::decode_account_secret_key(account_secret_key).ok()?;
+    let treasure_public_key = crypto::decode_treasure_public_key(treasure_public_key).ok()?;
+
+    let signature = crypto::sign_plant_request_for_account(
+        account_secret_key,
+        treasure_public_key
+    ).ok()?;
+
+    crypto::encode_signature(&signature).ok()
+}
+
 fn new_keypair() -> Keypair {
     Keypair::generate(&mut OsRng)
 }
@@ -88,4 +101,10 @@ fn new_keypair() -> Keypair {
 #[wasm_bindgen]
 pub fn get_hash(data: &str) -> Option<String> {
     crypto::get_hash(data).ok()
+}
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
 }

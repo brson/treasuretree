@@ -135,7 +135,8 @@ pub struct ClaimResponse {
 
 #[post("/api/claim", format = "json", data = "<claim_info>")]
 pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<ClaimResponse>> {
-    // verify if it's a valid Public key
+    // todo: claim treasure from scanning a qrcode
+
     let public_key_decode = crypto::decode_treasure_public_key(&claim_info.treasure_public_key)?;
     let public_key_encode = crypto::encode_treasure_public_key(&public_key_decode)?;
 
