@@ -143,7 +143,10 @@ pub fn verify_plant_request_for_account(
     treasure_public_key: PublicKey,
     signature: Signature,
 ) -> Result<()> {
-    panic!()
+    let mut message = Vec::from("plant");
+    message.extend_from_slice(&treasure_public_key.to_bytes());
+
+    verify_signature(&message, &signature, &account_public_key)
 }
 
 /// With the treasure secret key, sign
@@ -156,7 +159,11 @@ pub fn sign_plant_request_for_treasure(
     account_public_key: PublicKey,
     treasure_hash: &[u8],
 ) -> Result<Signature> {
-    panic!()
+    let mut message = Vec::from("plant");
+    message.extend_from_slice(&account_public_key.to_bytes());
+    message.extend_from_slice(treasure_hash);
+
+    create_signature(&message, &treasure_secret_key)
 }
 
 /// With the treasure public key, verify
@@ -167,7 +174,11 @@ pub fn verify_plant_request_for_treasure(
     treasure_hash: &[u8],
     signature: Signature,
 ) -> Result<()> {
-    panic!()
+    let mut message = Vec::from("plant");
+    message.extend_from_slice(&account_public_key.to_bytes());
+    message.extend_from_slice(treasure_hash);
+
+    verify_signature(&message, &signature, &treasure_public_key)
 }
 
 /// With the account secret key, sign

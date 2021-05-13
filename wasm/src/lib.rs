@@ -59,12 +59,30 @@ pub fn treasure_secret_key_to_secret_url(key: &str) -> Option<String> {
 }
 
 #[wasm_bindgen]
-pub fn sign_with_treasure_secret_key(key: &str, data: &str) -> Option<String> {
-    crypto::keypair_from_treasure_secret_key(&key).ok()
-        .map(|kp| kp.try_sign(data.as_bytes()).ok())
-        .flatten()
-        .map(|key| crypto::encode_signature(&key).ok())
-        .flatten()
+pub fn sign_with_treasure_secret_key(treasure_secret_key: &str, account_public_key: &str, treasure_hash: &str) -> Option<String> {
+    let treasure_secret_key = crypto::decode_treasure_secret_key(treasure_secret_key).ok()?;
+    let account_public_key = crypto::decode_account_public_key(account_public_key).ok()?;
+    
+    let signature = crypto::sign_plant_request_for_treasure(
+        treasure_secret_key,
+        account_public_key,
+        treasure_hash.as_bytes()
+    ).ok()?;
+
+    crypto::encode_signature(&signature).ok()
+}
+
+#[wasm_bindgen]
+pub fn sign_with_account_secret_key(account_secret_key: &str, treasure_public_key: &str) -> Option<String> {
+    let account_secret_key = crypto::decode_account_secret_key(account_secret_key).ok()?;
+    let treasure_public_key = crypto::decode_treasure_public_key(treasure_public_key).ok()?;
+
+    let signature = crypto::sign_plant_request_for_account(
+        account_secret_key,
+        treasure_public_key
+    ).ok()?;
+
+    crypto::encode_signature(&signature).ok()
 }
 
 #[wasm_bindgen]
@@ -79,19 +97,6 @@ pub fn account_secret_key_to_public_key(key: &str) -> Option<String> {
         .map(|kp| kp.public)
         .map(|key| crypto::encode_account_public_key(&key).ok())
         .flatten()
-}
-
-#[wasm_bindgen]
-pub fn sign_with_account_secret_key(account_secret_key: &str, treasure_public_key: &str) -> Option<String> {
-    let account_secret_key = crypto::decode_account_secret_key(account_secret_key).ok()?;
-    let treasure_public_key = crypto::decode_treasure_public_key(treasure_public_key).ok()?;
-
-    let signature = crypto::sign_plant_request_for_account(
-        account_secret_key,
-        treasure_public_key
-    ).ok()?;
-
-    crypto::encode_signature(&signature).ok()
 }
 
 fn new_keypair() -> Keypair {

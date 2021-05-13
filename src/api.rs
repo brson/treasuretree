@@ -74,24 +74,34 @@ pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<Pl
     let treasure_key_decode = crypto::decode_treasure_public_key(&plant_info.treasure_public_key)?;
     let treasure_key_encode = crypto::encode_treasure_public_key(&treasure_key_decode)?;
 
+    let account_key_decode = crypto::decode_account_public_key(&plant_info.account_public_key)?;
+
+    let treasure_signature = crypto::decode_signature(&plant_info.treasure_signature)?;
+    let account_signature = crypto::decode_signature(&plant_info.account_signature)?;
+
     // todo check the treasure doesn't exist
     // todo validate image type
 
-    let signature = crypto::decode_signature(&plant_info.treasure_signature)?;
-
     // todo: get_hash from decoded_image
-    let message = crypto::get_hash(&plant_info.image)?;
+    let treasure_hash = crypto::get_hash(&plant_info.image)?;
 
-    crypto::verify_signature(message.as_bytes(), &signature, &treasure_key_decode)?;
+    crypto::verify_plant_request_for_treasure(
+        treasure_key_decode,
+        account_key_decode,
+        treasure_hash.as_bytes(),
+        treasure_signature,
+    )?;
 
-    // todo: verify account_signature
+    crypto::verify_plant_request_for_account(
+        account_key_decode,
+        treasure_key_decode,
+        account_signature,
+    )?;
 
     let filename = format!("data/treasure/{key}", key = treasure_key_encode);
     fs::create_dir_all("data/treasure")?;
-    dbg!(&filename);
 
     let mut file = File::create(filename)?;
-    dbg!(&file);
     serde_json::to_writer(file, &plant_info.0)?;
 
     let return_url = format!(
