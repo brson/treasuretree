@@ -154,8 +154,8 @@ plantButton.addEventListener("click", async () => {
         // let treasureHash = wasm.get_hash(treasureImageBuffer);
 
         let treasureHash = wasm.get_hash(treasureImageEncoded);
-        let treasureSignature = wasm.sign_with_treasure_secret_key(treasureSecretKey, accountPublicKey, treasureHash);
-        let accountSignature = wasm.sign_with_account_secret_key(accountSecretKey, treasurePublicKey);
+        let treasureSignature = wasm.sign_plant_with_treasure_secret_key(treasureSecretKey, accountPublicKey, treasureHash);
+        let accountSignature = wasm.sign_plant_with_account_secret_key(accountSecretKey, treasurePublicKey);
         
         let requestInfo = {
             account_public_key: accountPublicKey,

@@ -42,19 +42,24 @@ claimButton.addEventListener("click", async () => {
     try {
         let wasm = await initWasm();
 
-        let nonce = "todo";
-        let signature = wasm.sign_with_treasure_secret_key(treasureSecretKey, nonce);
+        let treasureSignature = wasm.sign_claim_with_treasure_secret_key(treasureSecretKey, accountPublicKey);
+        let accountSignature = wasm.sign_claim_with_account_secret_key(accountSecretKey, treasurePublicKey);
 
-        if (signature == null) {
+        if (treasureSignature == null) {
             // TODO
-            console.log("signature == null");
+            console.log("treasure signature == null");
+        }
+
+        if (accountSignature == null) {
+            // TODO
+            console.log("account signature == null");
         }
 
         let requestInfo = {
             account_public_key: accountPublicKey,
             treasure_public_key: treasurePublicKey,
-            account_signature: "todo",
-            treasure_signature: signature
+            account_signature: accountSignature,
+            treasure_signature: treasureSignature
         };
 
         let response = await fetch("api/claim", {

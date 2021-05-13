@@ -9,8 +9,10 @@ import init, {
     treasure_secret_url_to_public_key,
     treasure_secret_key_to_public_key,
     treasure_secret_key_to_secret_url,
-    sign_with_treasure_secret_key,
-    sign_with_account_secret_key,
+    sign_plant_with_treasure_secret_key,
+    sign_plant_with_account_secret_key,
+    sign_claim_with_treasure_secret_key,
+    sign_claim_with_account_secret_key,
     get_hash,
 } from "../wasm/pkg/geonft_wasm.js";
 
@@ -32,8 +34,10 @@ async function initWasm() {
         treasure_secret_url_to_public_key,
         treasure_secret_key_to_public_key,
         treasure_secret_key_to_secret_url,
-        sign_with_treasure_secret_key,
-        sign_with_account_secret_key,
+        sign_plant_with_treasure_secret_key,
+        sign_plant_with_account_secret_key,
+        sign_claim_with_treasure_secret_key,
+        sign_claim_with_account_secret_key,
         get_hash,
     };
 

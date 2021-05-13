@@ -151,26 +151,35 @@ pub struct ClaimResponse {
 #[post("/api/claim", format = "json", data = "<claim_info>")]
 pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<ClaimResponse>> {
     // todo: claim treasure from scanning a qrcode
+    let treasure_key_decode = crypto::decode_treasure_public_key(&claim_info.treasure_public_key)?;
+    let treasure_key_encode = crypto::encode_treasure_public_key(&treasure_key_decode)?;
 
-    let public_key_decode = crypto::decode_treasure_public_key(&claim_info.treasure_public_key)?;
-    let public_key_encode = crypto::encode_treasure_public_key(&public_key_decode)?;
-
-    let filename = format!("data/treasure/{}", public_key_encode);
+    let filename = format!("data/treasure/{}", treasure_key_encode);
     if !Path::new(&filename).is_file() {
         bail!("Treasure doesn't exist")
     } else {
-        let message = public_key_decode.as_bytes();
-        let signature = crypto::decode_signature(&claim_info.treasure_signature)?;
-
-        // fixme
-        //crypto::verify_signature(message, &signature, &public_key_decode)?;
+        let account_key_decode = crypto::decode_account_public_key(&claim_info.account_public_key)?;
+        let treasure_signature = crypto::decode_signature(&claim_info.treasure_signature)?;
+        let account_signature = crypto::decode_signature(&claim_info.account_signature)?;
 
         // todo:
         // - claim success and transfer asset
         // - disable secret_key
         // - sync to blockchain
 
-        let filename = format!("data/claim/{key}", key = public_key_encode);
+        crypto::verify_claim_request_for_treasure(
+            treasure_key_decode,
+            account_key_decode,
+            treasure_signature,
+        )?;
+
+        crypto::verify_claim_request_for_account(
+            account_key_decode,
+            treasure_key_decode,
+            account_signature,
+        )?;
+
+        let filename = format!("data/claim/{key}", key = treasure_key_encode);
         fs::create_dir_all("data/claim")?;
 
         let mut file = File::create(filename)?;
@@ -179,7 +188,7 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
         let return_url = format!(
             "{host}/api/plant/{key}\n",
             host = "http://localhost:8000",
-            key = public_key_encode
+            key = treasure_key_encode
         );
 
         Ok(Json(ClaimResponse {

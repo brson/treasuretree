@@ -189,7 +189,10 @@ pub fn sign_claim_request_for_account(
     account_secret_key: SecretKey,
     treasure_public_key: PublicKey,
 ) -> Result<Signature> {
-    panic!()
+    let mut message = Vec::from("claim");
+    message.extend_from_slice(&treasure_public_key.to_bytes());
+
+    create_signature(&message, &account_secret_key)
 }
 
 /// With the account public key, verify
@@ -199,7 +202,10 @@ pub fn verify_claim_request_for_account(
     treasure_public_key: PublicKey,
     signature: Signature,
 ) -> Result<()> {
-    panic!()
+    let mut message = Vec::from("claim");
+    message.extend_from_slice(&treasure_public_key.to_bytes());
+
+    verify_signature(&message, &signature, &account_public_key)
 }
 
 /// With the treasure secret key, sign
@@ -210,7 +216,10 @@ pub fn sign_claim_request_for_treasure(
     treasure_secret_key: SecretKey,
     account_public_key: PublicKey,
 ) -> Result<Signature> {
-    panic!()
+    let mut message = Vec::from("claim");
+    message.extend_from_slice(&account_public_key.to_bytes());
+
+    create_signature(&message, &treasure_secret_key)
 }
 
 /// With the treasure public key, verify
@@ -220,7 +229,10 @@ pub fn verify_claim_request_for_treasure(
     account_public_key: PublicKey,
     signature: Signature,
 ) -> Result<()> {
-    panic!()
+    let mut message = Vec::from("claim");
+    message.extend_from_slice(&account_public_key.to_bytes());
+
+    verify_signature(&message, &signature, &treasure_public_key)
 }
 
 pub fn encode_signature(sig: &Signature) -> Result<String> {

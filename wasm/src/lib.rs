@@ -59,7 +59,7 @@ pub fn treasure_secret_key_to_secret_url(key: &str) -> Option<String> {
 }
 
 #[wasm_bindgen]
-pub fn sign_with_treasure_secret_key(treasure_secret_key: &str, account_public_key: &str, treasure_hash: &str) -> Option<String> {
+pub fn sign_plant_with_treasure_secret_key(treasure_secret_key: &str, account_public_key: &str, treasure_hash: &str) -> Option<String> {
     let treasure_secret_key = crypto::decode_treasure_secret_key(treasure_secret_key).ok()?;
     let account_public_key = crypto::decode_account_public_key(account_public_key).ok()?;
     
@@ -73,11 +73,37 @@ pub fn sign_with_treasure_secret_key(treasure_secret_key: &str, account_public_k
 }
 
 #[wasm_bindgen]
-pub fn sign_with_account_secret_key(account_secret_key: &str, treasure_public_key: &str) -> Option<String> {
+pub fn sign_plant_with_account_secret_key(account_secret_key: &str, treasure_public_key: &str) -> Option<String> {
     let account_secret_key = crypto::decode_account_secret_key(account_secret_key).ok()?;
     let treasure_public_key = crypto::decode_treasure_public_key(treasure_public_key).ok()?;
 
     let signature = crypto::sign_plant_request_for_account(
+        account_secret_key,
+        treasure_public_key
+    ).ok()?;
+
+    crypto::encode_signature(&signature).ok()
+}
+
+#[wasm_bindgen]
+pub fn sign_claim_with_treasure_secret_key(treasure_secret_key: &str, account_public_key: &str) -> Option<String> {
+    let treasure_secret_key = crypto::decode_treasure_secret_key(treasure_secret_key).ok()?;
+    let account_public_key = crypto::decode_account_public_key(account_public_key).ok()?;
+    
+    let signature = crypto::sign_claim_request_for_treasure(
+        treasure_secret_key,
+        account_public_key
+    ).ok()?;
+
+    crypto::encode_signature(&signature).ok()
+}
+
+#[wasm_bindgen]
+pub fn sign_claim_with_account_secret_key(account_secret_key: &str, treasure_public_key: &str) -> Option<String> {
+    let account_secret_key = crypto::decode_account_secret_key(account_secret_key).ok()?;
+    let treasure_public_key = crypto::decode_treasure_public_key(treasure_public_key).ok()?;
+
+    let signature = crypto::sign_claim_request_for_account(
         account_secret_key,
         treasure_public_key
     ).ok()?;
