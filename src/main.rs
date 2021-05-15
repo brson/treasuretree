@@ -71,13 +71,19 @@ fn recent_page() -> Result<Template> {
             let public_key = dent.file_name().into_string().expect("utf-8");
             let public_url = format!("treasure/{}", public_key);
             let image_url = format!("treasure-images/{}", public_key);
-            let date_time = chrono::DateTime::<chrono::Local>::from(time);
-            let date_time = date_time.to_rfc2822();
+            let planted_date_time = chrono::DateTime::<chrono::Local>::from(time);
+            let planted_date_time = planted_date_time.to_rfc2822();
+            let planted_by = "todo".to_string();
+            let claimed_date_time = "todo".to_string();
+            let claimed_by = "todo".to_string();
             TreasureTemplateData {
                 public_key,
                 public_url,
                 image_url,
-                date_time,
+                planted_date_time,
+                planted_by,
+                claimed_date_time,
+                claimed_by,
             }
         })
         .collect();
@@ -111,11 +117,15 @@ fn treasure_page(public_key: &RawStr) -> Result<Template> {
     let path = format!("data/treasure/{}", public_key);
     let file = fs::metadata(path)?;
     let time = file.modified()?;
-    let date_time = chrono::DateTime::<chrono::Local>::from(time);
-    let date_time = date_time.to_rfc2822();
+    let planted_date_time = chrono::DateTime::<chrono::Local>::from(time);
+    let planted_date_time = planted_date_time.to_rfc2822();
 
     let public_url = format!("treasure/{}", public_key);
     let image_url = format!("treasure-images/{}", public_key);
+
+    let planted_by = "todo".to_string();
+    let claimed_date_time = "todo".to_string();
+    let claimed_by = "todo".to_string();
 
     #[derive(Serialize)]
     struct TemplateData {
@@ -129,7 +139,10 @@ fn treasure_page(public_key: &RawStr) -> Result<Template> {
             public_key,
             public_url,
             image_url,
-            date_time,
+            planted_date_time,
+            planted_by,
+            claimed_date_time,
+            claimed_by,
         },
     };
 
@@ -141,7 +154,10 @@ struct TreasureTemplateData {
     public_key: String,
     public_url: String,
     image_url: String,
-    date_time: String,
+    planted_date_time: String,
+    planted_by: String,
+    claimed_date_time: String,
+    claimed_by: String,
 }
 
 /// A treasure's image.

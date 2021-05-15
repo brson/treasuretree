@@ -6,8 +6,14 @@
     </a>
   </p>
 
-  <p>{{ treasure.date_time }}</p>
-
   <p><img src="{{ treasure.image_url }}"></p>
+
+  <p>Planted on: {{ treasure.planted_date_time }}</p>
+
+  <p>Planted by: {{ treasure.planted_by }}</p>
+
+  <p>Claimed on: {{ treasure.claimed_date_time }}</p>
+
+  <p>Claimed by: {{ treasure.claimed_by }}</p>
 
 </section>
