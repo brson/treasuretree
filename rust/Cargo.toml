@@ -1,0 +1,34 @@
+[package]
+name = "geonft"
+version = "0.1.0"
+authors = ["Brian Anderson <andersrb@gmail.com>"]
+edition = "2018"
+
+[features]
+default = ["std-errors"]
+std-errors = []
+
+[dependencies]
+anyhow = "1.0.40"
+rocket = "0.4.7"
+serde_json = "1.0.64"
+qrcodegen = "1.6.0"
+rand = "0.7.3"
+ed25519-dalek = "1.0.1"
+bech32 = "0.8.0"
+base64 = "0.13.0"
+chrono = "0.4.19"
+sha256 = "1.0.2"
+image = "0.23.14"
+
+[dependencies.serde]
+version = "1.0.125"
+features = ["derive"]
+
+[dependencies.rocket_contrib]
+version = "0.4.7"
+default-features = false
+features = ["tera_templates", "json", "serve"]
+
+[global.limits]
+json = 5242880
