@@ -6,7 +6,7 @@ use ed25519_dalek::{PublicKey, SecretKey, Keypair, Signer};
 use bech32::{FromBase32, ToBase32, Variant};
 use rand::rngs::OsRng;
 
-#[path = "../../rust/src/crypto_shared.rs"]
+#[path = "../../geonft/src/crypto_shared.rs"]
 mod crypto_shared;
 use crypto_shared as crypto;
 use crypto::ResultWrapper;
