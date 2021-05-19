@@ -2,8 +2,8 @@
 
 members = [
     "geonft",
+    "geonft_wasm",
     "solana",
-    "wasm",
 ]
 
 [profile.release]
