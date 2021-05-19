@@ -1556,7 +1556,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fe0f37c9e8f3c5a4a66ad655a93c74daac4ad00c441533bf5c6e7990bb42604e"
 
 [[package]]
-name = "solana"
+name = "solana-program"
 version = "0.1.0"
 
 [[package]]
@@ -1592,6 +1592,10 @@ dependencies = [
  "quote 1.0.9",
  "unicode-xid 0.2.1",
 ]
+
+[[package]]
+name = "sync-bot"
+version = "0.1.0"
 
 [[package]]
 name = "synstructure"

@@ -3,7 +3,8 @@
 members = [
     "src/geonft",
     "src/geonft_wasm",
-    "src/solana",
+    "src/solana-program",
+    "src/sync-bot",
 ]
 
 [profile.release]

@@ -1,5 +1,5 @@
 [package]
-name = "solana"
+name = "solana-program"
 version = "0.1.0"
 authors = ["aimeedeer <aimeez@pm.me>"]
 edition = "2018"
