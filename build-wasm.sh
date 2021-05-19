@@ -1,3 +1,3 @@
 #!/bin/bash
 
-wasm-pack build --target=web geonft_wasm
+wasm-pack build --target=web src/geonft_wasm
