@@ -2,6 +2,7 @@
 
 members = [
     "rust",
+    "solana",
     "wasm",
 ]
 
