@@ -1,7 +1,7 @@
 [workspace]
 
 members = [
-    "rust",
+    "geonft",
     "solana",
     "wasm",
 ]
