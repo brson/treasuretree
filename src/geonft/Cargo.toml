@@ -9,6 +9,8 @@ default = ["std-errors"]
 std-errors = []
 
 [dependencies]
+geonft_shared = { path = "../geonft_shared" }
+
 anyhow = "1.0.40"
 rocket = "0.4.7"
 serde_json = "1.0.64"

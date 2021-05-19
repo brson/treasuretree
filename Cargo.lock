@@ -471,6 +471,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e78d4f1cc4ae33bbfc157ed5d5a5ef3bc29227303d595861deb238fcec4e9457"
 
 [[package]]
+name = "env_logger"
+version = "0.8.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "17392a012ea30ef05a610aa97dfb49496e71c9f676b27879922ea5bdf60d9d3f"
+dependencies = [
+ "atty",
+ "humantime",
+ "log 0.4.14",
+ "regex",
+ "termcolor",
+]
+
+[[package]]
 name = "error-chain"
 version = "0.12.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -561,6 +574,7 @@ dependencies = [
  "bech32",
  "chrono",
  "ed25519-dalek",
+ "geonft_shared",
  "image",
  "qrcodegen",
  "rand 0.7.3",
@@ -570,6 +584,10 @@ dependencies = [
  "serde_json",
  "sha256",
 ]
+
+[[package]]
+name = "geonft_shared"
+version = "0.1.0"
 
 [[package]]
 name = "geonft_wasm"
@@ -702,6 +720,12 @@ name = "humansize"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6cab2627acfc432780848602f3f558f7e9dd427352224b0d9324025796d2a5e"
+
+[[package]]
+name = "humantime"
+version = "2.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9a3a5bfb195931eeb336b2a7b4d761daec841b97f947d34394601737a7bba5e4"
 
 [[package]]
 name = "hyper"
@@ -1596,6 +1620,12 @@ dependencies = [
 [[package]]
 name = "sync-bot"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "env_logger",
+ "geonft_shared",
+ "log 0.4.14",
+]
 
 [[package]]
 name = "synstructure"
@@ -1628,6 +1658,15 @@ dependencies = [
  "slug",
  "unic-segment",
  "url",
+]
+
+[[package]]
+name = "termcolor"
+version = "1.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2dfed899f0eb03f32ee8c6a0aabdb8a7949659e3466561fc0adf54e26d88c5f4"
+dependencies = [
+ "winapi-util",
 ]
 
 [[package]]
