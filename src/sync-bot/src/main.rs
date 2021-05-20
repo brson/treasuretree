@@ -25,6 +25,14 @@ enum Step {
     },
 }
 
+enum TreasureStatus {
+    Planted,
+    Claimed,
+    PlantedAndSynced,
+    ClaimedAndPlantSynced,
+    ClaimedAndFullySynced,
+}
+
 fn make_plan() -> Result<Plan> {
     info!("making new plan");
     panic!()
