@@ -8,6 +8,7 @@ use std::fmt;
 use std::fs::{self, DirEntry, File, Metadata};
 use std::path::{Path, PathBuf};
 use treasure_qrcode::create_qr_code;
+use geonft_shared::data;
 
 #[derive(Debug, Serialize)]
 pub struct CreateResponse {
@@ -98,8 +99,8 @@ pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<Pl
         account_signature,
     )?;
 
-    let filename = format!("data/treasure/{key}", key = treasure_key_encode);
-    fs::create_dir_all("data/treasure")?;
+    let filename = format!("{}/{key}", data::PLANT_DIR, key = treasure_key_encode);
+    fs::create_dir_all(data::PLANT_DIR)?;
 
     let mut file = File::create(filename)?;
     serde_json::to_writer(file, &plant_info.0)?;
@@ -154,7 +155,7 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
     let treasure_key_decode = crypto::decode_treasure_public_key(&claim_info.treasure_public_key)?;
     let treasure_key_encode = crypto::encode_treasure_public_key(&treasure_key_decode)?;
 
-    let filename = format!("data/treasure/{}", treasure_key_encode);
+    let filename = format!("{}/{}", data::PLANT_DIR, treasure_key_encode);
     if !Path::new(&filename).is_file() {
         bail!("Treasure doesn't exist")
     } else {
@@ -179,8 +180,8 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
             account_signature,
         )?;
 
-        let filename = format!("data/claim/{key}", key = treasure_key_encode);
-        fs::create_dir_all("data/claim")?;
+        let filename = format!("{}/{key}", data::CLAIM_DIR, key = treasure_key_encode);
+        fs::create_dir_all(data::CLAIM_DIR)?;
 
         let mut file = File::create(filename)?;
         serde_json::to_writer(file, &claim_info.0)?;
