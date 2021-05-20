@@ -35,10 +35,18 @@ enum TreasureStatus {
 
 fn make_plan() -> Result<Plan> {
     info!("making new plan");
-    panic!()
+
+    let all_treasures = find_all_treasures()?;
+
+    todo!()
 }
 
 fn execute_plan(plan: Plan) -> Result<()> {
     info!("executing plan");
-    panic!()
+
+    todo!()
+}
+
+fn find_all_treasures() -> Result<Vec<String>> {
+    todo!()
 }
