@@ -588,6 +588,10 @@ dependencies = [
 [[package]]
 name = "geonft_shared"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+]
 
 [[package]]
 name = "geonft_wasm"
