@@ -21,7 +21,7 @@ struct Plan {
 }
 
 enum Step {
-    UploadTreasureToIpfs,
+    UploadBlobToIpfs,
     UploadPlantToSolana,
     UploadClaimToSolana,
 }
@@ -39,8 +39,27 @@ fn make_plan() -> Result<Plan> {
         let pubkey = treasure.public_key;
         let status = statuses.get(&pubkey);
 
+        use data::PlantClaim::{Plant, Claim};
+        use data::SyncStatus::*;
+        use Step::*;
+
         match (event, status) {
-            _ => todo!()
+            (Plant, None) => {
+                steps.push((pubkey.clone(), UploadBlobToIpfs));
+                steps.push((pubkey, UploadPlantToSolana));
+            },
+            (Plant, Some(BlobSynced)) => {
+                steps.push((pubkey, UploadPlantToSolana));
+            },
+            (Plant, Some(PlantSynced | ClaimSynced)) => {
+                /* plant is synced */
+            },
+            (Claim, None) | (Claim, Some(BlobSynced | PlantSynced)) => {
+                steps.push((pubkey, UploadClaimToSolana));
+            }
+            (Claim, Some(ClaimSynced)) => {
+                /* claim is synced */
+            }
         }
     }
 
