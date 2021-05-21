@@ -545,3 +545,16 @@ make the treasures transactable as NFTs;
 and to create a service that syncs the state of these treasures
 from the centralized service onto the blockchain.
 
+
+
+
+TODO:
+
+```
+$ cargo build-bpf
+Failed to obtain package metadata: Error during execution of `cargo metadata`: error: failed to parse manifest at `/Users/aimeez/github/geonft/src/solanaprogram/Cargo.toml`
+
+Caused by:
+  library target names cannot contain hyphens: solana-program
+  ```
+
