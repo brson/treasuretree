@@ -286,7 +286,10 @@ A ask again in #hack-blockchain-support:
 > What advantages does solana get from targeting eBPF, vs any other instruction
   set, for its VM? Been trying to get an answer to this for awhile.
 
-TODO
+Somebody respons by pinging "chase || solana",
+and asking them to ask a Solana dev to explain,
+but that explanation never comes.
+
 
 
 ## The Helloworld application
@@ -547,6 +550,12 @@ from the centralized service onto the blockchain.
 
 
 
+### Writing a solana program in Rust
+
+Aimee is responsible for writing our Solana program (aka smart contract),
+that handles the "plant" and "claim" actions.
+She has written these two functions previously in our Rocket backend,
+and now she is reimplementing them on-chain.
 
 TODO:
 
@@ -557,4 +566,30 @@ Failed to obtain package metadata: Error during execution of `cargo metadata`: e
 Caused by:
   library target names cannot contain hyphens: solana-program
   ```
+
+
+
+### Writing a solana client in Rust
+
+I am writing a program whose job is to sync the application state
+from our centralized Rocket application to Solana.
+I put it in a new crate, [`geonft_sync`].
+
+[`geonft_sync`]: https://github.com/brson/geonft/blob/master/src/geonft_sync/src/main.rs
+
+I gather that I'm going to need the [`solana-sdk`] and [`solana-client`]
+crates.
+The documentation for these is not great,
+and there's not an obvious example of a Rust Solana client:
+the Helloworld example uses a TypeScript client.
+
+[`solana-sdk`]: https://docs.rs/solana-sdk/1.6.9/solana_sdk/
+[`solana-client`]: https://docs.rs/solana-client/1.6.9/solana_client/
+
+I ask in #hack-rust-support:
+
+> Are there any examples writing a Solana client in Rust, using solana_sdk
+  and/or solana_client?
+
+
 
