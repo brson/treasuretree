@@ -12,7 +12,7 @@ std-errors = []
 geonft_shared = { path = "../geonft_shared" }
 
 anyhow = "1.0.40"
-rocket = "0.4.7"
+rocket = "0.4.9"
 serde_json = "1.0.64"
 qrcodegen = "1.6.0"
 rand = "0.7.3"
@@ -28,7 +28,7 @@ version = "1.0.125"
 features = ["derive"]
 
 [dependencies.rocket_contrib]
-version = "0.4.7"
+version = "0.4.9"
 default-features = false
 features = ["tera_templates", "json", "serve"]
 
