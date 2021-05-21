@@ -10,6 +10,8 @@ edition = "2018"
 borsh = "0.7.1"
 borsh-derive = "0.8.1"
 solana-program = "=1.6.6"
+serde_json = "1.0.64"
+serde = "1.0.126"
 
 [dev-dependencies]
 solana-program-test = "=1.6.6"
