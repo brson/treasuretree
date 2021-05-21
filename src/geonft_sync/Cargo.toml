@@ -11,3 +11,5 @@ geonft_shared = { path = "../geonft_shared" }
 anyhow = "1.0.40"
 log = "0.4.14"
 env_logger = "0.8.3"
+solana-sdk = "1.6.9"
+#solana-client = "1.6.9"
