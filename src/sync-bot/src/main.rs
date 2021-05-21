@@ -3,6 +3,7 @@
 use anyhow::Result;
 use log::info;
 use std::collections::HashMap;
+use std::thread;
 
 use geonft_shared::data;
 
@@ -12,6 +13,7 @@ fn main() -> Result<()> {
     loop {
         let plan = make_plan()?;
         execute_plan(plan)?;
+        wait_for_next_round();
     }
 }
 
@@ -20,6 +22,7 @@ struct Plan {
     steps: Vec<(String, Step)>,
 }
 
+#[derive(Debug)]
 enum Step {
     UploadBlobToIpfs,
     UploadPlantToSolana,
@@ -70,7 +73,20 @@ fn make_plan() -> Result<Plan> {
 }
 
 fn execute_plan(plan: Plan) -> Result<()> {
-    info!("executing plan");
+    info!("executing plan with {} steps", plan.steps.len());
 
-    todo!()
+    let mut statuses = plan.statuses;
+
+    for (pubkey, step) in plan.steps {
+        info!("executing step {:?} for {}", step, pubkey);
+    }
+
+    Ok(())
+}
+
+fn wait_for_next_round() {
+    let delay_ms = 1000;
+    info!("sleeping for {} ms", delay_ms);
+    #[allow(deprecated)]
+    thread::sleep_ms(delay_ms);
 }
