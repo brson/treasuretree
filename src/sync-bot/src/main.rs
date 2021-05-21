@@ -2,6 +2,7 @@
 
 use anyhow::Result;
 use log::info;
+use std::collections::HashMap;
 
 use geonft_shared::data;
 
@@ -15,16 +16,14 @@ fn main() -> Result<()> {
 }
 
 struct Plan {
-    steps: Vec<Step>,
+    statuses: HashMap<String, data::SyncStatus>,
+    steps: Vec<(String, Step)>,
 }
 
 enum Step {
-    UploadTreasureToIpfs {
-    },
-    UploadPlantToSolana {
-    },
-    UploadClaimToSolana {
-    },
+    UploadTreasureToIpfs,
+    UploadPlantToSolana,
+    UploadClaimToSolana,
 }
 
 fn make_plan() -> Result<Plan> {
@@ -32,7 +31,23 @@ fn make_plan() -> Result<Plan> {
 
     let statuses = data::get_all_sync_statuses()?;
 
-    todo!()
+    let treasure_events = data::get_all_plants_and_claims_time_sorted()?;
+
+    let mut steps = Vec::new();
+
+    for (event, treasure) in treasure_events {
+        let pubkey = treasure.public_key;
+        let status = statuses.get(&pubkey);
+
+        match (event, status) {
+            _ => todo!()
+        }
+    }
+
+    Ok(Plan {
+        statuses,
+        steps
+    })
 }
 
 fn execute_plan(plan: Plan) -> Result<()> {

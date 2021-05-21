@@ -77,10 +77,10 @@ pub fn get_all_plants_and_claims_time_sorted() -> Result<Vec<(PlantClaim, Treasu
     let plants = get_all_planted_treasures_time_sorted()?;
     let claims = get_all_claimed_treasures_time_sorted()?;
 
-    let plants: Vec<_> = plants.into_iter().map(|t| (PlantClaim::Plant, t)).collect();
-    let claims: Vec<_> = claims.into_iter().map(|t| (PlantClaim::Claim, t)).collect();
+    let plants = plants.into_iter().map(|t| (PlantClaim::Plant, t));
+    let claims = claims.into_iter().map(|t| (PlantClaim::Claim, t));
 
-    let mut treasure_events: Vec<_> = plants.into_iter().chain(claims.into_iter()).collect();
+    let mut treasure_events: Vec<_> = plants.chain(claims).collect();
 
     treasure_events.sort_by_key(|(_, t)| t.time);
 
