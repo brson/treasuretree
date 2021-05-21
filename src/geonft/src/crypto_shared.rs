@@ -7,8 +7,8 @@ use sha256::digest_bytes;
 
 pub static ACCOUNT_SECRET_KEY_HRP: &'static str = "gas";
 pub static ACCOUNT_PUBLIC_KEY_HRP: &'static str = "gap";
-pub static TREASURE_SECRET_KEY_HRP: &'static str = "gs";
-pub static TREASURE_PUBLIC_KEY_HRP: &'static str = "gp";
+pub static TREASURE_SECRET_KEY_HRP: &'static str = "gts";
+pub static TREASURE_PUBLIC_KEY_HRP: &'static str = "gtp";
 pub static TREASURE_SECRET_URL_PREFIX: &'static str = "http://localhost:8000/claim?key=";
 
 pub fn keypair_from_account_secret_key(key: &str) -> Result<Keypair> {
