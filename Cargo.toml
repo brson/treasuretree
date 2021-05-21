@@ -5,7 +5,7 @@ members = [
     "src/geonft_shared",
     "src/geonft_wasm",
     "src/geonft_solana",
-    "src/sync-bot",
+    "src/geonft_sync",
 ]
 
 [profile.release]
