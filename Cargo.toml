@@ -4,7 +4,7 @@ members = [
     "src/geonft",
     "src/geonft_shared",
     "src/geonft_wasm",
-    "src/solana-program",
+    "src/geonft_solana",
     "src/sync-bot",
 ]
 

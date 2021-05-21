@@ -1,0 +1,23 @@
+[package]
+name = "geonft_solana"
+version = "0.1.0"
+authors = ["aimeedeer <aimeez@pm.me>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+borsh = "0.7.1"
+borsh-derive = "0.8.1"
+solana-program = "=1.6.6"
+
+[dev-dependencies]
+solana-program-test = "=1.6.6"
+solana-sdk = "=1.6.6"
+
+[features]
+exclude_entrypoint = []
+
+[lib]
+name = "geonft_solana"
+crate-type = ["cdylib", "lib"]
