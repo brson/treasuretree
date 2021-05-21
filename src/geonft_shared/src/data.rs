@@ -1,5 +1,6 @@
 use anyhow::Result;
-use std::fs::{self, DirEntry, Metadata};
+use std::fs::{self, DirEntry, Metadata, File};
+use std::io::BufReader;
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
@@ -67,16 +68,59 @@ pub fn get_all_claimed_treasures_time_sorted() -> Result<Vec<TreasureTime>> {
     Ok(treasures)
 }
 
+pub enum PlantClaim {
+    Plant,
+    Claim,
+}
+
+pub fn get_all_plants_and_claims_time_sorted() -> Result<Vec<(PlantClaim, TreasureTime)>> {
+    let plants = get_all_planted_treasures_time_sorted()?;
+    let claims = get_all_claimed_treasures_time_sorted()?;
+
+    let plants: Vec<_> = plants.into_iter().map(|t| (PlantClaim::Plant, t)).collect();
+    let claims: Vec<_> = claims.into_iter().map(|t| (PlantClaim::Claim, t)).collect();
+
+    let mut treasure_events: Vec<_> = plants.into_iter().chain(claims.into_iter()).collect();
+
+    treasure_events.sort_by_key(|(_, t)| t.time);
+
+    Ok(treasure_events)
+}
+
 #[derive(Serialize, Deserialize)]
 pub enum SyncStatus {
     Planted,
-    Claimed,
+    PlantedAndBlobSynced,
     PlantedAndSynced,
+    Claimed,
+    ClaimedAndBlobSynced,
     ClaimedAndPlantSynced,
     ClaimedAndFullySynced,
 }
 
+pub fn get_all_sync_statuses() -> Result<HashMap<String, SyncStatus>> {
+    fs::create_dir_all(SYNC_STATUS_DIR)?;
 
-pub fn get_all_sync_status() -> Result<HashMap<String, SyncStatus>> {
-    todo!()
+    let mut statuses = HashMap::new();
+
+    for dent in fs::read_dir(SYNC_STATUS_DIR)? {
+        let dent = dent?;
+
+        let meta = dent.metadata()?;
+
+        if !meta.is_file() {
+            continue;
+        }
+
+        let public_key = dent.file_name().into_string().expect("utf-8");
+
+        let file = File::open(dent.path())?;
+        let mut reader = BufReader::new(file);
+
+        let status: SyncStatus = serde_json::from_reader(&mut reader)?;
+
+        statuses.insert(public_key, status);
+    }
+
+    Ok(statuses)
 }

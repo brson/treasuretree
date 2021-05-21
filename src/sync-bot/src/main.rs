@@ -3,6 +3,8 @@
 use anyhow::Result;
 use log::info;
 
+use geonft_shared::data;
+
 fn main() -> Result<()> {
     env_logger::init();
 
@@ -28,7 +30,7 @@ enum Step {
 fn make_plan() -> Result<Plan> {
     info!("making new plan");
 
-    let all_treasures = find_all_treasures()?;
+    let statuses = data::get_all_sync_statuses()?;
 
     todo!()
 }
@@ -36,9 +38,5 @@ fn make_plan() -> Result<Plan> {
 fn execute_plan(plan: Plan) -> Result<()> {
     info!("executing plan");
 
-    todo!()
-}
-
-fn find_all_treasures() -> Result<Vec<String>> {
     todo!()
 }
