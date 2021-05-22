@@ -586,10 +586,21 @@ the Helloworld example uses a TypeScript client.
 [`solana-sdk`]: https://docs.rs/solana-sdk/1.6.9/solana_sdk/
 [`solana-client`]: https://docs.rs/solana-client/1.6.9/solana_client/
 
-I ask in #hack-rust-support:
+I ask in `#hack-rust-support`:
 
 > Are there any examples writing a Solana client in Rust, using solana_sdk
   and/or solana_client?
+
+TODO
+
+I am thinking the `#hack-*` channels are low volume and not the place
+to be asking Solana dev questions.
+All the normal dev channels require proper permissions to talk in them,
+and I don't see how to get those permissions,
+so I ask in `#hack-questions`:
+
+> How can I get permission to talk in the #developer-support channel?
+
 
 
 
