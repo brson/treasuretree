@@ -4,8 +4,12 @@ use anyhow::Result;
 use log::info;
 use std::collections::HashMap;
 use std::thread;
+use std::net::SocketAddr;
+use std::time::Duration;
 
 use geonft_shared::data;
+use solana_client::thin_client::{self, ThinClient};
+use solana_sdk::client::SyncClient;
 
 fn main() -> Result<()> {
     env_logger::init();
@@ -74,6 +78,26 @@ fn make_plan() -> Result<Plan> {
 
 fn execute_plan(plan: Plan) -> Result<()> {
     info!("executing plan with {} steps", plan.steps.len());
+
+    let rpc_addr = "127.0.0.1:8899";
+    let tpu_addr = "127.0.0.1:1027";
+    let tx_port_range = (10_000_u16, 20_000_u16);
+    let timeout = 1000;
+
+    info!("connecting to solana node, RPC: {}, TPU: {}, tx range: {}-{}, timeout: {}ms",
+          rpc_addr, tpu_addr, tx_port_range.0, tx_port_range.1, timeout);
+
+    let rpc_addr: SocketAddr = rpc_addr.parse().expect("");
+    let tpu_addr: SocketAddr = tpu_addr.parse().expect("");
+
+    let client = thin_client::create_client_with_timeout(
+        (rpc_addr, tpu_addr),
+        tx_port_range,
+        Duration::from_millis(timeout));
+
+    let epoch = client.get_epoch_info()?;
+
+    info!("{:?}", epoch);
 
     let mut statuses = plan.statuses;
 

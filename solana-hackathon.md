@@ -601,6 +601,61 @@ so I ask in `#hack-questions`:
 
 > How can I get permission to talk in the #developer-support channel?
 
+Well, the `solana_client` crate has several clients,
+but I am eyeing [`ThinClient`] as the one I "should" use,
+just on a hunch.
 
+[`ThinClient`]: https://docs.rs/solana-client/1.6.9/solana_client/thin_client/index.html
 
+The constructor though has an argument I don't intuitively know what do do with:
 
+```rust
+pub fn create_client_with_timeout(
+    (rpc, tpu): (SocketAddr, SocketAddr),
+    range: (u16, u16),
+    timeout: Duration
+) -> ThinClient
+```
+
+The RPC ond TPU ("transaction processing unit") sockets
+are printed by `solana-test-validator` on startup,
+but I don't know what the `range` tuple is.
+Clicking through the docs to [the source of `create_client_with_timeout`][ccwtos],
+I see this tuple is passed to [`solana_net_utils::bind_in_range`][bin]
+to create a UDP socket,
+and that is passed to the underlying `ThinClient` constructor.
+
+[ccwtos]: https://docs.rs/solana-client/1.6.9/src/solana_client/thin_client.rs.html#619
+[bin]: https://docs.rs/solana-net-utils/1.6.9/src/solana_net_utils/lib.rs.html#412-428
+
+So this range is just a UDP port range to attempt listening on.
+
+I hack this together and it works:
+
+```rust
+    let rpc_addr = "127.0.0.1:8899";
+    let tpu_addr = "127.0.0.1:1027";
+    let tx_port_range = (10_000_u16, 20_000_u16);
+    let timeout = 1000;
+
+    info!("connecting to solana node, RPC: {}, TPU: {}, tx range: {}-{}, timeout: {}ms",
+          rpc_addr, tpu_addr, tx_port_range.0, tx_port_range.1, timeout);
+
+    let rpc_addr: SocketAddr = rpc_addr.parse().expect("");
+    let tpu_addr: SocketAddr = tpu_addr.parse().expect("");
+
+    let client = thin_client::create_client_with_timeout(
+        (rpc_addr, tpu_addr),
+        tx_port_range,
+        Duration::from_millis(timeout));
+
+    let epoch = client.get_epoch_info()?;
+
+    info!("{:?}", epoch);
+```
+
+It prints
+
+```
+[2021-05-22T02:36:59Z INFO  geonft_sync] EpochInfo { epoch: 0, slot_index: 32145, slots_in_epoch: 432000, absolute_slot: 32145, block_height: 32144, transaction_count: Some(32143) }
+```
