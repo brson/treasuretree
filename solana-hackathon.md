@@ -702,4 +702,24 @@ I think I can't submit transactions with just `RpcClient`,
 but for now I need access to `RpcClient` so I am going
 to create that instead of `ThinClient`.
 
+I end up with this for `establish_client`:
+
+```rust
+pub fn establish_connection() -> Result<RpcClient> {
+    let rpc_addr = "127.0.0.1:8899";
+    let timeout = 1000;
+
+    info!("connecting to solana node, RPC: {}, timeout: {}ms",
+          rpc_addr, timeout);
+
+    let rpc_addr: SocketAddr = rpc_addr.parse().expect("");
+
+    let client = RpcClient::new_socket_with_timeout(rpc_addr, Duration::from_millis(timeout));
+
+    let version = client.get_version()?;
+    info!("RPC version: {:?}", version);
+
+    Ok(client)
+}
+```
 
