@@ -526,7 +526,7 @@ and a basic understanding of how to set up a Solana program and client,
 let's think about integrating Solana into our own project.
 
 
-### An overview of our project
+## An overview of our project
 
 It is called [geonft].
 and it is a toy that connects NFTs to the physical world.
@@ -569,7 +569,7 @@ Caused by:
 
 
 
-### Writing a solana client in Rust
+## Writing a solana client in Rust
 
 I am writing a program whose job is to sync the application state
 from our centralized Rocket application to Solana.
@@ -659,3 +659,47 @@ It prints
 ```
 [2021-05-22T02:36:59Z INFO  geonft_sync] EpochInfo { epoch: 0, slot_index: 32145, slots_in_epoch: 432000, absolute_slot: 32145, block_height: 32144, transaction_count: Some(32143) }
 ```
+
+So even without adequate docs it was pretty easy to figure
+out how to connect to a solana node and query something.
+
+
+## Reproducing the Helloworld example client in Rust
+
+Since there don't seem to be Rust client examples to work off of,
+I'm going to proceed by following the [Helloworld typescript client][tsc],
+and trying to do what it does step by step.
+
+[tsc]: https://github.com/solana-labs/example-helloworld/tree/master/src/client
+
+The first thing it does is "establish a connection",
+and while I've already written code for that,
+the TypeScript code also calls the `getVersion` RPC method,
+which seems like a better way to smoke-test the connection that
+calling ``get_epoch_info` like I am now.
+
+So I refactor my code to create an `establish_connection` method,
+and look for how to call `getVersion` from Rust.
+I don't see it on the `SyncClient` trait,
+but [searching "version" in the `solana_client`][versearch] API docs
+reveals a `get_version` method on the `RpcClient` struct.
+I have a `ThinClient`. How do I get an `RpcClient` from that?
+
+[versearch]: https://docs.rs/solana-client/1.6.9/solana_client/index.html?search=version
+
+I assume a `ThinClient` encapsulates an `RpcClient`,
+and I can get a reference to its `RpcClient` somehow.
+
+I read the code again for `ThinClient`.
+It contains multiple `RpcClient`s.
+I wonder if I should be using `RpcClient` directly and not `ThinClient`,
+though `RpcClient` doesn't implement the `SyncClient` trait that it
+seems like I would want access to.
+I just don't see a way to access `ThinClient`s `RpcClient`,
+and since some of the methods on `ThinClient` are just
+delegating to `RpcClient` I suspect the API is a bit underbaked.
+I think I can't submit transactions with just `RpcClient`,
+but for now I need access to `RpcClient` so I am going
+to create that instead of `ThinClient`.
+
+
