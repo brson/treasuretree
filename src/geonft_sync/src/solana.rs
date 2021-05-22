@@ -9,15 +9,12 @@ use solana_sdk::client::SyncClient;
 
 pub fn establish_connection() -> Result<RpcClient> {
     let rpc_addr = "127.0.0.1:8899";
-    let tpu_addr = "127.0.0.1:1027";
-    let tx_port_range = (10_000_u16, 20_000_u16);
     let timeout = 1000;
 
-    info!("connecting to solana node, RPC: {}, TPU: {}, tx range: {}-{}, timeout: {}ms",
-          rpc_addr, tpu_addr, tx_port_range.0, tx_port_range.1, timeout);
+    info!("connecting to solana node, RPC: {}, timeout: {}ms",
+          rpc_addr, timeout);
 
     let rpc_addr: SocketAddr = rpc_addr.parse().expect("");
-    let tpu_addr: SocketAddr = tpu_addr.parse().expect("");
 
     let client = RpcClient::new_socket_with_timeout(rpc_addr, Duration::from_millis(timeout));
 
