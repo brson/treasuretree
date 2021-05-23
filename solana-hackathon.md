@@ -723,3 +723,25 @@ pub fn establish_connection() -> Result<RpcClient> {
 }
 ```
 
+Next step is to make an equivalent of `establishPayer`.
+The Helloworld tries to read a keypair from the CLI config,
+and if that doesn't exist creates a new account.
+For my purpsose I don't want to be creating arbitrary accounts,
+so I'll just fail if the CLI config doesn't contain an acocunt.
+Furthermore,
+my CLI config lists the keypair path as `/home/brian/.config/solana/id.json`,
+and that seems like a pretty stable name,
+so I'm just going to avoid parsing the CLI config,
+and try to load from there.
+
+The TypeScript code contains an `Account` type that can parse the keypair
+file more-or-less directly,
+but I don't see such a thing in the Rust SDK.
+Oh, wait, `id.json` is only barely JSON &mdash;
+it just contains an array of bytes,
+and there's an undocumented `deserialize_data` function on [`Account`]
+which will presumably parse that blob.
+
+[`Account`]: https://docs.rs/solana-sdk/1.6.9/solana_sdk/account/struct.Account.html
+
+After some further hacking I realize that `Account` is deserializeble via serde.
