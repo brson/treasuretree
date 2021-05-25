@@ -74,6 +74,7 @@ fn execute_plan(plan: Plan) -> Result<()> {
 
     let config = solana::load_config()?;
     let client = solana::connect(&config)?;
+    solana::check_program(&client)?;
 
     let mut statuses = plan.statuses;
 

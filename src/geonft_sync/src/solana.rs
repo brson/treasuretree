@@ -38,8 +38,20 @@ pub fn connect(config: &Config) -> Result<RpcClient> {
     Ok(client)
 }
 
-static KEYPAIR_PATH: &str = ".config/solana/id.json";
+static DEPLOY_PATH: &str = "target/deploy";
+static PROGRAM_SO_PATH: &str = "geonft_solana.so";
+static PROGRAM_KEYPAIR_PATH: &str = "geonft_solana-keypair.json";
 
-pub fn establish_payer(client: &RpcClient) -> Result<Account> {
+pub fn check_program(config: &RpcClient) -> Result<()> {
+    let manifest_dir = env!("CARGO_MANIFEST_DIR");
+    let deploy_path = format!("{}/{}", manifest_dir, DEPLOY_PATH);
+    let program_so_path = format!("{}/{}", deploy_path, PROGRAM_SO_PATH);
+    let program_keypair_path = format!("{}/{}", deploy_path, PROGRAM_KEYPAIR_PATH);
+
+    info!("loading program keypair from {}", program_keypair_path);
+
+    let program_keypair = read_keypair_file(&program_keypair_path)
+        .map_err(|e| anyhow!("{}", e))?;
+
     todo!()
 }
