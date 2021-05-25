@@ -1414,6 +1414,8 @@ dependencies = [
  "anyhow",
  "borsh 0.7.2",
  "borsh-derive 0.8.2",
+ "ed25519-dalek",
+ "geonft_nostd",
  "serde",
  "serde_json",
  "solana-program",
