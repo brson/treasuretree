@@ -10,6 +10,7 @@ use solana_client::rpc_client::RpcClient;
 use solana_sdk::client::SyncClient;
 use solana_sdk::account::Account;
 use solana_sdk::signature::{read_keypair_file, Keypair};
+use solana_sdk::commitment_config::CommitmentConfig;
 
 pub struct Config {
     json_rpc_url: String,
@@ -27,16 +28,10 @@ pub fn load_config() -> Result<Config> {
     })
 }
 
-pub fn establish_connection() -> Result<RpcClient> {
-    let rpc_addr = "127.0.0.1:8899";
-    let timeout = 1000;
+pub fn connect(config: &Config) -> Result<RpcClient> {
 
-    info!("connecting to solana node, RPC: {}, timeout: {}ms",
-          rpc_addr, timeout);
-
-    let rpc_addr: SocketAddr = rpc_addr.parse().expect("");
-
-    let client = RpcClient::new_socket_with_timeout(rpc_addr, Duration::from_millis(timeout));
+    info!("connecting to solana node at {}", config.json_rpc_url);
+    let client = RpcClient::new_with_commitment(config.json_rpc_url.clone(), CommitmentConfig::confirmed());
 
     let version = client.get_version()?;
     info!("RPC version: {:?}", version);
