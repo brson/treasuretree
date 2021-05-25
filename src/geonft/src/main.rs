@@ -25,7 +25,6 @@ mod api;
 mod crypto;
 mod images;
 mod treasure;
-mod treasure_qrcode;
 
 #[get("/")]
 fn root_page() -> Template {
@@ -203,7 +202,6 @@ fn main() {
                 recent_page,
                 treasure_page,
                 treasure_image,
-                api::create_treasure_key,
                 api::plant_treasure_with_key,
                 api::claim_treasure_with_key,
             ],

@@ -14,6 +14,7 @@ import init, {
     sign_claim_with_treasure_secret_key,
     sign_claim_with_account_secret_key,
     get_hash,
+    create_qrcode,
 } from "../wasm/pkg/geonft_wasm.js";
 
 let wasm = null;
@@ -39,6 +40,7 @@ async function initWasm() {
         sign_claim_with_treasure_secret_key,
         sign_claim_with_account_secret_key,
         get_hash,
+        create_qrcode,
     };
 
     wasm.set_panic_hook();
