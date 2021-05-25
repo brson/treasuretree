@@ -745,3 +745,20 @@ which will presumably parse that blob.
 [`Account`]: https://docs.rs/solana-sdk/1.6.9/solana_sdk/account/struct.Account.html
 
 After some further hacking I realize that `Account` is deserializeble via serde.
+
+
+
+TODO:
+
+```
+:geonft_solana aimeez$ cargo build-bpf
+BPF SDK: /<local_path>/solana/install/releases/1.6.9/solana-release/bin/sdk/bpf
+Running: rustup toolchain list -v
+Running: cargo +bpf build --target bpfel-unknown-unknown --release
+warning: /<local_path>/geonft/src/geonft/Cargo.toml: unused manifest key: global
+   Compiling serde v1.0.126
+   Compiling curve25519-dalek v3.1.0
+   Compiling ed25519-dalek v1.0.1
+Error: Function _ZN209_$LT$curve25519_dalek..window..NafLookupTable8$LT$curve25519_dalek..backend..serial..curve_models..ProjectiveNielsPoint$GT$$u20$as$u20$core..convert..From$LT$$RF$curve25519_dalek..edwards..EdwardsPoint$GT$$GT$4from17hbabee800aa927908E Stack offset of -10920 exceeded max offset of -4096 by 6824 bytes, please minimize large stack variables
+
+```
