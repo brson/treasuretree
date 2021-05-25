@@ -11,6 +11,16 @@ it was a good opportunity to give it a try.
 
 
 
+## Tips
+
+- For writing Rust client code,
+  crib off of the [`feature_proposal` client][fcp].
+  It is relatively simple.
+
+
+[fpc]: https://github.com/solana-labs/solana-program-library/blob/master/feature-proposal/cli/src/main.rs
+
+
 ## Today's plan
 
 Today is the 17th.
@@ -569,6 +579,36 @@ Caused by:
 
 
 
+
+We run into a problem when adding our `geonft_solana` program to a workspace.
+Because we are trying to use the `anyhow` crate in multiple crates,
+and with multiple targets,
+some no-std,
+we hit a problem where running `cargo build-bpf`
+ends up running cargo in such a way that the `anyhow` crate
+incorrectly gets resolved to use its `std` feature,
+and so doesn't build,
+seemingly because of missing backtraces
+in the Solana implementation of `std`.
+
+We add `resolver = "2"` to our workspace to fix this,
+but find an additional wrinkle that the bpf toolchain is still
+on Rust 1.50,
+where the v2 crate resolver was unstable,
+so have also add `carge-features = ["resolver"]`.
+
+Futthermore,
+`cargo build-bpf` doesn't accpt a `-p` parameter,
+so it seems like a bpf program probably shouldn't be part of a workspace.
+For now we do have it in our workspace though,
+and just `cd` into the `geonft_solana` directory to build it.
+
+TODO adding ed25519-dalek
+
+
+It's a big mess.
+
+
 ## Writing a solana client in Rust
 
 I am writing a program whose job is to sync the application state
@@ -591,7 +631,16 @@ I ask in `#hack-rust-support`:
 > Are there any examples writing a Solana client in Rust, using solana_sdk
   and/or solana_client?
 
-TODO
+"jon" tells me
+
+> Sure! You can take a look at the token CLI as an
+> example:
+>
+> https://github.com/solana-labs/solana-program-library/tree/master/token/cli
+>
+> or even the feature-proposal program:
+>
+> https://github.com/solana-labs/solana-program-library/blob/master/feature-proposal/cli/src/main.rs
 
 I am thinking the `#hack-*` channels are low volume and not the place
 to be asking Solana dev questions.
@@ -744,7 +793,68 @@ which will presumably parse that blob.
 
 [`Account`]: https://docs.rs/solana-sdk/1.6.9/solana_sdk/account/struct.Account.html
 
-After some further hacking I realize that `Account` is deserializeble via serde.
+After some further hacking I realize that `Account` is deserializeble via serde,
+but I'm beginning to think this `Account` is not the same as the `Account` type
+in the TypeScript API.
+
+I take a look at the source for the ["SPL Token program command line utility"][splt].
+From this I immediately discover the [`solana_cli_config`] crate,
+which seems useful,
+but upon inspection doesn't obviously get me from a keypair file to something usable in-memory.
+
+[splt]: https://github.com/solana-labs/solana-program-library/tree/master/token/cli
+[`solana-cli-config`]: https://docs.rs/solana-cli-config/1.6.9/solana_cli_config/
+
+OK, there are a lot of concepts to digest in this token program.
+I am feeling overwhelmed.
+I look at the ["feature proposal" CLI][fpc] in hopes it is smaller.
+
+[fpc]: https://github.com/solana-labs/solana-program-library/blob/master/feature-proposal/cli/src/main.rs
+
+Yeah, this is easier to crib from.
+And now I gather that the structure in the TypeScript Helloworld client
+isn't really appropriate for a Rust client.
+I basically need to start over.
+This time I'm going to use the SDK to load the CLI config file,
+pull the RPC address and keypair file out of that,
+and use the SDK to load the keypair.
+
+I run into problems with the error types returned by the SDK.
+
+Functions like `read_keypair_file` return `Box<dyn Error>`:
+
+```rust
+pub fn read_keypair_file<F: AsRef<Path>>(
+    path: F
+) -> Result<Keypair, Box<dyn Error>>
+```
+
+`Error` is too weak of a trait bound to be compatible with common
+error handling patterns like those from the `anyhow` crate,
+and when I try to trivially use `?` I get this error:
+
+```
+error[E0277]: `dyn std::error::Error` cannot be shared between threads safely
+  --> src/geonft_sync/src/solana.rs:23:62
+   |
+23 |     let keypair = read_keypair_file(&cli_config.keypair_path)?;
+   |                                                              ^ `dyn std::error::Error` cannot be shared between threads safely
+   |
+   = help: the trait `Sync` is not implemented for `dyn std::error::Error`
+   = note: required because of the requirements on the impl of `Sync` for `Unique<dyn std::error::Error>`
+   = note: required because it appears within the type `Box<dyn std::error::Error>`
+   = note: required because of the requirements on the impl of `From<Box<dyn std::error::Error>>` for `anyhow::Error`
+   = note: required because of the requirements on the impl of `FromResidual<Result<std::convert::Infallible, Box<dyn std::error::Error>>>` for `Result<solana::Config, anyhow::Error>`
+   = note: required by `from_residual`
+```
+
+Errors in Rust that are not `Send + Sync + 'static` are a pain.
+Is there a good reason Solana's error types are just `Error`?
+
+
+
+
+
 
 
 
