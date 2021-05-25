@@ -1400,6 +1400,7 @@ dependencies = [
 name = "geonft_solana"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "borsh 0.7.2",
  "borsh-derive 0.8.2",
  "serde",

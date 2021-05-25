@@ -1,13 +1,12 @@
 use anyhow::{anyhow, Result};
-use std::net::SocketAddr;
-use std::time::Duration;
 use log::info;
 use std::fs::File;
 use std::io::BufReader;
+use std::net::SocketAddr;
+use std::time::Duration;
 
-use solana_client::thin_client::{self, ThinClient};
 use solana_client::rpc_client::RpcClient;
-use solana_sdk::client::SyncClient;
+use solana_client::thin_client::{self, ThinClient};
 use solana_sdk::account::Account;
 use solana_sdk::signature::{read_keypair_file, Keypair};
 use solana_sdk::commitment_config::CommitmentConfig;

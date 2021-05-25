@@ -1,4 +1,6 @@
 use borsh::{BorshDeserialize, BorshSerialize};
+use serde::{Deserialize, Serialize};
+use serde_json;
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint,
@@ -7,8 +9,12 @@ use solana_program::{
     program_error::ProgramError,
     pubkey::Pubkey,
 };
-use serde::{Deserialize, Serialize};
-use serde_json;
+
+/*
+#[path = "../../geonft/src/crypto_shared.rs"]
+mod crypto_shared;
+use crypto_shared as crypto;
+*/
 
 /// Define the type of state stored in accounts
 #[derive(BorshSerialize, BorshDeserialize, Debug)]
@@ -24,14 +30,18 @@ entrypoint!(process_instruction);
 pub fn process_instruction(
     program_id: &Pubkey, // Public key of the account the hello world program was loaded into
     accounts: &[AccountInfo], // The account to say hello to
-    geonft_data: &[u8], // Ignored, all helloworld instructions are hellos
+    geonft_data: &[u8],  // Ignored, all helloworld instructions are hellos
 ) -> ProgramResult {
     msg!("Geonft_solana entrypoint.");
 
     let geonft_data = serde_json::from_slice(geonft_data).unwrap(); // convert ? to Solana Result
     match geonft_data {
-        GeonftRequest::PlantTreasure(plant_info) => { msg!("plant info: {:?}", &plant_info); },
-        GeonftRequest::ClaimTreasure(claim_info) => { msg!("claim info: {:?}", &claim_info); },
+        GeonftRequest::PlantTreasure(plant_info) => {
+            msg!("plant info: {:?}", &plant_info);
+        }
+        GeonftRequest::ClaimTreasure(claim_info) => {
+            msg!("claim info: {:?}", &claim_info);
+        }
         _ => unreachable!(),
     };
 
@@ -40,7 +50,7 @@ pub fn process_instruction(
     // content below is Solana's helloworld example
     // Iterating accounts is safer then indexing
     let accounts_iter = &mut accounts.iter();
-    
+
     // Get the account to say hello to
     let account = next_account_info(accounts_iter)?;
 
@@ -101,41 +111,60 @@ pub struct ClaimRequest {
     treasure_signature: String,
 }
 
-pub fn plant_treasure_with_key(plant_info: PlantRequest) -> Result<(), ProgramError> {
-    /*
-    let treasure_key_decode = crypto::decode_treasure_public_key(&plant_info.treasure_public_key)?;
-    let treasure_key_encode = crypto::encode_treasure_public_key(&treasure_key_decode)?;
+pub enum GeonftError {
+    SolanaError(ProgramError),
+    OtherError(anyhow::Error),
+}
 
-    let account_key_decode = crypto::decode_account_public_key(&plant_info.account_public_key)?;
+impl From<anyhow::Error> for GeonftError {
+    fn from(error: anyhow::Error) -> Self {
+        GeonftError::SolanaError(ProgramError::InvalidArgument)
+    }
+}
 
-    let treasure_signature = crypto::decode_signature(&plant_info.treasure_signature)?;
-    let account_signature = crypto::decode_signature(&plant_info.account_signature)?;
+pub fn plant_treasure_with_key(plant_info: PlantRequest) -> Result<(), GeonftError> {
 
-    // todo check the treasure doesn't exist
-    // todo validate image type
 
-    // todo: get_hash from decoded_image
-    let treasure_hash = crypto::get_hash(&plant_info.image)?;
+    /*    
+        let treasure_pubkey_decode = crypto::decode_treasure_public_key(&plant_info.treasure_public_key)?;
 
-    crypto::verify_plant_request_for_treasure(
+
+        let treasure_pubkey_encode = crypto::encode_treasure_public_key(&treasure_pubkey_decode)?;
+
+        let account_pubket_decode = crypto::decode_account_public_key(&plant_info.account_public_key)?;
+
+        let treasure_signature = crypto::decode_signature(&plant_info.treasure_signature)?;
+        let account_signature = crypto::decode_signature(&plant_info.account_signature)?;
+
+        let treasure_hash = &plant_info.treasure_hash;
+        //figure out IPFS's hash scheme
+
+
+        // todo check the treasure doesn't exist
+        // todo validate image type
+
+        // todo: get_hash from decoded_image
+        let treasure_hash = crypto::get_hash(&plant_info.image)?;
+
+        crypto::verify_plant_request_for_treasure(
         treasure_key_decode,
         account_key_decode,
         treasure_hash.as_bytes(),
         treasure_signature,
     )?;
 
-    crypto::verify_plant_request_for_account(
+        crypto::verify_plant_request_for_account(
         account_key_decode,
         treasure_key_decode,
         account_signature,
     )?;
 
-    let filename = format!("{}/{key}", data::PLANT_DIR, key = treasure_key_encode);
-    fs::create_dir_all(data::PLANT_DIR)?;
+        let filename = format!("{}/{key}", data::PLANT_DIR, key = treasure_key_encode);
+        fs::create_dir_all(data::PLANT_DIR)?;
 
-    let mut file = File::create(filename)?;
-    serde_json::to_writer(file, &plant_info.0)?;
-*/
+        let mut file = File::create(filename)?;
+        serde_json::to_writer(file, &plant_info.0)?;
+         */
     Ok(())
 }
 
