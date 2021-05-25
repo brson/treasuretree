@@ -286,7 +286,10 @@ A ask again in #hack-blockchain-support:
 > What advantages does solana get from targeting eBPF, vs any other instruction
   set, for its VM? Been trying to get an answer to this for awhile.
 
-TODO
+Somebody respons by pinging "chase || solana",
+and asking them to ask a Solana dev to explain,
+but that explanation never comes.
+
 
 
 ## The Helloworld application
@@ -523,7 +526,7 @@ and a basic understanding of how to set up a Solana program and client,
 let's think about integrating Solana into our own project.
 
 
-### An overview of our project
+## An overview of our project
 
 It is called [geonft].
 and it is a toy that connects NFTs to the physical world.
@@ -547,6 +550,12 @@ from the centralized service onto the blockchain.
 
 
 
+### Writing a solana program in Rust
+
+Aimee is responsible for writing our Solana program (aka smart contract),
+that handles the "plant" and "claim" actions.
+She has written these two functions previously in our Rocket backend,
+and now she is reimplementing them on-chain.
 
 TODO:
 
@@ -558,3 +567,181 @@ Caused by:
   library target names cannot contain hyphens: solana-program
   ```
 
+
+
+## Writing a solana client in Rust
+
+I am writing a program whose job is to sync the application state
+from our centralized Rocket application to Solana.
+I put it in a new crate, [`geonft_sync`].
+
+[`geonft_sync`]: https://github.com/brson/geonft/blob/master/src/geonft_sync/src/main.rs
+
+I gather that I'm going to need the [`solana-sdk`] and [`solana-client`]
+crates.
+The documentation for these is not great,
+and there's not an obvious example of a Rust Solana client:
+the Helloworld example uses a TypeScript client.
+
+[`solana-sdk`]: https://docs.rs/solana-sdk/1.6.9/solana_sdk/
+[`solana-client`]: https://docs.rs/solana-client/1.6.9/solana_client/
+
+I ask in `#hack-rust-support`:
+
+> Are there any examples writing a Solana client in Rust, using solana_sdk
+  and/or solana_client?
+
+TODO
+
+I am thinking the `#hack-*` channels are low volume and not the place
+to be asking Solana dev questions.
+All the normal dev channels require proper permissions to talk in them,
+and I don't see how to get those permissions,
+so I ask in `#hack-questions`:
+
+> How can I get permission to talk in the #developer-support channel?
+
+Well, the `solana_client` crate has several clients,
+but I am eyeing [`ThinClient`] as the one I "should" use,
+just on a hunch.
+
+[`ThinClient`]: https://docs.rs/solana-client/1.6.9/solana_client/thin_client/index.html
+
+The constructor though has an argument I don't intuitively know what do do with:
+
+```rust
+pub fn create_client_with_timeout(
+    (rpc, tpu): (SocketAddr, SocketAddr),
+    range: (u16, u16),
+    timeout: Duration
+) -> ThinClient
+```
+
+The RPC ond TPU ("transaction processing unit") sockets
+are printed by `solana-test-validator` on startup,
+but I don't know what the `range` tuple is.
+Clicking through the docs to [the source of `create_client_with_timeout`][ccwtos],
+I see this tuple is passed to [`solana_net_utils::bind_in_range`][bin]
+to create a UDP socket,
+and that is passed to the underlying `ThinClient` constructor.
+
+[ccwtos]: https://docs.rs/solana-client/1.6.9/src/solana_client/thin_client.rs.html#619
+[bin]: https://docs.rs/solana-net-utils/1.6.9/src/solana_net_utils/lib.rs.html#412-428
+
+So this range is just a UDP port range to attempt listening on.
+
+I hack this together and it works:
+
+```rust
+    let rpc_addr = "127.0.0.1:8899";
+    let tpu_addr = "127.0.0.1:1027";
+    let tx_port_range = (10_000_u16, 20_000_u16);
+    let timeout = 1000;
+
+    info!("connecting to solana node, RPC: {}, TPU: {}, tx range: {}-{}, timeout: {}ms",
+          rpc_addr, tpu_addr, tx_port_range.0, tx_port_range.1, timeout);
+
+    let rpc_addr: SocketAddr = rpc_addr.parse().expect("");
+    let tpu_addr: SocketAddr = tpu_addr.parse().expect("");
+
+    let client = thin_client::create_client_with_timeout(
+        (rpc_addr, tpu_addr),
+        tx_port_range,
+        Duration::from_millis(timeout));
+
+    let epoch = client.get_epoch_info()?;
+
+    info!("{:?}", epoch);
+```
+
+It prints
+
+```
+[2021-05-22T02:36:59Z INFO  geonft_sync] EpochInfo { epoch: 0, slot_index: 32145, slots_in_epoch: 432000, absolute_slot: 32145, block_height: 32144, transaction_count: Some(32143) }
+```
+
+So even without adequate docs it was pretty easy to figure
+out how to connect to a solana node and query something.
+
+
+## Reproducing the Helloworld example client in Rust
+
+Since there don't seem to be Rust client examples to work off of,
+I'm going to proceed by following the [Helloworld typescript client][tsc],
+and trying to do what it does step by step.
+
+[tsc]: https://github.com/solana-labs/example-helloworld/tree/master/src/client
+
+The first thing it does is "establish a connection",
+and while I've already written code for that,
+the TypeScript code also calls the `getVersion` RPC method,
+which seems like a better way to smoke-test the connection that
+calling ``get_epoch_info` like I am now.
+
+So I refactor my code to create an `establish_connection` method,
+and look for how to call `getVersion` from Rust.
+I don't see it on the `SyncClient` trait,
+but [searching "version" in the `solana_client`][versearch] API docs
+reveals a `get_version` method on the `RpcClient` struct.
+I have a `ThinClient`. How do I get an `RpcClient` from that?
+
+[versearch]: https://docs.rs/solana-client/1.6.9/solana_client/index.html?search=version
+
+I assume a `ThinClient` encapsulates an `RpcClient`,
+and I can get a reference to its `RpcClient` somehow.
+
+I read the code again for `ThinClient`.
+It contains multiple `RpcClient`s.
+I wonder if I should be using `RpcClient` directly and not `ThinClient`,
+though `RpcClient` doesn't implement the `SyncClient` trait that it
+seems like I would want access to.
+I just don't see a way to access `ThinClient`s `RpcClient`,
+and since some of the methods on `ThinClient` are just
+delegating to `RpcClient` I suspect the API is a bit underbaked.
+I think I can't submit transactions with just `RpcClient`,
+but for now I need access to `RpcClient` so I am going
+to create that instead of `ThinClient`.
+
+I end up with this for `establish_client`:
+
+```rust
+pub fn establish_connection() -> Result<RpcClient> {
+    let rpc_addr = "127.0.0.1:8899";
+    let timeout = 1000;
+
+    info!("connecting to solana node, RPC: {}, timeout: {}ms",
+          rpc_addr, timeout);
+
+    let rpc_addr: SocketAddr = rpc_addr.parse().expect("");
+
+    let client = RpcClient::new_socket_with_timeout(rpc_addr, Duration::from_millis(timeout));
+
+    let version = client.get_version()?;
+    info!("RPC version: {:?}", version);
+
+    Ok(client)
+}
+```
+
+Next step is to make an equivalent of `establishPayer`.
+The Helloworld tries to read a keypair from the CLI config,
+and if that doesn't exist creates a new account.
+For my purpsose I don't want to be creating arbitrary accounts,
+so I'll just fail if the CLI config doesn't contain an acocunt.
+Furthermore,
+my CLI config lists the keypair path as `/home/brian/.config/solana/id.json`,
+and that seems like a pretty stable name,
+so I'm just going to avoid parsing the CLI config,
+and try to load from there.
+
+The TypeScript code contains an `Account` type that can parse the keypair
+file more-or-less directly,
+but I don't see such a thing in the Rust SDK.
+Oh, wait, `id.json` is only barely JSON &mdash;
+it just contains an array of bytes,
+and there's an undocumented `deserialize_data` function on [`Account`]
+which will presumably parse that blob.
+
+[`Account`]: https://docs.rs/solana-sdk/1.6.9/solana_sdk/account/struct.Account.html
+
+After some further hacking I realize that `Account` is deserializeble via serde.

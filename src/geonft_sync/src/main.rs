@@ -4,8 +4,12 @@ use anyhow::Result;
 use log::info;
 use std::collections::HashMap;
 use std::thread;
+use std::net::SocketAddr;
+use std::time::Duration;
 
 use geonft_shared::data;
+
+mod solana;
 
 fn main() -> Result<()> {
     env_logger::init();
@@ -74,6 +78,8 @@ fn make_plan() -> Result<Plan> {
 
 fn execute_plan(plan: Plan) -> Result<()> {
     info!("executing plan with {} steps", plan.steps.len());
+
+    let client = solana::establish_connection()?;
 
     let mut statuses = plan.statuses;
 
