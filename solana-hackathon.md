@@ -603,10 +603,28 @@ so it seems like a bpf program probably shouldn't be part of a workspace.
 For now we do have it in our workspace though,
 and just `cd` into the `geonft_solana` directory to build it.
 
-TODO adding ed25519-dalek
+
+When we add ed25519-dalek to our dependencies we start seeing errors
+about large stack frames,
+but the build still succeeds.
+I ask in #hack-rust-support
+
+> After adding ed25519-dalek crate to my solana program, I get (non-fatal) errors when building that say "Stack
+ offset of -7680 exceeded max offset of -4096 by 3584 bytes, please minimize large stack variables". What can I do about this?
+
+And again:
+
+> Can I get access to the #developer-support channel?
+
+TODO
 
 
-It's a big mess.
+
+
+
+
+
+
 
 
 ## Writing a solana client in Rust
