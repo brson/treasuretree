@@ -123,9 +123,7 @@ impl From<anyhow::Error> for GeonftError {
 }
 
 pub fn plant_treasure_with_key(plant_info: PlantRequest) -> Result<(), GeonftError> {
-
-
-    /*    
+    /*
         let treasure_pubkey_decode = crypto::decode_treasure_public_key(&plant_info.treasure_public_key)?;
 
 

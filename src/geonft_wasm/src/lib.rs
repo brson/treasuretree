@@ -1,9 +1,9 @@
+mod treasure_qrcode;
 mod utils;
-
-use anyhow::Result;
 use bech32::{FromBase32, ToBase32, Variant};
 use ed25519_dalek::{Keypair, PublicKey, SecretKey, Signer};
 use rand::rngs::OsRng;
+use serde_json;
 use wasm_bindgen::prelude::*;
 
 #[path = "../../geonft/src/crypto_shared.rs"]
@@ -20,6 +20,12 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 #[wasm_bindgen]
 pub fn set_panic_hook() {
     utils::set_panic_hook();
+}
+
+#[wasm_bindgen]
+pub fn create_qrcode() -> Option<String> {
+    let new_qrcode = treasure_qrcode::init_random_qrcode().ok();
+    serde_json::to_string(&new_qrcode).ok()
 }
 
 #[wasm_bindgen]

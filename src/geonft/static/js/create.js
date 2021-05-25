@@ -1,3 +1,5 @@
+import { initWasm } from "./wasm-init.js";
+
 let createButton = document.getElementById("create-button");
 
 console.assert(createButton);
@@ -18,16 +20,10 @@ createButton.addEventListener("click", async () => {
     spinner.classList.remove("no-display");
 
     try {
-        let response = await fetch("api/create");
-
-        console.log(response);
-
-        if (!response.ok) {
-            // TODO
-        }
-
-        let jsonResponse = await response.json();
-
+        let wasm = await initWasm();
+        
+        let response = wasm.create_qrcode();
+        let jsonResponse = JSON.parse(response);
         console.log(jsonResponse);
         console.assert(jsonResponse.qrcode);
         console.assert(jsonResponse.secret_key);

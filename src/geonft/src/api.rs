@@ -1,5 +1,4 @@
 use crate::crypto;
-use crate::treasure_qrcode;
 use anyhow::{bail, Result};
 use geonft_shared::data;
 use rocket_contrib::{json::Json, templates::Template};
@@ -8,27 +7,6 @@ use serde_json::json;
 use std::fmt;
 use std::fs::{self, DirEntry, File, Metadata};
 use std::path::{Path, PathBuf};
-use treasure_qrcode::create_qr_code;
-
-#[derive(Debug, Serialize)]
-pub struct CreateResponse {
-    secret_key: String,
-    qrcode: String,
-    url: String,
-}
-
-#[get("/api/create")]
-pub fn create_treasure_key() -> Result<Json<CreateResponse>> {
-    let init_keys = create_qr_code()?;
-    let first_key = &init_keys[0];
-
-    Ok(Json(CreateResponse {
-        secret_key: first_key.secret_key.clone(),
-        // Argument is the size, bigger number means smaller size on the page
-        qrcode: first_key.qrcode.to_svg_string(0),
-        url: first_key.url.clone(),
-    }))
-}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PlantRequest {
