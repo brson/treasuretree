@@ -1,8 +1,8 @@
 use anyhow::Result;
-use std::fs::{self, DirEntry, Metadata, File};
-use std::io::BufReader;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::fs::{self, DirEntry, File, Metadata};
+use std::io::BufReader;
 
 pub static PLANT_DIR: &'static str = "data/plant";
 pub static CLAIM_DIR: &'static str = "data/claim";
@@ -12,7 +12,7 @@ pub static SYNC_STATUS_DIR: &'static str = "data/sync-status";
 /// can be used for both plants and claims.
 pub struct TreasureTime {
     pub public_key: String,
-    pub time: chrono::DateTime::<chrono::Local>,
+    pub time: chrono::DateTime<chrono::Local>,
 }
 
 pub fn get_all_planted_treasures() -> Result<Vec<TreasureTime>> {
@@ -36,14 +36,14 @@ fn get_all_treasures_from_dir(dir: &str) -> Result<Vec<TreasureTime>> {
         })
         // Keep modify time for sorting
         .map(|dent: Result<(Metadata, DirEntry), _>| {
-            dent.and_then(|(meta, dent): (Metadata, DirEntry)| -> Result<TreasureTime, _> {
-                let public_key = dent.file_name().into_string().expect("utf-8");
-                let time = meta.modified()?;
-                let time = chrono::DateTime::<chrono::Local>::from(time);
-                Ok(TreasureTime {
-                    public_key, time,
-                })
-            })
+            dent.and_then(
+                |(meta, dent): (Metadata, DirEntry)| -> Result<TreasureTime, _> {
+                    let public_key = dent.file_name().into_string().expect("utf-8");
+                    let time = meta.modified()?;
+                    let time = chrono::DateTime::<chrono::Local>::from(time);
+                    Ok(TreasureTime { public_key, time })
+                },
+            )
         })
         // Collect iter of Result into Result<Vec>,
         // and return any error.

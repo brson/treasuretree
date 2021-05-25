@@ -5,6 +5,7 @@
 extern crate rocket;
 
 use anyhow::{anyhow, bail, Result};
+use geonft_shared::data;
 use rocket::http::{ContentType, Method, RawStr};
 use rocket::response::{content::Html, Content, Responder};
 use rocket::Data;
@@ -19,7 +20,6 @@ use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 use treasure::Treasure;
-use geonft_shared::data;
 
 mod api;
 mod crypto;

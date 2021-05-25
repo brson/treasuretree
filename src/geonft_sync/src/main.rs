@@ -3,8 +3,8 @@
 use anyhow::Result;
 use log::info;
 use std::collections::HashMap;
-use std::thread;
 use std::net::SocketAddr;
+use std::thread;
 use std::time::Duration;
 
 use geonft_shared::data;
@@ -46,7 +46,7 @@ fn make_plan() -> Result<Plan> {
         let pubkey = treasure.public_key;
         let status = statuses.get(&pubkey);
 
-        use data::PlantClaim::{Plant, Claim};
+        use data::PlantClaim::{Claim, Plant};
         use data::SyncStatus::*;
         use Step::*;
 
@@ -54,26 +54,19 @@ fn make_plan() -> Result<Plan> {
             (Plant, None) => {
                 steps.push((pubkey.clone(), UploadBlobToIpfs));
                 steps.push((pubkey, UploadPlantToSolana));
-            },
+            }
             (Plant, Some(BlobSynced)) => {
                 steps.push((pubkey, UploadPlantToSolana));
-            },
-            (Plant, Some(PlantSynced | ClaimSynced)) => {
-                /* plant is synced */
-            },
+            }
+            (Plant, Some(PlantSynced | ClaimSynced)) => { /* plant is synced */ }
             (Claim, None) | (Claim, Some(BlobSynced | PlantSynced)) => {
                 steps.push((pubkey, UploadClaimToSolana));
             }
-            (Claim, Some(ClaimSynced)) => {
-                /* claim is synced */
-            }
+            (Claim, Some(ClaimSynced)) => { /* claim is synced */ }
         }
     }
 
-    Ok(Plan {
-        statuses,
-        steps
-    })
+    Ok(Plan { statuses, steps })
 }
 
 fn execute_plan(plan: Plan) -> Result<()> {
