@@ -9,6 +9,23 @@ use solana_client::thin_client::{self, ThinClient};
 use solana_client::rpc_client::RpcClient;
 use solana_sdk::client::SyncClient;
 use solana_sdk::account::Account;
+use solana_sdk::signature::{read_keypair_file, Keypair};
+
+pub struct Config {
+    json_rpc_url: String,
+    keypair: Keypair,
+}
+
+pub fn load_config() -> Result<Config> {
+    let config_file = solana_cli_config::CONFIG_FILE.as_ref().ok_or_else(|| anyhow!("config file path"))?;
+    let cli_config = solana_cli_config::Config::load(&config_file)?;
+    let json_rpc_url = cli_config.json_rpc_url;
+    let keypair = read_keypair_file(&cli_config.keypair_path).map_err(|e| anyhow!("{}", e))?;
+    Ok(Config {
+        json_rpc_url,
+        keypair,
+    })
+}
 
 pub fn establish_connection() -> Result<RpcClient> {
     let rpc_addr = "127.0.0.1:8899";
@@ -30,12 +47,5 @@ pub fn establish_connection() -> Result<RpcClient> {
 static KEYPAIR_PATH: &str = ".config/solana/id.json";
 
 pub fn establish_payer(client: &RpcClient) -> Result<Account> {
-    let mut home_dir = dirs::home_dir().ok_or_else(|| anyhow!("no home dir"))?;
-    let keypair_path = home_dir.join(KEYPAIR_PATH);
-    let file = File::open(keypair_path)?;
-    let mut reader = BufReader::new(file);
-    let json: serde_json::Value = serde_json::from_reader(reader)?;
-    let array = json.as_array().ok_or_else(|| anyhow!("keypair json not array"))?;
-    let array: Vec<u8> = serde_json::from_value(json)?;
     todo!()
 }

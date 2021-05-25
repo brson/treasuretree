@@ -79,8 +79,6 @@ fn make_plan() -> Result<Plan> {
 fn execute_plan(plan: Plan) -> Result<()> {
     info!("executing plan with {} steps", plan.steps.len());
 
-    let client = solana::establish_connection()?;
-
     let mut statuses = plan.statuses;
 
     for (pubkey, step) in plan.steps {

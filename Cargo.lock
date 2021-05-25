@@ -1419,6 +1419,7 @@ dependencies = [
  "geonft_shared",
  "log 0.4.14",
  "serde_json",
+ "solana-cli-config",
  "solana-client",
  "solana-sdk",
 ]
