@@ -591,7 +591,16 @@ I ask in `#hack-rust-support`:
 > Are there any examples writing a Solana client in Rust, using solana_sdk
   and/or solana_client?
 
-TODO
+"jon" tells me
+
+> Sure! You can take a look at the token CLI as an
+> example:
+>
+> https://github.com/solana-labs/solana-program-library/tree/master/token/cli
+>
+> or even the feature-proposal program:
+>
+> https://github.com/solana-labs/solana-program-library/blob/master/feature-proposal/cli/src/main.rs
 
 I am thinking the `#hack-*` channels are low volume and not the place
 to be asking Solana dev questions.
@@ -744,4 +753,6 @@ which will presumably parse that blob.
 
 [`Account`]: https://docs.rs/solana-sdk/1.6.9/solana_sdk/account/struct.Account.html
 
-After some further hacking I realize that `Account` is deserializeble via serde.
+After some further hacking I realize that `Account` is deserializeble via serde,
+but I'm beginning to think this `Account` is not the same as the `Account` type
+in the TypeScript API.
