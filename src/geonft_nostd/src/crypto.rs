@@ -1,3 +1,6 @@
+use alloc::format;
+use alloc::string::String;
+use alloc::vec::Vec;
 use anyhow::{bail, Result};
 use ed25519_dalek::{Keypair, PublicKey, SecretKey, Signature, Signer};
 
@@ -310,6 +313,7 @@ mod err {
 
 #[cfg(not(feature = "std-errors"))]
 mod err {
+    use alloc::format;
     use super::ResultWrapper;
 
     impl<T> ResultWrapper<T> for Result<T, bech32::Error> {

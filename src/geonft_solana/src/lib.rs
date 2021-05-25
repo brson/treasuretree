@@ -10,12 +10,6 @@ use solana_program::{
     pubkey::Pubkey,
 };
 
-/*
-#[path = "../../geonft/src/crypto_shared.rs"]
-mod crypto_shared;
-use crypto_shared as crypto;
-*/
-
 /// Define the type of state stored in accounts
 #[derive(BorshSerialize, BorshDeserialize, Debug)]
 pub struct GreetingAccount {

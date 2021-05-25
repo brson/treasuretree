@@ -1389,6 +1389,13 @@ dependencies = [
 [[package]]
 name = "geonft_nostd"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "base64 0.13.0",
+ "bech32",
+ "ed25519-dalek",
+ "sha256",
+]
 
 [[package]]
 name = "geonft_shared"
@@ -1407,7 +1414,6 @@ dependencies = [
  "anyhow",
  "borsh 0.7.2",
  "borsh-derive 0.8.2",
- "geonft_nostd",
  "serde",
  "serde_json",
  "solana-program",

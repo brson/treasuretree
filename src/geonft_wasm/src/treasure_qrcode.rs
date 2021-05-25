@@ -1,4 +1,4 @@
-use super::crypto_shared as crypto;
+use geonft_nostd::crypto;
 use anyhow::Result;
 use crypto::ResultWrapper;
 use qrcodegen::QrCode;

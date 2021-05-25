@@ -6,10 +6,8 @@ use rand::rngs::OsRng;
 use serde_json;
 use wasm_bindgen::prelude::*;
 
-#[path = "../../geonft/src/crypto_shared.rs"]
-mod crypto_shared;
+use geonft_nostd::crypto;
 use crypto::ResultWrapper;
-use crypto_shared as crypto;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
