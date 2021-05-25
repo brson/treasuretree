@@ -5,6 +5,7 @@ resolver = "2"
 
 members = [
     "src/geonft",
+    "src/geonft_nostd",
     "src/geonft_shared",
     "src/geonft_wasm",
     "src/geonft_solana",

@@ -1375,6 +1375,7 @@ dependencies = [
  "bech32",
  "chrono",
  "ed25519-dalek",
+ "geonft_nostd",
  "geonft_shared",
  "image",
  "rand 0.7.3",
@@ -1384,6 +1385,10 @@ dependencies = [
  "serde_json",
  "sha256",
 ]
+
+[[package]]
+name = "geonft_nostd"
+version = "0.1.0"
 
 [[package]]
 name = "geonft_shared"
@@ -1402,6 +1407,7 @@ dependencies = [
  "anyhow",
  "borsh 0.7.2",
  "borsh-derive 0.8.2",
+ "geonft_nostd",
  "serde",
  "serde_json",
  "solana-program",
@@ -1433,6 +1439,7 @@ dependencies = [
  "bech32",
  "console_error_panic_hook",
  "ed25519-dalek",
+ "geonft_nostd",
  "getrandom 0.1.16",
  "qrcodegen",
  "rand 0.7.3",

@@ -11,6 +11,8 @@ crate-type = ["cdylib", "rlib"]
 default = ["console_error_panic_hook"]
 
 [dependencies]
+geonft_nostd = { path = "../geonft_nostd" }
+
 wasm-bindgen = "0.2.63"
 base64 = "0.13.0"
 sha256 = "1.0.2"
