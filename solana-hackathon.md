@@ -616,9 +616,17 @@ And again:
 
 > Can I get access to the #developer-support channel?
 
+Somebody named "Metric O'Forte" explains to me that I need to go to the `#welcome` channel
+and follow the instructions from Carl-bot to become a developer. So I do that.
+
+Still waiting on solutions to the stack offset problem,
+but now that I'm a developer and can talk in `#developer-support` I ask there:
+
+> After adding ed25519-dalek crate to my solana program, I get errors when building that say "Stack
+  offset of -7680 exceeded max offset of -4096 by 3584 bytes, please minimize large stack variables".
+  What can I do about this?
+
 TODO
-
-
 
 
 
