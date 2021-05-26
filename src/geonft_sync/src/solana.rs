@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, Result, Context};
 use log::info;
 use std::fs::File;
 use std::io::BufReader;
@@ -44,14 +44,15 @@ static PROGRAM_KEYPAIR_PATH: &str = "geonft_solana-keypair.json";
 
 pub fn check_program(config: &RpcClient) -> Result<()> {
     let manifest_dir = env!("CARGO_MANIFEST_DIR");
-    let deploy_path = format!("{}/{}", manifest_dir, DEPLOY_PATH);
+    let deploy_path = format!("{}/../../{}", manifest_dir, DEPLOY_PATH);
     let program_so_path = format!("{}/{}", deploy_path, PROGRAM_SO_PATH);
     let program_keypair_path = format!("{}/{}", deploy_path, PROGRAM_KEYPAIR_PATH);
 
     info!("loading program keypair from {}", program_keypair_path);
 
     let program_keypair = read_keypair_file(&program_keypair_path)
-        .map_err(|e| anyhow!("{}", e))?;
+        .map_err(|e| anyhow!("{}", e))
+        .context("unable to load program keypair")?;
 
     todo!()
 }
