@@ -10,10 +10,11 @@ use solana_client::thin_client::{self, ThinClient};
 use solana_sdk::account::Account;
 use solana_sdk::signature::{read_keypair_file, Keypair, Signer};
 use solana_sdk::commitment_config::CommitmentConfig;
+use solana_sdk::pubkey::Pubkey;
 
 pub struct Config {
-    json_rpc_url: String,
-    keypair: Keypair,
+    pub json_rpc_url: String,
+    pub keypair: Keypair,
 }
 
 pub fn load_config() -> Result<Config> {
@@ -34,6 +35,11 @@ pub fn connect(config: &Config) -> Result<RpcClient> {
 
     let version = client.get_version()?;
     info!("RPC version: {:?}", version);
+
+    let account = client.get_account(&config.keypair.pubkey())
+        .context("unable to get payer account")?;
+
+    info!("payer account: {:?}", account);
 
     Ok(client)
 }
@@ -66,4 +72,22 @@ pub fn get_program_keypair(client: &RpcClient) -> Result<Keypair> {
     }
 
     Ok(program_keypair)
+}
+
+pub fn get_program_instance_account(client: &RpcClient, payer_account: &Keypair, program_keypair: &Keypair) -> Result<Pubkey> {
+    let pubkey = Pubkey::create_with_seed(
+        &payer_account.pubkey(),
+        "geonft",
+        &program_keypair.pubkey())?;
+
+    info!("program account pubkey: {}", pubkey);
+
+    let account = client.get_account(&pubkey);
+
+    if account.is_ok() {
+        Ok(pubkey)
+    } else {
+        info!("creating program instance at {}", pubkey);
+        todo!()
+    }    
 }
