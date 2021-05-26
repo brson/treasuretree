@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result, Context};
+use anyhow::{anyhow, Result, Context, bail};
 use log::info;
 use std::fs::File;
 use std::io::BufReader;
@@ -8,7 +8,7 @@ use std::time::Duration;
 use solana_client::rpc_client::RpcClient;
 use solana_client::thin_client::{self, ThinClient};
 use solana_sdk::account::Account;
-use solana_sdk::signature::{read_keypair_file, Keypair};
+use solana_sdk::signature::{read_keypair_file, Keypair, Signer};
 use solana_sdk::commitment_config::CommitmentConfig;
 
 pub struct Config {
@@ -42,7 +42,7 @@ static DEPLOY_PATH: &str = "target/deploy";
 static PROGRAM_SO_PATH: &str = "geonft_solana.so";
 static PROGRAM_KEYPAIR_PATH: &str = "geonft_solana-keypair.json";
 
-pub fn check_program(config: &RpcClient) -> Result<()> {
+pub fn get_program_keypair(client: &RpcClient) -> Result<Keypair> {
     let manifest_dir = env!("CARGO_MANIFEST_DIR");
     let deploy_path = format!("{}/../../{}", manifest_dir, DEPLOY_PATH);
     let program_so_path = format!("{}/{}", deploy_path, PROGRAM_SO_PATH);
@@ -54,5 +54,16 @@ pub fn check_program(config: &RpcClient) -> Result<()> {
         .map_err(|e| anyhow!("{}", e))
         .context("unable to load program keypair")?;
 
-    todo!()
+    let program_id = program_keypair.pubkey();
+
+    info!("program id: {}", program_id);
+
+    let account = client.get_account(&program_id)
+        .context("unable to get program account")?;
+
+    if !account.executable {
+        bail!("solana account not executable");
+    }
+
+    Ok(program_keypair)
 }
