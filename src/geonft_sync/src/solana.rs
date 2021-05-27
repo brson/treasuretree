@@ -138,3 +138,10 @@ fn get_contract_size(client: &RpcClient) -> Result<usize> {
     // TODO
     Ok(10_000)
 }
+
+pub fn upload_plant(config: &Config,
+                    client: &RpcClient,
+                    program: &Keypair,
+                    program_account: &Pubkey) -> Result<()> {
+    todo!()
+}

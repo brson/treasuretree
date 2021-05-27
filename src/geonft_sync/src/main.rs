@@ -1,7 +1,7 @@
 #![allow(unused)]
 
 use anyhow::Result;
-use log::info;
+use log::{info, error};
 use std::collections::HashMap;
 use std::net::SocketAddr;
 use std::thread;
@@ -84,6 +84,18 @@ fn execute_plan(plan: Plan) -> Result<()> {
 
     for (pubkey, step) in plan.steps {
         info!("executing step {:?} for {}", step, pubkey);
+
+        match step {
+            Step::UploadPlantToSolana => {
+                let r = solana::upload_plant(&config, &client,
+                                             &program_keypair,
+                                             &program_instance_account);
+                if let Err(e) = r {
+                    error!("{}", e);
+                }
+            }
+            _ => { /* todo */ }
+        }
     }
 
     Ok(())
