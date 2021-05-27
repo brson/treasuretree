@@ -89,9 +89,7 @@ pub fn get_program_instance_account(client: &RpcClient, payer_account: &Keypair,
 
     let account = client.get_account(&pubkey);
 
-    if account.is_ok() {
-        Ok(pubkey)
-    } else {
+    if !account.is_ok() {
         info!("creating program instance at {}", pubkey);
 
         let contract_size = get_contract_size(client)?;
@@ -119,10 +117,16 @@ pub fn get_program_instance_account(client: &RpcClient, payer_account: &Keypair,
             recent_blockhash,
         );
 
-        todo!()
-    }    
+        let sig = client.send_transaction(&tx)?;
+
+        info!("account created");
+        info!("signature: {}", sig);
+    }
+
+    Ok(pubkey)
 }
 
 fn get_contract_size(client: &RpcClient) -> Result<usize> {
-    todo!()
+    // TODO
+    Ok(100)
 }
