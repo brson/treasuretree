@@ -7,7 +7,7 @@ use std::net::SocketAddr;
 use std::thread;
 use std::time::Duration;
 
-use geonft_data::{GeonftRequest, PlantRequest, ClaimRequest};
+use geonft_data::{ClaimRequest, GeonftRequest, PlantRequest};
 use geonft_shared::io;
 
 mod ipfs;
