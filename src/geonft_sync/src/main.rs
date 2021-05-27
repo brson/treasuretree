@@ -7,7 +7,7 @@ use std::net::SocketAddr;
 use std::thread;
 use std::time::Duration;
 
-use geonft_shared::data;
+use geonft_shared::io;
 
 mod ipfs;
 mod solana;
@@ -23,7 +23,7 @@ fn main() -> Result<()> {
 }
 
 struct Plan {
-    statuses: HashMap<String, data::SyncStatus>,
+    statuses: HashMap<String, io::SyncStatus>,
     steps: Vec<(String, Step)>,
 }
 
@@ -37,9 +37,9 @@ enum Step {
 fn make_plan() -> Result<Plan> {
     info!("making new plan");
 
-    let statuses = data::get_all_sync_statuses()?;
+    let statuses = io::get_all_sync_statuses()?;
 
-    let treasure_events = data::get_all_plants_and_claims_time_sorted()?;
+    let treasure_events = io::get_all_plants_and_claims_time_sorted()?;
 
     let mut steps = Vec::new();
 
@@ -47,8 +47,8 @@ fn make_plan() -> Result<Plan> {
         let pubkey = treasure.public_key;
         let status = statuses.get(&pubkey);
 
-        use data::PlantClaim::{Claim, Plant};
-        use data::SyncStatus::*;
+        use io::PlantClaim::{Claim, Plant};
+        use io::SyncStatus::*;
         use Step::*;
 
         match (event, status) {
