@@ -76,7 +76,7 @@ pub struct PlantRequest {
     pub account_public_key: String,
     /// A public key to represent the treasure, bech32 encoded
     pub treasure_public_key: String,
-    /// An image, base64 encoded
+    /// An image hash, base64 encoded
     pub treasure_hash: String,
     /// A base64-encoded signature by the account of
     /// the string "plant",
@@ -105,7 +105,7 @@ pub struct ClaimRequest {
     treasure_signature: String,
 }
 
-pub fn plant_treasure_with_key(plant_info: PlantRequest) -> Result<(), GeonftError> {
+pub fn plant_treasure_with_key(plant_info: PlantRequest) -> Result<(), anyhow::Error> {
     let treasure_pubkey_decode = crypto::decode_treasure_public_key(&plant_info.treasure_public_key)?;
     let treasure_pubkey_encode = crypto::encode_treasure_public_key(&treasure_pubkey_decode)?;
 
@@ -133,6 +133,8 @@ pub fn plant_treasure_with_key(plant_info: PlantRequest) -> Result<(), GeonftErr
         account_signature,
     )?;
 
+    
+    
     /*
     let filename = format!("{}/{key}", data::PLANT_DIR, key = treasure_key_encode);
     fs::create_dir_all(data::PLANT_DIR)?;
@@ -150,10 +152,12 @@ pub enum GeonftError {
 }
 
 impl From<anyhow::Error> for GeonftError {
-    fn from(error: anyhow::Error) -> Self {
-        GeonftError::SolanaError(ProgramError::InvalidArgument)
+    fn from(e: anyhow::Error) -> Self {
+        GeonftError::OtherError(e)
     }
 }
+
+
 
 #[cfg(test)]
 mod tests {
