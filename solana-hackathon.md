@@ -607,6 +607,22 @@ and just `cd` into the `geonft_solana` directory to build it.
 When we add ed25519-dalek to our dependencies we start seeing errors
 about large stack frames,
 but the build still succeeds.
+
+They look like this:
+
+```
+$ cargo build-bpf
+BPF SDK: /<local_path>/solana/install/releases/1.6.9/solana-release/bin/sdk/bpf
+Running: rustup toolchain list -v
+Running: cargo +bpf build --target bpfel-unknown-unknown --release
+warning: /<local_path>/geonft/src/geonft/Cargo.toml: unused manifest key: global
+   Compiling serde v1.0.126
+   Compiling curve25519-dalek v3.1.0
+   Compiling ed25519-dalek v1.0.1
+Error: Function _ZN209_$LT$curve25519_dalek..window..NafLookupTable8$LT$curve25519_dalek..backend..serial..curve_models..ProjectiveNielsPoint$GT$$u20$as$u20$core..convert..From$LT$$RF$curve25519_dalek..edwards..EdwardsPoint$GT$$GT$4from17hbabee800aa927908E Stack offset of -10920 exceeded max offset of -4096 by 6824 bytes, please minimize large stack variables
+
+```
+
 I ask in #hack-rust-support
 
 > After adding ed25519-dalek crate to my solana program, I get (non-fatal) errors when building that say "Stack
@@ -616,9 +632,17 @@ And again:
 
 > Can I get access to the #developer-support channel?
 
+Somebody named "Metric O'Forte" explains to me that I need to go to the `#welcome` channel
+and follow the instructions from Carl-bot to become a developer. So I do that.
+
+Still waiting on solutions to the stack offset problem,
+but now that I'm a developer and can talk in `#developer-support` I ask there:
+
+> After adding ed25519-dalek crate to my solana program, I get errors when building that say "Stack
+  offset of -7680 exceeded max offset of -4096 by 3584 bytes, please minimize large stack variables".
+  What can I do about this?
+
 TODO
-
-
 
 
 
@@ -814,6 +838,7 @@ which will presumably parse that blob.
 After some further hacking I realize that `Account` is deserializeble via serde,
 but I'm beginning to think this `Account` is not the same as the `Account` type
 in the TypeScript API.
+I'm doing something wrong.
 
 I take a look at the source for the ["SPL Token program command line utility"][splt].
 From this I immediately discover the [`solana_cli_config`] crate,
@@ -830,7 +855,7 @@ I look at the ["feature proposal" CLI][fpc] in hopes it is smaller.
 [fpc]: https://github.com/solana-labs/solana-program-library/blob/master/feature-proposal/cli/src/main.rs
 
 Yeah, this is easier to crib from.
-And now I gather that the structure in the TypeScript Helloworld client
+And now I gather that the structure of the TypeScript Helloworld client
 isn't really appropriate for a Rust client.
 I basically need to start over.
 This time I'm going to use the SDK to load the CLI config file,
@@ -866,27 +891,87 @@ error[E0277]: `dyn std::error::Error` cannot be shared between threads safely
    = note: required by `from_residual`
 ```
 
-Errors in Rust that are not `Send + Sync + 'static` are a pain.
-Is there a good reason Solana's error types are just `Error`?
+Errors in Rust that are not `Error + Send + Sync + 'static` are a pain.
+Is there a good reason this error type is just `Error`?
 
+After some hacking,
+cribbing from both the "feature proposal" Rust client
+and the "Helloworld" TypeScript client,
+I arrive at three functions
+that: load the CLI config and the paying account keypair,
+connect to the Solana node and run a sanity check,
+and load the program keypair and verify the program is deployed:
 
+```rust
+pub struct Config {
+    json_rpc_url: String,
+    keypair: Keypair,
+}
 
+pub fn load_config() -> Result<Config> {
+    let config_file = solana_cli_config::CONFIG_FILE.as_ref().ok_or_else(|| anyhow!("config file path"))?;
+    let cli_config = solana_cli_config::Config::load(&config_file)?;
+    let json_rpc_url = cli_config.json_rpc_url;
+    let keypair = read_keypair_file(&cli_config.keypair_path).map_err(|e| anyhow!("{}", e))?;
+    Ok(Config {
+        json_rpc_url,
+        keypair,
+    })
+}
 
+pub fn connect(config: &Config) -> Result<RpcClient> {
 
+    info!("connecting to solana node at {}", config.json_rpc_url);
+    let client = RpcClient::new_with_commitment(config.json_rpc_url.clone(), CommitmentConfig::confirmed());
 
+    let version = client.get_version()?;
+    info!("RPC version: {:?}", version);
 
+    Ok(client)
+}
 
-TODO:
+static DEPLOY_PATH: &str = "target/deploy";
+static PROGRAM_SO_PATH: &str = "geonft_solana.so";
+static PROGRAM_KEYPAIR_PATH: &str = "geonft_solana-keypair.json";
 
+pub fn get_program_keypair(client: &RpcClient) -> Result<Keypair> {
+    let manifest_dir = env!("CARGO_MANIFEST_DIR");
+    let deploy_path = format!("{}/../../{}", manifest_dir, DEPLOY_PATH);
+    let program_so_path = format!("{}/{}", deploy_path, PROGRAM_SO_PATH);
+    let program_keypair_path = format!("{}/{}", deploy_path, PROGRAM_KEYPAIR_PATH);
+
+    info!("loading program keypair from {}", program_keypair_path);
+
+    let program_keypair = read_keypair_file(&program_keypair_path)
+        .map_err(|e| anyhow!("{}", e))
+        .context("unable to load program keypair")?;
+
+    let program_id = program_keypair.pubkey();
+
+    info!("program id: {}", program_id);
+
+    let account = client.get_account(&program_id)
+        .context("unable to get program account")?;
+
+    if !account.executable {
+        bail!("solana account not executable");
+    }
+
+    Ok(program_keypair)
+}
 ```
-:geonft_solana aimeez$ cargo build-bpf
-BPF SDK: /<local_path>/solana/install/releases/1.6.9/solana-release/bin/sdk/bpf
-Running: rustup toolchain list -v
-Running: cargo +bpf build --target bpfel-unknown-unknown --release
-warning: /<local_path>/geonft/src/geonft/Cargo.toml: unused manifest key: global
-   Compiling serde v1.0.126
-   Compiling curve25519-dalek v3.1.0
-   Compiling ed25519-dalek v1.0.1
-Error: Function _ZN209_$LT$curve25519_dalek..window..NafLookupTable8$LT$curve25519_dalek..backend..serial..curve_models..ProjectiveNielsPoint$GT$$u20$as$u20$core..convert..From$LT$$RF$curve25519_dalek..edwards..EdwardsPoint$GT$$GT$4from17hbabee800aa927908E Stack offset of -10920 exceeded max offset of -4096 by 6824 bytes, please minimize large stack variables
 
-```
+The next step in the Helloworld program is to
+"derive the address of a greeting account from the program so that it's easy to find later".
+This seems like something I need to do as well.
+Based on experience with other blockchains,
+I suspect that just having the program uploaded to the blockchain isn't enough to use it,
+but that it needs to be instantiated into one or more accounts before it can run,
+and I think that is what this Helloworld code is doing.
+
+
+
+
+
+
+
