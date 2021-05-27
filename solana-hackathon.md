@@ -755,6 +755,7 @@ So even without adequate docs it was pretty easy to figure
 out how to connect to a solana node and query something.
 
 
+
 ## Reproducing the Helloworld example client in Rust
 
 Since there don't seem to be Rust client examples to work off of,
@@ -969,9 +970,45 @@ I suspect that just having the program uploaded to the blockchain isn't enough t
 but that it needs to be instantiated into one or more accounts before it can run,
 and I think that is what this Helloworld code is doing.
 
+I slowly work through the problem by reading the Helloworld TypeScript code,
+search the `solana_sdk` and `solana_client` API docs for similarly-named methods.
+I reach a point where I am calling [`get_minimum_balance_for_rent_exemption`],
+but that method is failing with
 
+[`get_minimum_balance_for_rent_exemption`]: https://docs.rs/solana-client/1.6.9/solana_client/rpc_client/struct.RpcClient.html#method.get_minimum_balance_for_rent_exemption
 
+```
+Error: RPC request error: Failed to deserialize RPC error response: {"code":-32600,"message":"Invalid request"} [missing field `data`]
+```
 
+I think maybe I am using this method incorrectly,
+and want to look at some example Rust code.
+The `feature-proposal` client doesn't use this method,
+so I ripgrep the `solana-program-library` repo.
 
+The [`token` CLI] uses it,
+but not in a way that is really different from what I'm doing.
+The big difference is that I am fudging the `data_len` parameter
+by just passing in `1_000_000_000` and hoping it is large enough,
+while the examples are calculating the data length exactly.
+One billion is way larger than the data lengths used by the `token` program,
+so maybe I just picked too big a number.
 
+[`token` CLI]: https://github.com/solana-labs/solana-program-library/blob/master/token/cli/src/main.rs#L275
 
+I try the same call with `data_len` as 100.
+
+And that works.
+
+Strange error,
+but I think I understand:
+there were two errors here.
+The RPC client itself had an error,
+where the server returned a response with a missing `data` field,
+so deserializing the response failed;
+and the server returned an "invalid request" error,
+presumably because a data length of one billion bytes is bogus.
+
+I know my program is going to require more than 100 bytes of data,
+so I set it to 10_000 for now,
+and verify that I am allowed to store at least that many bytes.

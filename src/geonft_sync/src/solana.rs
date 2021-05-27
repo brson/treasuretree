@@ -4,13 +4,18 @@ use std::fs::File;
 use std::io::BufReader;
 use std::net::SocketAddr;
 use std::time::Duration;
+use std::convert::TryInto;
 
 use solana_client::rpc_client::RpcClient;
 use solana_client::thin_client::{self, ThinClient};
 use solana_sdk::account::Account;
 use solana_sdk::commitment_config::CommitmentConfig;
 use solana_sdk::pubkey::Pubkey;
+
 use solana_sdk::signature::{read_keypair_file, Keypair, Signer};
+
+use solana_sdk::system_instruction;
+use solana_sdk::transaction::Transaction;
 
 pub struct Config {
     pub json_rpc_url: String,
@@ -78,22 +83,56 @@ pub fn get_program_keypair(client: &RpcClient) -> Result<Keypair> {
     Ok(program_keypair)
 }
 
-pub fn get_program_instance_account(
-    client: &RpcClient,
-    payer_account: &Keypair,
-    program_keypair: &Keypair,
-) -> Result<Pubkey> {
-    let pubkey =
-        Pubkey::create_with_seed(&payer_account.pubkey(), "geonft", &program_keypair.pubkey())?;
+pub fn get_program_instance_account(client: &RpcClient, payer_account: &Keypair, program_keypair: &Keypair) -> Result<Pubkey> {
+    static SEED: &str = "geonft";
+
+    let pubkey = Pubkey::create_with_seed(
+        &payer_account.pubkey(),
+        SEED,
+        &program_keypair.pubkey())?;
 
     info!("program account pubkey: {}", pubkey);
 
     let account = client.get_account(&pubkey);
 
-    if account.is_ok() {
-        Ok(pubkey)
-    } else {
+    if !account.is_ok() {
         info!("creating program instance at {}", pubkey);
-        todo!()
+
+        let contract_size = get_contract_size(client)?;
+        info!("contract size: {}", contract_size);
+        let lamports = client.get_minimum_balance_for_rent_exemption(contract_size)?;
+        info!("minimim balance for rent exemption: {}", lamports);
+
+        let instr = system_instruction::create_account_with_seed(
+            &payer_account.pubkey(),
+            &pubkey,
+            &payer_account.pubkey(),
+            SEED,
+            lamports,
+            contract_size.try_into().expect("u64"),
+            &program_keypair.pubkey(),
+        );
+
+        let recent_blockhash = client.get_recent_blockhash()?.0;
+        info!("recent blockhash: {}", recent_blockhash);
+
+        let tx = Transaction::new_signed_with_payer(
+            &[instr],
+            Some(&payer_account.pubkey()),
+            &[payer_account],
+            recent_blockhash,
+        );
+
+        let sig = client.send_transaction(&tx)?;
+
+        info!("account created");
+        info!("signature: {}", sig);
     }
+
+    Ok(pubkey)
+}
+
+fn get_contract_size(client: &RpcClient) -> Result<usize> {
+    // TODO
+    Ok(10_000)
 }
