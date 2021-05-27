@@ -1411,6 +1411,7 @@ dependencies = [
  "bech32",
  "chrono",
  "ed25519-dalek",
+ "geonft_data",
  "geonft_nostd",
  "geonft_shared",
  "image",

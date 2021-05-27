@@ -1,5 +1,5 @@
 use borsh::{BorshDeserialize, BorshSerialize};
-use geonft_data::{ClaimRequest, GeonftRequest, PlantRequest};
+use geonft_data::{ClaimRequest, GeonftRequest, PlantRequestHash};
 use geonft_nostd::crypto;
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
@@ -47,13 +47,13 @@ pub fn process_instruction(
 
 #[derive(BorshDeserialize, BorshSerialize, Debug)]
 struct Treasure {
-    plant_treasure: HashMap<String, PlantRequest>,
+    plant_treasure: HashMap<String, PlantRequestHash>,
     claim_treasure: HashMap<String, ClaimRequest>,
 }
 
 pub fn plant_treasure_with_key(
     account: &AccountInfo,
-    plant_info: PlantRequest,
+    plant_info: PlantRequestHash,
 ) -> Result<(), GeonftError> {
     let treasure_pubkey_decode =
         crypto::decode_treasure_public_key(&plant_info.treasure_public_key)?;

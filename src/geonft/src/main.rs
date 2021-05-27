@@ -5,6 +5,7 @@
 extern crate rocket;
 
 use anyhow::{anyhow, bail, Result};
+use geonft_data::PlantRequest;
 use geonft_shared::io;
 use rocket::http::{ContentType, Method, RawStr};
 use rocket::response::{content::Html, Content, Responder};
@@ -174,7 +175,7 @@ fn treasure_image(public_key: &RawStr) -> Result<Content<Vec<u8>>> {
 
     let path = format!("{}/{}", io::PLANT_DIR, public_key);
     let file = BufReader::new(File::open(path)?);
-    let record: api::PlantRequest = serde_json::from_reader(file)?;
+    let record: PlantRequest = serde_json::from_reader(file)?;
     let encoded_image = record.image;
     let decoded_image = base64::decode(&encoded_image)?;
 
