@@ -1,10 +1,10 @@
 use anyhow::{anyhow, bail, Context, Result};
 use log::info;
+use std::convert::TryInto;
 use std::fs::File;
 use std::io::BufReader;
 use std::net::SocketAddr;
 use std::time::Duration;
-use std::convert::TryInto;
 
 use solana_client::rpc_client::RpcClient;
 use solana_client::thin_client::{self, ThinClient};
@@ -83,13 +83,15 @@ pub fn get_program_keypair(client: &RpcClient) -> Result<Keypair> {
     Ok(program_keypair)
 }
 
-pub fn get_program_instance_account(client: &RpcClient, payer_account: &Keypair, program_keypair: &Keypair) -> Result<Pubkey> {
+pub fn get_program_instance_account(
+    client: &RpcClient,
+    payer_account: &Keypair,
+    program_keypair: &Keypair,
+) -> Result<Pubkey> {
     static SEED: &str = "geonft";
 
-    let pubkey = Pubkey::create_with_seed(
-        &payer_account.pubkey(),
-        SEED,
-        &program_keypair.pubkey())?;
+    let pubkey =
+        Pubkey::create_with_seed(&payer_account.pubkey(), SEED, &program_keypair.pubkey())?;
 
     info!("program account pubkey: {}", pubkey);
 
