@@ -1,0 +1,6 @@
+#!/bin/bash
+
+wasm-pack build --target=web src/geonft_wasm
+cargo build-bpf --manifest-path=src/geonft_solana/Cargo.toml
+cargo build -p geonft
+cargo build -p geonft_sync
