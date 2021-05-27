@@ -1012,3 +1012,20 @@ presumably because a data length of one billion bytes is bogus.
 I know my program is going to require more than 100 bytes of data,
 so I set it to 10_000 for now,
 and verify that I am allowed to store at least that many bytes.
+
+
+
+
+
+
+
+
+
+
+# todo
+
+Transaction executed in slot 109259:
+  Signature: 4b3QgitAR8ZsWimQXdCg59m1F2U5jbstQwX4YhNucpfaLHEvG9sSX6EqazJECYdrAothUqTwFx1yD7M9EyNqkgUN
+  Status: Error processing Instruction 0: account data too small for instruction
+  Log Messages:
+    ProgramData account not large enough
