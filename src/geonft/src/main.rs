@@ -5,7 +5,7 @@
 extern crate rocket;
 
 use anyhow::{anyhow, bail, Result};
-use geonft_shared::data;
+use geonft_shared::io;
 use rocket::http::{ContentType, Method, RawStr};
 use rocket::response::{content::Html, Content, Responder};
 use rocket::Data;
@@ -38,14 +38,14 @@ fn static_page(page: String) -> Template {
 
 #[get("/recent")]
 fn recent_page() -> Result<Template> {
-    fs::create_dir_all(data::PLANT_DIR)?;
+    fs::create_dir_all(io::PLANT_DIR)?;
 
     // This nightmare expression collects DirEntrys for every
     // thing in the directory that is a file,
     // and extracting the modify time,
     // while also bubbling any possible errors.
     // It does the "collect Iter<Item = Result> into Result<Vec>" trick.
-    let mut files = fs::read_dir(data::PLANT_DIR)?
+    let mut files = fs::read_dir(io::PLANT_DIR)?
         // Get the file metadata
         .map(|dent: Result<DirEntry, _>| dent.and_then(|dent| Ok((dent.metadata()?, dent))))
         // Only keep entries that are files or errors
@@ -114,7 +114,7 @@ fn treasure_page(public_key: &RawStr) -> Result<Template> {
     let public_key = crypto::decode_treasure_public_key(&public_key)?;
     let public_key = crypto::encode_treasure_public_key(&public_key)?;
 
-    let path = format!("{}/{}", data::PLANT_DIR, public_key);
+    let path = format!("{}/{}", io::PLANT_DIR, public_key);
     let file = fs::metadata(path)?;
     let time = file.modified()?;
     let planted_date_time = chrono::DateTime::<chrono::Local>::from(time);
@@ -172,7 +172,7 @@ fn treasure_image(public_key: &RawStr) -> Result<Content<Vec<u8>>> {
     let public_key = crypto::decode_treasure_public_key(&public_key)?;
     let public_key = crypto::encode_treasure_public_key(&public_key)?;
 
-    let path = format!("{}/{}", data::PLANT_DIR, public_key);
+    let path = format!("{}/{}", io::PLANT_DIR, public_key);
     let file = BufReader::new(File::open(path)?);
     let record: api::PlantRequest = serde_json::from_reader(file)?;
     let encoded_image = record.image;
