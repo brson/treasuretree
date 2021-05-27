@@ -10,6 +10,7 @@ use solana_program::{
     pubkey::Pubkey,
 };
 use std::collections::HashMap;
+use anyhow::anyhow;
 
 // Declare and export the program's entrypoint
 entrypoint!(process_instruction);
@@ -40,7 +41,7 @@ pub fn process_instruction(
         }
         GeonftRequest::ClaimTreasure(claim_info) => {
             msg!("claim info: {:?}", &claim_info);
-            Ok(())
+            Ok(()) // todo
         }
     }
 }
@@ -85,6 +86,38 @@ pub fn plant_treasure_with_key(
         .insert(treasure_pubkey_encode, plant_info);
 
     Ok(treasure_data.serialize(&mut &mut account.data.borrow_mut()[..])?)
+}
+
+pub fn claim_treasure_with_key(
+    account: &AccountInfo,
+    claim_info: ClaimRequest
+) -> Result<(), GeonftError> {
+    let treasure_pubkey_decode = crypto::decode_treasure_public_key(&claim_info.treasure_public_key)?;
+    let treasure_pubkey_encode = crypto::encode_treasure_public_key(&treasure_pubkey_decode)?;
+
+    let mut treasure_data = Treasure::try_from_slice(&account.data.borrow())?;
+    if !treasure_data.plant_treasure.contains_key(&treasure_pubkey_encode) {
+        Err(GeonftError::AnyhowError(anyhow!("Treasure doesn't exist")))
+    } else {
+        let account_pubkey_decode = crypto::decode_account_public_key(&claim_info.account_public_key)?;
+        let treasure_signature = crypto::decode_signature(&claim_info.treasure_signature)?;
+        let account_signature = crypto::decode_signature(&claim_info.account_signature)?;
+
+        crypto::verify_claim_request_for_treasure(
+            treasure_pubkey_decode,
+            account_pubkey_decode,
+            treasure_signature,
+        )?;
+
+        crypto::verify_claim_request_for_account(
+            account_pubkey_decode,
+            treasure_pubkey_decode,
+            account_signature,
+        )?;
+
+        treasure_data.claim_treasure.insert(treasure_pubkey_encode, claim_info);
+        Ok(treasure_data.serialize(&mut &mut account.data.borrow_mut()[..])?)
+    }
 }
 
 pub enum GeonftError {
