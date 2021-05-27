@@ -1,6 +1,6 @@
-use geonft_nostd::crypto;
 use anyhow::Result;
 use crypto::ResultWrapper;
+use geonft_nostd::crypto;
 use qrcodegen::QrCode;
 use qrcodegen::QrCodeEcc;
 use serde::{Deserialize, Serialize};

@@ -313,8 +313,8 @@ mod err {
 
 #[cfg(not(feature = "std-errors"))]
 mod err {
-    use alloc::format;
     use super::ResultWrapper;
+    use alloc::format;
 
     impl<T> ResultWrapper<T> for Result<T, bech32::Error> {
         fn e(self) -> Result<T, anyhow::Error> {

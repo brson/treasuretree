@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result, Context, bail};
+use anyhow::{anyhow, bail, Context, Result};
 use log::info;
 use std::fs::File;
 use std::io::BufReader;
@@ -8,9 +8,9 @@ use std::time::Duration;
 use solana_client::rpc_client::RpcClient;
 use solana_client::thin_client::{self, ThinClient};
 use solana_sdk::account::Account;
-use solana_sdk::signature::{read_keypair_file, Keypair, Signer};
 use solana_sdk::commitment_config::CommitmentConfig;
 use solana_sdk::pubkey::Pubkey;
+use solana_sdk::signature::{read_keypair_file, Keypair, Signer};
 
 pub struct Config {
     pub json_rpc_url: String,
@@ -18,7 +18,9 @@ pub struct Config {
 }
 
 pub fn load_config() -> Result<Config> {
-    let config_file = solana_cli_config::CONFIG_FILE.as_ref().ok_or_else(|| anyhow!("config file path"))?;
+    let config_file = solana_cli_config::CONFIG_FILE
+        .as_ref()
+        .ok_or_else(|| anyhow!("config file path"))?;
     let cli_config = solana_cli_config::Config::load(&config_file)?;
     let json_rpc_url = cli_config.json_rpc_url;
     let keypair = read_keypair_file(&cli_config.keypair_path).map_err(|e| anyhow!("{}", e))?;
@@ -29,14 +31,15 @@ pub fn load_config() -> Result<Config> {
 }
 
 pub fn connect(config: &Config) -> Result<RpcClient> {
-
     info!("connecting to solana node at {}", config.json_rpc_url);
-    let client = RpcClient::new_with_commitment(config.json_rpc_url.clone(), CommitmentConfig::confirmed());
+    let client =
+        RpcClient::new_with_commitment(config.json_rpc_url.clone(), CommitmentConfig::confirmed());
 
     let version = client.get_version()?;
     info!("RPC version: {:?}", version);
 
-    let account = client.get_account(&config.keypair.pubkey())
+    let account = client
+        .get_account(&config.keypair.pubkey())
         .context("unable to get payer account")?;
 
     info!("payer account: {:?}", account);
@@ -64,7 +67,8 @@ pub fn get_program_keypair(client: &RpcClient) -> Result<Keypair> {
 
     info!("program id: {}", program_id);
 
-    let account = client.get_account(&program_id)
+    let account = client
+        .get_account(&program_id)
         .context("unable to get program account")?;
 
     if !account.executable {
@@ -74,11 +78,13 @@ pub fn get_program_keypair(client: &RpcClient) -> Result<Keypair> {
     Ok(program_keypair)
 }
 
-pub fn get_program_instance_account(client: &RpcClient, payer_account: &Keypair, program_keypair: &Keypair) -> Result<Pubkey> {
-    let pubkey = Pubkey::create_with_seed(
-        &payer_account.pubkey(),
-        "geonft",
-        &program_keypair.pubkey())?;
+pub fn get_program_instance_account(
+    client: &RpcClient,
+    payer_account: &Keypair,
+    program_keypair: &Keypair,
+) -> Result<Pubkey> {
+    let pubkey =
+        Pubkey::create_with_seed(&payer_account.pubkey(), "geonft", &program_keypair.pubkey())?;
 
     info!("program account pubkey: {}", pubkey);
 
@@ -89,5 +95,5 @@ pub fn get_program_instance_account(client: &RpcClient, payer_account: &Keypair,
     } else {
         info!("creating program instance at {}", pubkey);
         todo!()
-    }    
+    }
 }

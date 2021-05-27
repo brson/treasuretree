@@ -1,6 +1,5 @@
 use borsh::{BorshDeserialize, BorshSerialize};
-use serde::{Deserialize, Serialize};
-use serde_json;
+use geonft_nostd::crypto;
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint,
@@ -9,43 +8,18 @@ use solana_program::{
     program_error::ProgramError,
     pubkey::Pubkey,
 };
-use geonft_nostd::crypto;
-
-/// Define the type of state stored in accounts
-#[derive(BorshSerialize, BorshDeserialize, Debug)]
-pub struct GreetingAccount {
-    /// number of greetings
-    pub counter: u32,
-}
+use std::collections::HashMap;
 
 // Declare and export the program's entrypoint
 entrypoint!(process_instruction);
 
 // Program entrypoint's implementation
 pub fn process_instruction(
-    program_id: &Pubkey, // Public key of the account the hello world program was loaded into
-    accounts: &[AccountInfo], // The account to say hello to
-    geonft_data: &[u8],  // Ignored, all helloworld instructions are hellos
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
+    geonft_data: &[u8],
 ) -> ProgramResult {
-    msg!("Geonft_solana entrypoint.");
-
-    let geonft_data = serde_json::from_slice(geonft_data).unwrap(); // convert ? to Solana Result
-    match geonft_data {
-        GeonftRequest::PlantTreasure(plant_info) => {
-            msg!("plant info: {:?}", &plant_info);
-        }
-        GeonftRequest::ClaimTreasure(claim_info) => {
-            msg!("claim info: {:?}", &claim_info);
-        }
-    };
-
-    msg!("Cool. Finished Geonft part.");
-
-    // content below is Solana's helloworld example
-    // Iterating accounts is safer then indexing
     let accounts_iter = &mut accounts.iter();
-
-    // Get the account to say hello to
     let account = next_account_info(accounts_iter)?;
 
     // The account must be owned by the program in order to modify its data
@@ -54,23 +28,35 @@ pub fn process_instruction(
         return Err(ProgramError::IncorrectProgramId);
     }
 
-    // Increment and store the number of times the account has been greeted
-    let mut greeting_account = GreetingAccount::try_from_slice(&account.data.borrow())?;
-    greeting_account.counter += 1;
-    greeting_account.serialize(&mut &mut account.data.borrow_mut()[..])?;
+    msg!("Geonft_solana entrypoint.");
 
-    msg!("Greeted {} time(s)!", greeting_account.counter);
+    let geonft_data = GeonftRequest::try_from_slice(geonft_data).unwrap(); // convert ? to Solana Result
 
-    Ok(())
+    match geonft_data {
+        GeonftRequest::PlantTreasure(plant_info) => {
+            msg!("plant info: {:?}", &plant_info);
+            Ok(plant_treasure_with_key(&account, plant_info)?)
+        }
+        GeonftRequest::ClaimTreasure(claim_info) => {
+            msg!("claim info: {:?}", &claim_info);
+            Ok(())
+        }
+    }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(BorshSerialize, BorshDeserialize, Debug)]
 enum GeonftRequest {
     PlantTreasure(PlantRequest),
     ClaimTreasure(ClaimRequest),
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(BorshDeserialize, BorshSerialize, Debug)]
+struct Treasure {
+    plant_treasure: HashMap<String, PlantRequest>,
+    claim_treasure: HashMap<String, ClaimRequest>,
+}
+
+#[derive(Hash, Eq, PartialEq, BorshSerialize, BorshDeserialize, Debug)]
 pub struct PlantRequest {
     /// The public key of the account that is planting the treasure
     pub account_public_key: String,
@@ -89,7 +75,7 @@ pub struct PlantRequest {
     pub treasure_signature: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(BorshSerialize, BorshDeserialize, Debug)]
 pub struct ClaimRequest {
     /// The public key of the claiming account, bech32 encoded
     account_public_key: String,
@@ -105,8 +91,12 @@ pub struct ClaimRequest {
     treasure_signature: String,
 }
 
-pub fn plant_treasure_with_key(plant_info: PlantRequest) -> Result<(), anyhow::Error> {
-    let treasure_pubkey_decode = crypto::decode_treasure_public_key(&plant_info.treasure_public_key)?;
+pub fn plant_treasure_with_key(
+    account: &AccountInfo,
+    plant_info: PlantRequest,
+) -> Result<(), GeonftError> {
+    let treasure_pubkey_decode =
+        crypto::decode_treasure_public_key(&plant_info.treasure_public_key)?;
     let treasure_pubkey_encode = crypto::encode_treasure_public_key(&treasure_pubkey_decode)?;
 
     let account_pubkey_decode = crypto::decode_account_public_key(&plant_info.account_public_key)?;
@@ -115,10 +105,6 @@ pub fn plant_treasure_with_key(plant_info: PlantRequest) -> Result<(), anyhow::E
     let account_signature = crypto::decode_signature(&plant_info.account_signature)?;
 
     let treasure_hash = &plant_info.treasure_hash;
-
-    // todo: figure out IPFS's hash scheme
-    // todo: get treasure_hash 
-    // todo check the treasure doesn't exist
 
     crypto::verify_plant_request_for_treasure(
         treasure_pubkey_decode,
@@ -133,31 +119,47 @@ pub fn plant_treasure_with_key(plant_info: PlantRequest) -> Result<(), anyhow::E
         account_signature,
     )?;
 
-    
-    
-    /*
-    let filename = format!("{}/{key}", data::PLANT_DIR, key = treasure_key_encode);
-    fs::create_dir_all(data::PLANT_DIR)?;
+    let mut treasure_data = Treasure::try_from_slice(&account.data.borrow())?;
+    treasure_data
+        .plant_treasure
+        .insert(treasure_pubkey_encode, plant_info);
 
-    let mut file = File::create(filename)?;
-    serde_json::to_writer(file, &plant_info.0)?;
-     */
-
-    Ok(())
+    Ok(treasure_data.serialize(&mut &mut account.data.borrow_mut()[..])?)
 }
 
 pub enum GeonftError {
     SolanaError(ProgramError),
-    OtherError(anyhow::Error),
+    AnyhowError(anyhow::Error),
+    IOError(std::io::Error),
 }
 
 impl From<anyhow::Error> for GeonftError {
     fn from(e: anyhow::Error) -> Self {
-        GeonftError::OtherError(e)
+        GeonftError::AnyhowError(e)
     }
 }
 
+impl From<std::io::Error> for GeonftError {
+    fn from(e: std::io::Error) -> Self {
+        GeonftError::IOError(e)
+    }
+}
 
+impl From<GeonftError> for ProgramError {
+    fn from(e: GeonftError) -> Self {
+        match e {
+            GeonftError::SolanaError(e) => e,
+            GeonftError::AnyhowError(e) => {
+                msg!("{}", e);
+                ProgramError::Custom(0)
+            }
+            GeonftError::IOError(e) => {
+                msg!("{}", e);
+                ProgramError::Custom(1)
+            }
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {

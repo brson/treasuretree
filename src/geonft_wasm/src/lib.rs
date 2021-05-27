@@ -6,8 +6,8 @@ use rand::rngs::OsRng;
 use serde_json;
 use wasm_bindgen::prelude::*;
 
-use geonft_nostd::crypto;
 use crypto::ResultWrapper;
+use geonft_nostd::crypto;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
