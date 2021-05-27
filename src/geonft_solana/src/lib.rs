@@ -105,17 +105,6 @@ pub struct ClaimRequest {
     treasure_signature: String,
 }
 
-pub enum GeonftError {
-    SolanaError(ProgramError),
-    OtherError(anyhow::Error),
-}
-
-impl From<anyhow::Error> for GeonftError {
-    fn from(error: anyhow::Error) -> Self {
-        GeonftError::SolanaError(ProgramError::InvalidArgument)
-    }
-}
-
 pub fn plant_treasure_with_key(plant_info: PlantRequest) -> Result<(), GeonftError> {
     let treasure_pubkey_decode = crypto::decode_treasure_public_key(&plant_info.treasure_public_key)?;
     let treasure_pubkey_encode = crypto::encode_treasure_public_key(&treasure_pubkey_decode)?;
@@ -128,10 +117,8 @@ pub fn plant_treasure_with_key(plant_info: PlantRequest) -> Result<(), GeonftErr
     let treasure_hash = &plant_info.treasure_hash;
 
     // todo: figure out IPFS's hash scheme
-    // todo: get treasure_hash of image_blob 
-
+    // todo: get treasure_hash 
     // todo check the treasure doesn't exist
-    // todo validate image type
 
     crypto::verify_plant_request_for_treasure(
         treasure_pubkey_decode,
@@ -155,6 +142,17 @@ pub fn plant_treasure_with_key(plant_info: PlantRequest) -> Result<(), GeonftErr
      */
 
     Ok(())
+}
+
+pub enum GeonftError {
+    SolanaError(ProgramError),
+    OtherError(anyhow::Error),
+}
+
+impl From<anyhow::Error> for GeonftError {
+    fn from(error: anyhow::Error) -> Self {
+        GeonftError::SolanaError(ProgramError::InvalidArgument)
+    }
 }
 
 #[cfg(test)]

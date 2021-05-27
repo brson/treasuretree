@@ -10,6 +10,7 @@ use std::time::Duration;
 use geonft_shared::data;
 
 mod solana;
+mod ipfs;
 
 fn main() -> Result<()> {
     env_logger::init();
