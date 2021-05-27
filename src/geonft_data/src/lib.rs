@@ -1,12 +1,18 @@
-use borsh::{BorshDeserialize, BorshSerialize};
+use serde::{Serialize, Deserialize};
+use borsh::{BorshSerialize, BorshDeserialize};
 
-#[derive(BorshSerialize, BorshDeserialize, Debug)]
+#[derive(Debug)]
+#[derive(BorshSerialize, BorshDeserialize)]
+#[derive(Serialize, Deserialize)]
 pub enum GeonftRequest {
     PlantTreasure(PlantRequest),
     ClaimTreasure(ClaimRequest),
 }
 
-#[derive(Hash, Eq, PartialEq, BorshSerialize, BorshDeserialize, Debug)]
+#[derive(Debug)]
+#[derive(BorshSerialize, BorshDeserialize)]
+#[derive(Serialize, Deserialize)]
+#[derive(Hash, Eq, PartialEq)]
 pub struct PlantRequest {
     /// The public key of the account that is planting the treasure
     pub account_public_key: String,
@@ -25,7 +31,10 @@ pub struct PlantRequest {
     pub treasure_signature: String,
 }
 
-#[derive(BorshSerialize, BorshDeserialize, Debug)]
+#[derive(Debug)]
+#[derive(BorshSerialize, BorshDeserialize)]
+#[derive(Serialize, Deserialize)]
+#[derive(Hash, Eq, PartialEq)]
 pub struct ClaimRequest {
     /// The public key of the claiming account, bech32 encoded
     account_public_key: String,

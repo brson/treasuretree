@@ -1428,6 +1428,8 @@ version = "0.1.0"
 dependencies = [
  "borsh 0.7.2",
  "borsh-derive 0.8.2",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

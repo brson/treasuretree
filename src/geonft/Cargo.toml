@@ -14,6 +14,7 @@ geonft_shared = { path = "../geonft_shared" }
 
 anyhow = "1.0.40"
 rocket = "0.4.9"
+serde = { version = "1.0.125", features = ["derive"] }
 serde_json = "1.0.64"
 rand = "0.7.3"
 ed25519-dalek = "1.0.1"
@@ -22,10 +23,6 @@ base64 = "0.13.0"
 chrono = "0.4.19"
 sha256 = "1.0.2"
 image = "0.23.14"
-
-[dependencies.serde]
-version = "1.0.125"
-features = ["derive"]
 
 [dependencies.rocket_contrib]
 version = "0.4.9"
