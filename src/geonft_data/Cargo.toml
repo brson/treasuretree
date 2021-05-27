@@ -1,0 +1,8 @@
+[package]
+name = "geonft_data"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+borsh = "0.7.1"
+borsh-derive = "0.8.1"

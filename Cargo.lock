@@ -1423,6 +1423,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "geonft_data"
+version = "0.1.0"
+dependencies = [
+ "borsh 0.7.2",
+ "borsh-derive 0.8.2",
+]
+
+[[package]]
 name = "geonft_nostd"
 version = "0.1.0"
 dependencies = [
@@ -1451,6 +1459,7 @@ dependencies = [
  "borsh 0.7.2",
  "borsh-derive 0.8.2",
  "ed25519-dalek",
+ "geonft_data",
  "geonft_nostd",
  "solana-program",
  "solana-program-test",
@@ -1464,6 +1473,7 @@ dependencies = [
  "anyhow",
  "dirs",
  "env_logger",
+ "geonft_data",
  "geonft_shared",
  "ipfs-api",
  "log 0.4.14",
