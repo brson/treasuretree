@@ -1009,4 +1009,6 @@ so deserializing the response failed;
 and the server returned an "invalid request" error,
 presumably because a data length of one billion bytes is bogus.
 
-
+I know my program is going to require more than 100 bytes of data,
+so I set it to 10_000 for now,
+and verify that I am allowed to store at least that many bytes.

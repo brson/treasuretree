@@ -128,5 +128,5 @@ pub fn get_program_instance_account(client: &RpcClient, payer_account: &Keypair,
 
 fn get_contract_size(client: &RpcClient) -> Result<usize> {
     // TODO
-    Ok(100)
+    Ok(10_000)
 }
