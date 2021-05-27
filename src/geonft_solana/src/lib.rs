@@ -41,7 +41,7 @@ pub fn process_instruction(
         }
         GeonftRequest::ClaimTreasure(claim_info) => {
             msg!("claim info: {:?}", &claim_info);
-            Ok(()) // todo
+            Ok(claim_treasure_with_key(&account, claim_info)?)
         }
     }
 }
