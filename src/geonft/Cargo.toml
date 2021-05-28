@@ -18,7 +18,6 @@ rocket = "0.4.9"
 serde = { version = "1.0.125", features = ["derive"] }
 serde_json = "1.0.64"
 rand = "0.7.3"
-ed25519-dalek = "1.0.1"
 bech32 = "0.8.0"
 base64 = "0.13.0"
 chrono = "0.4.19"
