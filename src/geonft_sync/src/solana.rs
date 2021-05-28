@@ -171,7 +171,7 @@ pub fn upload_plant(plant_key: &str,
     let mut tx = Transaction::new_with_payer(
         &[inst], Some(&config.keypair.pubkey()));
     let blockhash = client.get_recent_blockhash()?.0;
-    tx.try_sign(&[&config.keypair, program], blockhash)?;
+    tx.try_sign(&[&config.keypair], blockhash)?;
     client.send_and_confirm_transaction_with_spinner(&tx)?;
 
     Ok(())
@@ -184,7 +184,7 @@ fn create_plant_instruction(plant_request: PlantRequestHash,
     Ok(Instruction {
         program_id: *program_id,
         accounts: vec![
-            AccountMeta::new(*program_instance, true),
+            AccountMeta::new(*program_instance, false),
         ],
         data,
     })
