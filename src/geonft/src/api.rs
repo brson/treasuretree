@@ -47,16 +47,16 @@ pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<Pl
     let treasure_hash = crypto::get_hash(&plant_info.image)?;
 
     crypto::verify_plant_request_for_treasure(
-        treasure_key_decode,
-        account_key_decode,
+        &treasure_key_decode,
+        &account_key_decode,
         treasure_hash.as_bytes(),
-        treasure_signature,
+        &treasure_signature,
     )?;
 
     crypto::verify_plant_request_for_account(
-        account_key_decode,
-        treasure_key_decode,
-        account_signature,
+        &account_key_decode,
+        &treasure_key_decode,
+        &account_signature,
     )?;
 
     let filename = format!("{}/{key}", io::PLANT_DIR, key = treasure_key_encode);
@@ -113,15 +113,15 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
         // - sync to blockchain
 
         crypto::verify_claim_request_for_treasure(
-            treasure_key_decode,
-            account_key_decode,
-            treasure_signature,
+            &treasure_key_decode,
+            &account_key_decode,
+            &treasure_signature,
         )?;
 
         crypto::verify_claim_request_for_account(
-            account_key_decode,
-            treasure_key_decode,
-            account_signature,
+            &account_key_decode,
+            &treasure_key_decode,
+            &account_signature,
         )?;
 
         let filename = format!("{}/{key}", io::CLAIM_DIR, key = treasure_key_encode);

@@ -2,17 +2,51 @@ use alloc::format;
 use alloc::string::String;
 use alloc::vec::Vec;
 use anyhow::{bail, Result};
-pub use ed25519_dalek::{Keypair, PublicKey, SecretKey, Signature, Signer};
+
+//pub use ed25519_dalek::{Keypair, PublicKey, SecretKey, Signature, Signer};
+pub use k256::ecdsa::{SigningKey as SecretKey, VerifyingKey as PublicKey, Signature};
+pub use k256::ecdsa::signature::{Signer, Verifier, Signature as SignatureTrait};
 
 use base64;
 use bech32::{FromBase32, ToBase32, Variant};
 use sha256::digest_bytes;
+
+use rand::{CryptoRng, RngCore};
 
 pub static ACCOUNT_SECRET_KEY_HRP: &'static str = "gas";
 pub static ACCOUNT_PUBLIC_KEY_HRP: &'static str = "gap";
 pub static TREASURE_SECRET_KEY_HRP: &'static str = "gts";
 pub static TREASURE_PUBLIC_KEY_HRP: &'static str = "gtp";
 pub static TREASURE_SECRET_URL_PREFIX: &'static str = "http://localhost:8000/claim?key=";
+
+pub struct Keypair {
+    pub secret: SecretKey,
+    pub public: PublicKey,
+}
+
+// duplicated from k256 crate because we have to use rand 0.7
+// for wasm support, and k256 only has rand 0.6
+fn generate_vartime(rng: &mut (impl CryptoRng + RngCore)) -> k256::NonZeroScalar {
+    let mut bytes = k256::FieldBytes::default();
+
+    // TODO: pre-generate several scalars to bring the probability of non-constant-timeness down?
+    loop {
+        rng.fill_bytes(&mut bytes);
+        if let Some(scalar) = k256::NonZeroScalar::from_repr(bytes) {
+            return scalar;
+        }
+    }
+}
+
+pub fn generate_keypair(rng: &mut (impl CryptoRng + RngCore)) -> Keypair {
+    let scalar = generate_vartime(rng);
+    let secret = k256::SecretKey::new(scalar);
+    let secret = SecretKey::from(secret);
+    let public = PublicKey::from(&secret);
+    Keypair {
+        secret, public,
+    }
+}
 
 pub fn keypair_from_account_secret_key(key: &str) -> Result<Keypair> {
     let secret_key = decode_account_secret_key(key)?;
@@ -58,7 +92,8 @@ pub fn encode_treasure_secret_key(key: &SecretKey) -> Result<String> {
 }
 
 fn encode_secret_key(key: &SecretKey, hrp: &str) -> Result<String> {
-    let bytes = key.as_bytes();
+    let bytes = key.to_bytes();
+    let bytes = bytes.as_slice();
     let encoded = bech32::encode(hrp, bytes.to_base32(), Variant::Bech32m).e()?;
     Ok(encoded)
 }
@@ -96,7 +131,7 @@ pub fn encode_treasure_public_key(key: &PublicKey) -> Result<String> {
 }
 
 fn encode_public_key(key: &PublicKey, hrp: &str) -> Result<String> {
-    let bytes = key.as_bytes();
+    let bytes = key.to_bytes();
     let encoded = bech32::encode(hrp, bytes.to_base32(), Variant::Bech32m).e()?;
     Ok(encoded)
 }
@@ -121,7 +156,7 @@ fn decode_public_key(key: &str, hrp: &str) -> Result<PublicKey> {
     }
 
     let bytes = Vec::<u8>::from_base32(&data).e()?;
-    let key = PublicKey::from_bytes(&bytes).e()?;
+    let key = PublicKey::from_sec1_bytes(&bytes).e()?;
     Ok(key)
 }
 
@@ -130,26 +165,26 @@ fn decode_public_key(key: &str, hrp: &str) -> Result<PublicKey> {
 /// - "plant", appended with
 /// - the treasure public key
 pub fn sign_plant_request_for_account(
-    account_secret_key: SecretKey,
-    treasure_public_key: PublicKey,
+    account_secret_key: &SecretKey,
+    treasure_public_key: &PublicKey,
 ) -> Result<Signature> {
     let mut message = Vec::from("plant");
     message.extend_from_slice(&treasure_public_key.to_bytes());
 
-    create_signature(&message, &account_secret_key)
+    create_signature(&message, account_secret_key)
 }
 
 /// With the account public key, verify
 /// the plant request signature.
 pub fn verify_plant_request_for_account(
-    account_public_key: PublicKey,
-    treasure_public_key: PublicKey,
-    signature: Signature,
+    account_public_key: &PublicKey,
+    treasure_public_key: &PublicKey,
+    signature: &Signature,
 ) -> Result<()> {
     let mut message = Vec::from("plant");
     message.extend_from_slice(&treasure_public_key.to_bytes());
 
-    verify_signature(&message, &signature, &account_public_key)
+    verify_signature(&message, signature, account_public_key)
 }
 
 /// With the treasure secret key, sign
@@ -158,30 +193,30 @@ pub fn verify_plant_request_for_account(
 /// - the account public key, appended with
 /// - the hash of the treasure image
 pub fn sign_plant_request_for_treasure(
-    treasure_secret_key: SecretKey,
-    account_public_key: PublicKey,
+    treasure_secret_key: &SecretKey,
+    account_public_key: &PublicKey,
     treasure_hash: &[u8],
 ) -> Result<Signature> {
     let mut message = Vec::from("plant");
     message.extend_from_slice(&account_public_key.to_bytes());
     message.extend_from_slice(treasure_hash);
 
-    create_signature(&message, &treasure_secret_key)
+    create_signature(&message, treasure_secret_key)
 }
 
 /// With the treasure public key, verify
 /// the plant request signature.
 pub fn verify_plant_request_for_treasure(
-    treasure_public_key: PublicKey,
-    account_public_key: PublicKey,
+    treasure_public_key: &PublicKey,
+    account_public_key: &PublicKey,
     treasure_hash: &[u8],
-    signature: Signature,
+    signature: &Signature,
 ) -> Result<()> {
     let mut message = Vec::from("plant");
     message.extend_from_slice(&account_public_key.to_bytes());
     message.extend_from_slice(treasure_hash);
 
-    verify_signature(&message, &signature, &treasure_public_key)
+    verify_signature(&message, signature, treasure_public_key)
 }
 
 /// With the account secret key, sign
@@ -189,26 +224,26 @@ pub fn verify_plant_request_for_treasure(
 /// - "claim", appended with
 /// - the treasure public key
 pub fn sign_claim_request_for_account(
-    account_secret_key: SecretKey,
-    treasure_public_key: PublicKey,
+    account_secret_key: &SecretKey,
+    treasure_public_key: &PublicKey,
 ) -> Result<Signature> {
     let mut message = Vec::from("claim");
     message.extend_from_slice(&treasure_public_key.to_bytes());
 
-    create_signature(&message, &account_secret_key)
+    create_signature(&message, account_secret_key)
 }
 
 /// With the account public key, verify
 /// the claim request signature.
 pub fn verify_claim_request_for_account(
-    account_public_key: PublicKey,
-    treasure_public_key: PublicKey,
-    signature: Signature,
+    account_public_key: &PublicKey,
+    treasure_public_key: &PublicKey,
+    signature: &Signature,
 ) -> Result<()> {
     let mut message = Vec::from("claim");
     message.extend_from_slice(&treasure_public_key.to_bytes());
 
-    verify_signature(&message, &signature, &account_public_key)
+    verify_signature(&message, signature, account_public_key)
 }
 
 /// With the treasure secret key, sign
@@ -216,30 +251,30 @@ pub fn verify_claim_request_for_account(
 /// - "claim", appended with
 /// - the account public key
 pub fn sign_claim_request_for_treasure(
-    treasure_secret_key: SecretKey,
-    account_public_key: PublicKey,
+    treasure_secret_key: &SecretKey,
+    account_public_key: &PublicKey,
 ) -> Result<Signature> {
     let mut message = Vec::from("claim");
     message.extend_from_slice(&account_public_key.to_bytes());
 
-    create_signature(&message, &treasure_secret_key)
+    create_signature(&message, treasure_secret_key)
 }
 
 /// With the treasure public key, verify
 /// the claim request signature.
 pub fn verify_claim_request_for_treasure(
-    treasure_public_key: PublicKey,
-    account_public_key: PublicKey,
-    signature: Signature,
+    treasure_public_key: &PublicKey,
+    account_public_key: &PublicKey,
+    signature: &Signature,
 ) -> Result<()> {
     let mut message = Vec::from("claim");
     message.extend_from_slice(&account_public_key.to_bytes());
 
-    verify_signature(&message, &signature, &treasure_public_key)
+    verify_signature(&message, signature, treasure_public_key)
 }
 
 pub fn encode_signature(sig: &Signature) -> Result<String> {
-    let bytes = sig.to_bytes();
+    let bytes = sig.as_bytes();
     let encoded = base64::encode(bytes);
     Ok(encoded)
 }
@@ -247,22 +282,13 @@ pub fn encode_signature(sig: &Signature) -> Result<String> {
 // Decodes a base64 encoded signature
 pub fn decode_signature(sig: &str) -> Result<Signature> {
     let decoded = base64::decode(sig.as_bytes()).e()?;
-    let mut decoded_array = [0; 64];
-    decoded_array.copy_from_slice(decoded.as_slice());
-
-    let signature = Signature::new(decoded_array);
+    let signature = Signature::from_bytes(&decoded).e()?;
     Ok(signature)
 }
 
 pub fn create_signature(message: &[u8], secret_key: &SecretKey) -> Result<Signature> {
-    let secret_key = SecretKey::from_bytes(&secret_key.to_bytes()).e()?;
-    let public_key = PublicKey::from(&secret_key);
-    let keypair = Keypair {
-        secret: secret_key,
-        public: public_key,
-    };
-
-    let signature = keypair.try_sign(message).e()?;
+    let secret_key = SecretKey::from_bytes(secret_key.to_bytes().as_slice()).e()?;
+    let signature = secret_key.try_sign(message).e()?;
     Ok(signature)
 }
 
@@ -271,7 +297,7 @@ pub fn verify_signature(
     signature: &Signature,
     public_key: &PublicKey,
 ) -> Result<()> {
-    Ok(public_key.verify_strict(message, signature).e()?)
+    Ok(public_key.verify(message, signature).e()?)
 }
 
 pub fn get_hash(data: &str) -> Result<String> {
@@ -298,13 +324,19 @@ mod err {
         }
     }
 
-    impl<T> ResultWrapper<T> for Result<T, ed25519_dalek::ed25519::Error> {
+    /*impl<T> ResultWrapper<T> for Result<T, ed25519_dalek::ed25519::Error> {
+        fn e(self) -> Result<T, anyhow::Error> {
+            Ok(self?)
+        }
+    }*/
+
+    impl<T> ResultWrapper<T> for Result<T, base64::DecodeError> {
         fn e(self) -> Result<T, anyhow::Error> {
             Ok(self?)
         }
     }
 
-    impl<T> ResultWrapper<T> for Result<T, base64::DecodeError> {
+    impl<T> ResultWrapper<T> for Result<T, k256::ecdsa::Error> {
         fn e(self) -> Result<T, anyhow::Error> {
             Ok(self?)
         }
@@ -322,13 +354,19 @@ mod err {
         }
     }
 
-    impl<T> ResultWrapper<T> for Result<T, ed25519_dalek::ed25519::Error> {
+    /*impl<T> ResultWrapper<T> for Result<T, ed25519_dalek::ed25519::Error> {
+        fn e(self) -> Result<T, anyhow::Error> {
+            self.map_err(|e| anyhow::anyhow!("{}", e))
+        }
+    }*/
+
+    impl<T> ResultWrapper<T> for Result<T, base64::DecodeError> {
         fn e(self) -> Result<T, anyhow::Error> {
             self.map_err(|e| anyhow::anyhow!("{}", e))
         }
     }
 
-    impl<T> ResultWrapper<T> for Result<T, base64::DecodeError> {
+    impl<T> ResultWrapper<T> for Result<T, k256::ecdsa::Error> {
         fn e(self) -> Result<T, anyhow::Error> {
             self.map_err(|e| anyhow::anyhow!("{}", e))
         }

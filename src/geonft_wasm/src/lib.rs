@@ -1,9 +1,8 @@
 mod treasure_qrcode;
 mod utils;
-use ed25519_dalek::Keypair;
 use rand::rngs::OsRng;
 use wasm_bindgen::prelude::*;
-use geonft_nostd::crypto;
+use geonft_nostd::crypto::{self, Keypair};
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -72,8 +71,8 @@ pub fn sign_plant_with_treasure_secret_key(
     let account_public_key = crypto::decode_account_public_key(account_public_key).ok()?;
 
     let signature = crypto::sign_plant_request_for_treasure(
-        treasure_secret_key,
-        account_public_key,
+        &treasure_secret_key,
+        &account_public_key,
         treasure_hash.as_bytes(),
     )
     .ok()?;
@@ -90,7 +89,7 @@ pub fn sign_plant_with_account_secret_key(
     let treasure_public_key = crypto::decode_treasure_public_key(treasure_public_key).ok()?;
 
     let signature =
-        crypto::sign_plant_request_for_account(account_secret_key, treasure_public_key).ok()?;
+        crypto::sign_plant_request_for_account(&account_secret_key, &treasure_public_key).ok()?;
 
     crypto::encode_signature(&signature).ok()
 }
@@ -104,7 +103,7 @@ pub fn sign_claim_with_treasure_secret_key(
     let account_public_key = crypto::decode_account_public_key(account_public_key).ok()?;
 
     let signature =
-        crypto::sign_claim_request_for_treasure(treasure_secret_key, account_public_key).ok()?;
+        crypto::sign_claim_request_for_treasure(&treasure_secret_key, &account_public_key).ok()?;
 
     crypto::encode_signature(&signature).ok()
 }
@@ -118,7 +117,7 @@ pub fn sign_claim_with_account_secret_key(
     let treasure_public_key = crypto::decode_treasure_public_key(treasure_public_key).ok()?;
 
     let signature =
-        crypto::sign_claim_request_for_account(account_secret_key, treasure_public_key).ok()?;
+        crypto::sign_claim_request_for_account(&account_secret_key, &treasure_public_key).ok()?;
 
     crypto::encode_signature(&signature).ok()
 }
@@ -139,7 +138,7 @@ pub fn account_secret_key_to_public_key(key: &str) -> Option<String> {
 }
 
 fn new_keypair() -> Keypair {
-    Keypair::generate(&mut OsRng)
+    crypto::generate_keypair(&mut OsRng)
 }
 
 #[wasm_bindgen]

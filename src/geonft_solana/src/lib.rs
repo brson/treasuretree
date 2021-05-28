@@ -67,16 +67,16 @@ pub fn plant_treasure_with_key(
     let treasure_hash = &plant_info.treasure_hash;
 
     crypto::verify_plant_request_for_treasure(
-        treasure_pubkey_decode,
-        account_pubkey_decode,
+        &treasure_pubkey_decode,
+        &account_pubkey_decode,
         treasure_hash.as_bytes(),
-        treasure_signature,
+        &treasure_signature,
     )?;
 
     crypto::verify_plant_request_for_account(
-        account_pubkey_decode,
-        treasure_pubkey_decode,
-        account_signature,
+        &account_pubkey_decode,
+        &treasure_pubkey_decode,
+        &account_signature,
     )?;
 
     let mut treasure_data = Treasure::try_from_slice(&account.data.borrow())?;
@@ -103,15 +103,15 @@ pub fn claim_treasure_with_key(
         let account_signature = crypto::decode_signature(&claim_info.account_signature)?;
 
         crypto::verify_claim_request_for_treasure(
-            treasure_pubkey_decode,
-            account_pubkey_decode,
-            treasure_signature,
+            &treasure_pubkey_decode,
+            &account_pubkey_decode,
+            &treasure_signature,
         )?;
 
         crypto::verify_claim_request_for_account(
-            account_pubkey_decode,
-            treasure_pubkey_decode,
-            account_signature,
+            &account_pubkey_decode,
+            &treasure_pubkey_decode,
+            &account_signature,
         )?;
 
         treasure_data.claim_treasure.insert(treasure_pubkey_encode, claim_info);
