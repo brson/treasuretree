@@ -26,14 +26,13 @@ pub fn process_instruction(
 
     // The account must be owned by the program in order to modify its data
     if account.owner != program_id {
-        msg!("Greeted account does not have the correct program id");
+        msg!("Geonft account does not have the correct program id");
         return Err(ProgramError::IncorrectProgramId);
     }
 
     msg!("Geonft_solana entrypoint.");
 
-    let geonft_data = GeonftRequest::try_from_slice(geonft_data).unwrap(); // convert ? to Solana Result
-
+    let geonft_data = GeonftRequest::try_from_slice(geonft_data)?;
     match geonft_data {
         GeonftRequest::PlantTreasure(plant_info) => {
             msg!("plant info: {:?}", &plant_info);

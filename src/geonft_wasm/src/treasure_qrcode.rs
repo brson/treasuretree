@@ -1,10 +1,8 @@
 use anyhow::Result;
-use crypto::ResultWrapper;
 use geonft_nostd::crypto;
 use qrcodegen::QrCode;
 use qrcodegen::QrCodeEcc;
 use serde::{Deserialize, Serialize};
-use wasm_bindgen::prelude::*;
 
 #[derive(Serialize, Deserialize)]
 pub struct UniqueCode {

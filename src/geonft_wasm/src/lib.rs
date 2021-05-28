@@ -1,12 +1,8 @@
 mod treasure_qrcode;
 mod utils;
-use bech32::{FromBase32, ToBase32, Variant};
-use ed25519_dalek::{Keypair, PublicKey, SecretKey, Signer};
+use ed25519_dalek::Keypair;
 use rand::rngs::OsRng;
-use serde_json;
 use wasm_bindgen::prelude::*;
-
-use crypto::ResultWrapper;
 use geonft_nostd::crypto;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global

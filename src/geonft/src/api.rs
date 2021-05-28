@@ -137,7 +137,7 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
         );
 
         Ok(Json(ClaimResponse {
-            message: format!("Congrats! Treasure received!"),
+            message: "Congrats! Treasure received!".to_string(),
             return_url,
         }))
     }
