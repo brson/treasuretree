@@ -30,6 +30,8 @@ it was a good opportunity to give it a try.
 - `time` and `anyhow` not building against Solana's `std`.
   `anyhow` can be built with `std` feature off, but that loses
   compatibility with the `Error` trait.
+- 4K BPF stack frames means some crates don't work,
+  including `ed25519-dalek`.
 
 
 ## Today's plan
@@ -1223,6 +1225,46 @@ finally causing us a problem.
 Now we need to figure out what to do about our large stack frames,
 which were introduced when we added the `ed25519-dalek` dependency
 to our Solana program.
+
+I ask again in `#developer-support`
+
+> After adding ed25519-dalek to my solana program, I get non-fatal build errors like
+>
+> > Error: Function ZN209$LT$curve25519_dalek..window..LookupTableRadix256$LT$curve25519_dalek..backend..serial..curve_models..AffineNielsPoint$GT$$u20$as$u20$core..convert..From$LT$$RF$curve25519_dalek..edwards..EdwardsPoint$GT$$GT$4from17h1e9be112f934ec3bE Stack offset of -15848 exceeded max offset of -4096 by 11752 bytes, please minimize large stack variables
+>
+> And these seem to manifest as access violations when running the program. How can I deal with this? Can a tell the compiler to give me bigger maximum stack frames?
+
+And I go on:
+
+> Seems 4k frames are a hard limit.
+>
+> I'm not tied to ed25519. Is there another assymetric crypto crate that definitely doesn't create huge stack frames?
+>
+> I guess the sdk's keypair is ed25519 so I could use that
+>
+> But it is using ed25519-dalek internally! How does it do that?
+>
+> Sorry for rambling.
+
+I discover then that the `solana_sdk` crate,
+while it can be included in on-chain programs,
+needs a bunch of features turned off for that purpose,
+including `ed25519-dalek`.
+
+I get the sense we are not on the Solana happy-path,
+wanted to do our own signature verification on-chain,
+but our application architecture of first verifying
+signatures of our own transaction bundles off-chain,
+then passively syncing them to the chain,
+kind of demands it.
+
+I realize that the problem here is probably this architectural
+decision,
+but we are committed to it for now,
+and I think it can still work.
+
+We just have to choose an async crypto crate that
+doesn't create huge stack frames.
 
 
 
