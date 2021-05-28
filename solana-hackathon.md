@@ -1266,6 +1266,10 @@ and I think it can still work.
 We just have to choose an async crypto crate that
 doesn't create huge stack frames.
 
+In the meantime I file an [issue against `curve25519-dalek`][dalek-issue] asking
+about putting their lookup tables in boxes.
+
+[dalek-issue]: https://github.com/dalek-cryptography/curve25519-dalek/issues/355
 
 
 

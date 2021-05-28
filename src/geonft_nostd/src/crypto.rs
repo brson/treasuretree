@@ -2,7 +2,7 @@ use alloc::format;
 use alloc::string::String;
 use alloc::vec::Vec;
 use anyhow::{bail, Result};
-use ed25519_dalek::{Keypair, PublicKey, SecretKey, Signature, Signer};
+pub use ed25519_dalek::{Keypair, PublicKey, SecretKey, Signature, Signer};
 
 use base64;
 use bech32::{FromBase32, ToBase32, Variant};
