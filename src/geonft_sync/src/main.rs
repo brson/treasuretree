@@ -96,6 +96,14 @@ fn execute_plan(plan: Plan) -> Result<()> {
 
                 // TODO record SyncStatus
             }
+            Step::UploadClaimToSolana => {
+                let r = solana::upload_claim(&pubkey, &config, &client,
+                                             &program_keypair,
+                                             &program_instance_account);
+                if let Err(e) = r {
+                    error!("{}", e);
+                }
+            }
             _ => { /* todo */ }
         }
     }
