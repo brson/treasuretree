@@ -16,9 +16,20 @@ it was a good opportunity to give it a try.
 - For writing Rust client code,
   crib off of the [`feature_proposal` client][fcp].
   It is relatively simple.
+> Call `solana_logger::setup_with("solana=debug");` before your program starts,
+  or set the envvar `RUST_LOG=solana_client=debug`.
 
 
 [fpc]: https://github.com/solana-labs/solana-program-library/blob/master/feature-proposal/cli/src/main.rs
+
+
+## Annoyances
+
+- Functions like `read_keypair_file` return `Box<dyn Error>`,
+  which can't be trivially converted to `anyhow::Error` with `?`.
+- `time` and `anyhow` not building against Solana's `std`.
+  `anyhow` can be built with `std` feature off, but that loses
+  compatibility with the `Error` trait.
 
 
 ## Today's plan
@@ -1061,7 +1072,13 @@ I ask in `#developer-support`:
 >
 > How can I see those "4 log messages"? The don't show up in my 'solana logs' output.
 
-TODO
+Sometime later "dovacrow" responds with:
+
+> call solana_logger::setup_with("solana=debug"); before your program starts
+
+And "trent" with:
+
+> Set the envvar `RUST_LOG=solana_client=debug`
 
 I figure out that I passed the wrong pubkey to the `accounts` vector in my instructions.
 I had
