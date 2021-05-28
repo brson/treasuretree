@@ -1271,6 +1271,32 @@ about putting their lookup tables in boxes.
 
 [dalek-issue]: https://github.com/dalek-cryptography/curve25519-dalek/issues/355
 
+In the meantime I switch from ed25519 to ECDSa va the `k256` crate.
+It only takes a couple hours.
+
+And now I no longer have the access violation errors.
+I have new errors:
+
+```
+[2021-05-28T21:39:49Z INFO  geonft_sync] executing step UploadPlantToSolana for gtp1q05z4wcc9l0rah0ce2jpxhy2eyj2mrwljv7pmg2yced6fhgj9krtsxu8xa7
+[2021-05-28T21:39:49Z DEBUG solana_client::rpc_client] -32002 Transaction simulation failed: Error processing Instruction 0: Program failed to complete
+[2021-05-28T21:39:49Z DEBUG solana_client::rpc_client]   1: Program SMTdcH2EM33tSkbjW1oNxKRwfCCSaVoqTraoVYJAYsZ invoke [1]
+[2021-05-28T21:39:49Z DEBUG solana_client::rpc_client]   2: Program log: Geonft_solana entrypoint.
+[2021-05-28T21:39:49Z DEBUG solana_client::rpc_client]   3: Program log: plant info: PlantRequestHash { account_public_key: "gap1qt2ylqnejfe9znuvgn24lw240pcf
+g50jeg7l5cpmd6rdms6fdmqa6enham7", treasure_public_key: "gtp1q05z4wcc9l0rah0ce2jpxhy2eyj2mrwljv7pmg2yced6fhgj9krtsxu8xa7", treasure_hash: "0d6f3d0ad56a849d017
+8b6d2dcad56e4b2dcf95663349044d650d3cafd912c8e", account_signature: "rP/Vk5Q+/ofX+EpDSuTW5/nNWYvGL9u0YITIayA6/b1aD9ZRTW1LXvP55Zl1q6NDk7+5Im43bVLLVcwfZjgN2g=="
+, treasure_signature: "H90jsobBourHNdIBLKlQj5zM5T9JHxHPMNG7aZ+D/v4PO7uoMS4HrvDhG1qTZWbsUXl8e+2VykJPntv1HSTUPQ==" }
+[2021-05-28T21:39:49Z DEBUG solana_client::rpc_client]   4: Program SMTdcH2EM33tSkbjW1oNxKRwfCCSaVoqTraoVYJAYsZ consumed 200000 of 200000 compute units
+[2021-05-28T21:39:49Z DEBUG solana_client::rpc_client]   5: Program failed to complete: exceeded maximum number of instructions allowed (200000) at instructi
+on #29900
+[2021-05-28T21:39:49Z DEBUG solana_client::rpc_client]   6: Program SMTdcH2EM33tSkbjW1oNxKRwfCCSaVoqTraoVYJAYsZ failed: Program failed to complete
+[2021-05-28T21:39:49Z DEBUG solana_client::rpc_client]
+[2021-05-28T21:39:49Z ERROR geonft_sync] RPC response error -32002: Transaction simulation failed: Error processing Instruction 0: Program failed to complete
+ [6 log messages]
+```
+
+It seems our program is just running too much code now.
+That's a problem for tomorrow.
 
 
 # todo
