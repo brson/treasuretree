@@ -10,7 +10,7 @@ geonft_data = { path = "../geonft_data" }
 geonft_nostd = { path = "../geonft_nostd" }
 geonft_shared = { path = "../geonft_shared" }
 
-borsh = "0.7.1"
+borsh = "0.9.0"
 anyhow = "1.0.40"
 log = "0.4.14"
 env_logger = "0.8.3"
