@@ -1178,6 +1178,51 @@ and it doesn't work.
 I think I'll go read some solana docs about accounts
 and transaction signing.
 
+I figure out just by hunch that I was incorrectly
+telling Solana to require a signature from by program account key,
+which was derived from my program ID,
+and for which I don't have the secret key to sign with.
+I change my corresponding `AccountMeta` declaration:
+
+```rust
+     Ok(Instruction {
+         program_id: *program_id,
+         accounts: vec![
+-            AccountMeta::new(*program_instance, true),
++            AccountMeta::new(*program_instance, false),
+         ],
+         data,
+     })
+```
+
+and the transaction finally executes,
+but with a new error:
+
+```
+[2021-05-28T16:19:52Z INFO  geonft_sync] executing step UploadPlantToSolana for gtp1kgx9nljqxjlm3vrz235xt669uy8da93d6lepshpkyjamh4etrets2xg5v3
+[2021-05-28T16:19:52Z DEBUG solana_client::rpc_client] -32002 Transaction simulation failed: Error processing Instruction 0: Program failed to complete
+[2021-05-28T16:19:52Z DEBUG solana_client::rpc_client]   1: Program EeyTCHgpCgn9NDZeiwtnbzXbN5ojw4wptorvF5uLXM5d invoke [1]
+[2021-05-28T16:19:52Z DEBUG solana_client::rpc_client]   2: Program log: Geonft_solana entrypoint.
+[2021-05-28T16:19:52Z DEBUG solana_client::rpc_client]   3: Program log: plant info: PlantRequestHash { account_public_key: "gap1g4gdvt6dnjrjwz6aeutcku4c39hc
+qyd3vw5hxg85cspq20vzazhq5ccfyk", treasure_public_key: "gtp1kgx9nljqxjlm3vrz235xt669uy8da93d6lepshpkyjamh4etrets2xg5v3", treasure_hash: "9d3ca96c3e22ec303b988
+cf64df62488c4488611fa83f04e9a898bcd374a193b", account_signature: "p/UeDqqJv5g2zaJKuZepx2EKdqKSphMUxxZ8oUiDWTvlZ22ZIzTw2i70EayaIUfJoiSWLVGq7sd8dxRNV8eRBg==",
+treasure_signature: "tmpFTeXQ13E2ZcL8+PyHZeelAdbxqbcf43jG3vVe44sKsatWtbuuR0oF5PxjDNdokL9nSsW9AR/xkaEkyaDCBw==" }
+[2021-05-28T16:19:52Z DEBUG solana_client::rpc_client]   4: Program EeyTCHgpCgn9NDZeiwtnbzXbN5ojw4wptorvF5uLXM5d consumed 124283 of 200000 compute units
+[2021-05-28T16:19:52Z DEBUG solana_client::rpc_client]   5: Program failed to complete: Access violation in stack frame 13 at address 0x20000de70 of size 8 b
+y instruction #29814
+[2021-05-28T16:19:52Z DEBUG solana_client::rpc_client]   6: Program EeyTCHgpCgn9NDZeiwtnbzXbN5ojw4wptorvF5uLXM5d failed: Program failed to complete
+[2021-05-28T16:19:52Z DEBUG solana_client::rpc_client]
+[2021-05-28T16:19:52Z ERROR geonft_sync] RPC response error -32002: Transaction simulation failed: Error processing Instruction 0: Program failed to complete
+ [6 log messages]
+```
+
+This definitely looks like my old compiler warning
+about our solana program having too-large stack offsets
+finally causing us a problem.
+
+Now we need to figure out what to do about our large stack frames,
+which were introduced when we added the `ed25519-dalek` dependency
+to our Solana program.
 
 
 
