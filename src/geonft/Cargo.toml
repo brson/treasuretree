@@ -4,13 +4,9 @@ version = "0.1.0"
 authors = ["Brian Anderson <andersrb@gmail.com>"]
 edition = "2018"
 
-[features]
-default = ["std-errors"]
-std-errors = []
-
 [dependencies]
 geonft_data = { path = "../geonft_data" }
-geonft_nostd = { path = "../geonft_nostd", features = ["std-errors"] }
+geonft_nostd = { path = "../geonft_nostd" }
 geonft_shared = { path = "../geonft_shared" }
 
 anyhow = "1.0.40"

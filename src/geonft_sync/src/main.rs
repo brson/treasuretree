@@ -93,6 +93,8 @@ fn execute_plan(plan: Plan) -> Result<()> {
                 if let Err(e) = r {
                     error!("{}", e);
                 }
+
+                // TODO record SyncStatus
             }
             _ => { /* todo */ }
         }

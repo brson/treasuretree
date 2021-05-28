@@ -314,61 +314,20 @@ pub trait ResultWrapper<T> {
     fn e(self) -> Result<T>;
 }
 
-#[cfg(feature = "std-errors")]
-mod err {
-    use super::ResultWrapper;
-
-    impl<T> ResultWrapper<T> for Result<T, bech32::Error> {
-        fn e(self) -> Result<T, anyhow::Error> {
-            Ok(self?)
-        }
-    }
-
-    /*impl<T> ResultWrapper<T> for Result<T, ed25519_dalek::ed25519::Error> {
-        fn e(self) -> Result<T, anyhow::Error> {
-            Ok(self?)
-        }
-    }*/
-
-    impl<T> ResultWrapper<T> for Result<T, base64::DecodeError> {
-        fn e(self) -> Result<T, anyhow::Error> {
-            Ok(self?)
-        }
-    }
-
-    impl<T> ResultWrapper<T> for Result<T, k256::ecdsa::Error> {
-        fn e(self) -> Result<T, anyhow::Error> {
-            Ok(self?)
-        }
+impl<T> ResultWrapper<T> for Result<T, bech32::Error> {
+    fn e(self) -> Result<T, anyhow::Error> {
+        self.map_err(|e| anyhow::anyhow!("{}", e))
     }
 }
 
-#[cfg(not(feature = "std-errors"))]
-mod err {
-    use super::ResultWrapper;
-    use alloc::format;
-
-    impl<T> ResultWrapper<T> for Result<T, bech32::Error> {
-        fn e(self) -> Result<T, anyhow::Error> {
-            self.map_err(|e| anyhow::anyhow!("{}", e))
-        }
+impl<T> ResultWrapper<T> for Result<T, base64::DecodeError> {
+    fn e(self) -> Result<T, anyhow::Error> {
+        self.map_err(|e| anyhow::anyhow!("{}", e))
     }
+}
 
-    /*impl<T> ResultWrapper<T> for Result<T, ed25519_dalek::ed25519::Error> {
-        fn e(self) -> Result<T, anyhow::Error> {
-            self.map_err(|e| anyhow::anyhow!("{}", e))
-        }
-    }*/
-
-    impl<T> ResultWrapper<T> for Result<T, base64::DecodeError> {
-        fn e(self) -> Result<T, anyhow::Error> {
-            self.map_err(|e| anyhow::anyhow!("{}", e))
-        }
-    }
-
-    impl<T> ResultWrapper<T> for Result<T, k256::ecdsa::Error> {
-        fn e(self) -> Result<T, anyhow::Error> {
-            self.map_err(|e| anyhow::anyhow!("{}", e))
-        }
+impl<T> ResultWrapper<T> for Result<T, k256::ecdsa::Error> {
+    fn e(self) -> Result<T, anyhow::Error> {
+        self.map_err(|e| anyhow::anyhow!("{}", e))
     }
 }
