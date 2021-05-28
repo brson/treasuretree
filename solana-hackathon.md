@@ -1044,6 +1044,122 @@ I discover the token program client is calling `RpcClient::send_and_confirm_tran
 to execute its transaction,
 and am intrigued by what "spinner" means in this context.
 
+After I write my instruction-building and transaction-executing `upload_plant`
+method,
+when I run it I see this error:
+
+```
+RPC response error -32002: Transaction simulation failed: Error processing Instruction 0: incorrect program id for instruction [4 log messages]
+```
+
+What does "4 log messages" mean?
+I ask in `#developer-support`:
+
+> When I try to submit a transaction to my program, I see the error
+>
+> > RPC response error -32002: Transaction simulation failed: Error processing Instruction 0: incorrect program id for instruction [4 log messages]
+>
+> How can I see those "4 log messages"? The don't show up in my 'solana logs' output.
+
+TODO
+
+I figure out that I passed the wrong pubkey to the `accounts` vector in my instructions.
+I had
+
+```rust
+fn create_plant_instruction(plant_request: PlantRequestHash,
+                            program_id: &Pubkey,
+                            payer: &Pubkey,) -> Result<Instruction> {
+    let data = GeonftRequest::PlantTreasure(plant_request).try_to_vec()?;
+    Ok(Instruction {
+        program_id: *program_id,
+        accounts: vec![
+            AccountMeta::new(*payer, true),
+        ],
+        data,
+    })
+}
+```
+
+passing the _payer_ account in the `accounts` vector.
+Changing it to
+
+```rust
+fn create_plant_instruction(plant_request: PlantRequestHash,
+                            program_id: &Pubkey,
+                            program_instance: &Pubkey,) -> Result<Instruction> {
+    let data = GeonftRequest::PlantTreasure(plant_request).try_to_vec()?;
+    Ok(Instruction {
+        program_id: *program_id,
+        accounts: vec![
+            AccountMeta::new(*program_instance, true),
+        ],
+        data,
+    })
+}
+```
+
+where `program_instance` is the account my program is running under.
+After making that change I still had another error:
+
+```
+[2021-05-28T15:33:35Z ERROR geonft_sync] not enough signers
+```
+
+It is interesting that this error displays as simply "not enough signers",
+with no "RPC response error ..." preceding it.
+I wonder why that is.
+After some investigation,
+I find out that the error comes from the `try_sign` method on `Transaction`,
+not from an RPC call.
+
+I try adding the only other keypair I have,
+for the program ID,
+to the list of signers:
+
+```rust
+    tx.try_sign(&[&config.keypair, program], blockhash)?;
+```
+
+And get another error:
+
+```
+[2021-05-28T15:44:26Z ERROR geonft_sync] keypair-pubkey mismatch
+```
+
+At this point my `upload_plant` function looks like
+
+```rust
+pub fn upload_plant(plant_key: &str,
+                    config: &Config,
+                    client: &RpcClient,
+                    program: &Keypair,
+                    program_account: &Pubkey) -> Result<()> {
+    let plant_request = io::get_plant(plant_key)?;
+    let hash = crypto::get_hash(&plant_request.image)?;
+    let plant_request = PlantRequestHash {
+        account_public_key: plant_request.account_public_key,
+        treasure_public_key: plant_request.treasure_public_key,
+        treasure_hash: hash,
+        account_signature: plant_request.account_signature,
+        treasure_signature: plant_request.treasure_signature,
+    };
+    let inst = create_plant_instruction(plant_request,
+                                        &program.pubkey(),
+                                        program_account)?;
+    let mut tx = Transaction::new_with_payer(
+        &[inst], Some(&config.keypair.pubkey()));
+    let blockhash = client.get_recent_blockhash()?.0;
+    tx.try_sign(&[&config.keypair, program], blockhash)?;
+    client.send_and_confirm_transaction_with_spinner(&tx)?;
+
+    Ok(())
+}
+```
+
+and it doesn't work.
+I think I'll go read some solana docs about accounts
+and transaction signing.
 
 
 

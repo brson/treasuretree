@@ -80,6 +80,8 @@ pub fn get_program_keypair(client: &RpcClient) -> Result<Keypair> {
         .get_account(&program_id)
         .context("unable to get program account")?;
 
+    info!("program account: {:?}", account);
+
     if !account.executable {
         bail!("solana account not executable");
     }
@@ -135,6 +137,12 @@ pub fn get_program_instance_account(
         info!("signature: {}", sig);
     }
 
+    let account = client
+        .get_account(&pubkey)
+        .context("unable to get program instance account")?;
+
+    info!("program instance account: {:?}", account);
+
     Ok(pubkey)
 }
 
@@ -158,25 +166,25 @@ pub fn upload_plant(plant_key: &str,
         treasure_signature: plant_request.treasure_signature,
     };
     let inst = create_plant_instruction(plant_request,
-                                        &config.keypair.pubkey(),
-                                        &program.pubkey())?;
+                                        &program.pubkey(),
+                                        program_account)?;
     let mut tx = Transaction::new_with_payer(
         &[inst], Some(&config.keypair.pubkey()));
     let blockhash = client.get_recent_blockhash()?.0;
-    tx.try_sign(&[&config.keypair], blockhash)?;
+    tx.try_sign(&[&config.keypair, program], blockhash)?;
     client.send_and_confirm_transaction_with_spinner(&tx)?;
 
     Ok(())
 }
 
 fn create_plant_instruction(plant_request: PlantRequestHash,
-                            payer: &Pubkey,
-                            program_id: &Pubkey) -> Result<Instruction> {
+                            program_id: &Pubkey,
+                            program_instance: &Pubkey) -> Result<Instruction> {
     let data = GeonftRequest::PlantTreasure(plant_request).try_to_vec()?;
     Ok(Instruction {
         program_id: *program_id,
         accounts: vec![
-            AccountMeta::new(*payer, true),
+            AccountMeta::new(*program_instance, true),
         ],
         data,
     })
