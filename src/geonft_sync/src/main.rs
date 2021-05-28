@@ -87,7 +87,7 @@ fn execute_plan(plan: Plan) -> Result<()> {
 
         match step {
             Step::UploadPlantToSolana => {
-                let r = solana::upload_plant(&config, &client,
+                let r = solana::upload_plant(&pubkey, &config, &client,
                                              &program_keypair,
                                              &program_instance_account);
                 if let Err(e) = r {

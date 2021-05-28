@@ -1450,6 +1450,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "chrono",
+ "geonft_data",
  "serde",
  "serde_json",
 ]
@@ -1474,9 +1475,11 @@ name = "geonft_sync"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "borsh 0.7.2",
  "dirs",
  "env_logger",
  "geonft_data",
+ "geonft_nostd",
  "geonft_shared",
  "ipfs-api",
  "log 0.4.14",

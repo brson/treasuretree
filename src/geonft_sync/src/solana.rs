@@ -6,8 +6,11 @@ use std::io::BufReader;
 use std::net::SocketAddr;
 use std::time::Duration;
 
-use geonft_data::{GeonftRequest, PlantRequest};
+use geonft_shared::io;
+use geonft_nostd::crypto;
+use geonft_data::{GeonftRequest, PlantRequest, PlantRequestHash};
 
+use borsh::ser::BorshSerialize;
 use solana_client::rpc_client::RpcClient;
 use solana_client::thin_client::{self, ThinClient};
 use solana_sdk::account::Account;
@@ -126,7 +129,7 @@ pub fn get_program_instance_account(
             recent_blockhash,
         );
 
-        let sig = client.send_transaction(&tx)?;
+        let sig = client.send_and_confirm_transaction_with_spinner(&tx)?;
 
         info!("account created");
         info!("signature: {}", sig);
@@ -140,9 +143,41 @@ fn get_contract_size(client: &RpcClient) -> Result<usize> {
     Ok(10_000)
 }
 
-pub fn upload_plant(config: &Config,
+pub fn upload_plant(plant_key: &str,
+                    config: &Config,
                     client: &RpcClient,
                     program: &Keypair,
                     program_account: &Pubkey) -> Result<()> {
-    todo!()
+    let plant_request = io::get_plant(plant_key)?;
+    let hash = crypto::get_hash(&plant_request.image)?;
+    let plant_request = PlantRequestHash {
+        account_public_key: plant_request.account_public_key,
+        treasure_public_key: plant_request.treasure_public_key,
+        treasure_hash: hash,
+        account_signature: plant_request.account_signature,
+        treasure_signature: plant_request.treasure_signature,
+    };
+    let inst = create_plant_instruction(plant_request,
+                                        &config.keypair.pubkey(),
+                                        &program.pubkey())?;
+    let mut tx = Transaction::new_with_payer(
+        &[inst], Some(&config.keypair.pubkey()));
+    let blockhash = client.get_recent_blockhash()?.0;
+    tx.try_sign(&[&config.keypair], blockhash)?;
+    client.send_and_confirm_transaction_with_spinner(&tx)?;
+
+    Ok(())
+}
+
+fn create_plant_instruction(plant_request: PlantRequestHash,
+                            payer: &Pubkey,
+                            program_id: &Pubkey) -> Result<Instruction> {
+    let data = GeonftRequest::PlantTreasure(plant_request).try_to_vec()?;
+    Ok(Instruction {
+        program_id: *program_id,
+        accounts: vec![
+            AccountMeta::new(*payer, true),
+        ],
+        data,
+    })
 }

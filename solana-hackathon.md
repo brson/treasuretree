@@ -1014,8 +1014,35 @@ so I set it to 10_000 for now,
 and verify that I am allowed to store at least that many bytes.
 
 
+## Building an instruction
+
+Today my task is to build an instruction to execute the "plant" verb.
+Something I think I am going to like about Solana is that
+the on-chain program just recieves a blob of bytes,
+called an "instruction",
+and it's up to the program to interpret those bytes how it wants.
+This gives me freedom to structure my program how I want &mdash;
+I don't have to write a contract object that looks like Solidity.
+
+One problem I anticipate is determining how much space our instructions use.
+Solana programs and instructions seem to have to declare an exact amount of space
+they occupy,
+and determining that amount for an arbitrary serialized data structure
+is not simple;
+the length calculations in the SPL seem to be hardcoded,
+so somebody has pre-calculated how much space their serilialized structures need,
+which seems brittle.
+
+For now I'll probably just say we need "a lot" of space.
+
+I'm cribbing off the [`token` program][tpg] from the Solana Program Library.
+
+[tpg]: https://github.com/solana-labs/solana-program-library/blob/master/token/program/src/instruction.rs
 
 
+I discover the token program client is calling `RpcClient::send_and_confirm_transaction_with_spinner`
+to execute its transaction,
+and am intrigued by what "spinner" means in this context.
 
 
 

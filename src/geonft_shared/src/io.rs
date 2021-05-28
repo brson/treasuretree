@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::{self, DirEntry, File, Metadata};
 use std::io::BufReader;
+use geonft_data::PlantRequest;
 
 pub static PLANT_DIR: &'static str = "data/plant";
 pub static CLAIM_DIR: &'static str = "data/claim";
@@ -85,6 +86,17 @@ pub fn get_all_plants_and_claims_time_sorted() -> Result<Vec<(PlantClaim, Treasu
     treasure_events.sort_by_key(|(_, t)| t.time);
 
     Ok(treasure_events)
+}
+
+pub fn get_plant(key: &str) -> Result<PlantRequest> {
+    fs::create_dir_all(PLANT_DIR)?;
+
+    let path = format!("{}/{}", PLANT_DIR, key);
+    let file = File::open(path)?;
+    let reader = BufReader::new(file);
+    let req = serde_json::from_reader(reader)?;
+
+    Ok(req)
 }
 
 #[derive(Serialize, Deserialize)]
