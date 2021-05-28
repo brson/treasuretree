@@ -8,7 +8,7 @@ use std::time::Duration;
 
 use geonft_shared::io;
 use geonft_nostd::crypto;
-use geonft_data::{GeonftRequest, PlantRequest, PlantRequestHash};
+use geonft_data::{GeonftRequest, PlantRequest, PlantRequestHash, ClaimRequest};
 
 use borsh::ser::BorshSerialize;
 use solana_client::rpc_client::RpcClient;
@@ -177,10 +177,50 @@ pub fn upload_plant(plant_key: &str,
     Ok(())
 }
 
+pub fn upload_claim(claim_key: &str,
+                    config: &Config,
+                    client: &RpcClient,
+                    program: &Keypair,
+                    program_account: &Pubkey) -> Result<()> {
+    let claim_request = io::get_claim(claim_key)?;
+    let claim_request = ClaimRequest {
+        account_public_key: claim_request.account_public_key,
+        treasure_public_key: claim_request.treasure_public_key,
+        account_signature: claim_request.account_signature,
+        treasure_signature: claim_request.treasure_signature,
+    };
+    
+    let inst = create_claim_instruction(claim_request,
+                                        &program.pubkey(),
+                                        program_account)?;
+
+    let mut tx = Transaction::new_with_payer(
+        &[inst], Some(&config.keypair.pubkey()));
+    let blockhash = client.get_recent_blockhash()?.0;
+    tx.try_sign(&[&config.keypair], blockhash)?;
+    client.send_and_confirm_transaction_with_spinner(&tx)?;
+
+    Ok(())
+}
+
+
 fn create_plant_instruction(plant_request: PlantRequestHash,
                             program_id: &Pubkey,
                             program_instance: &Pubkey) -> Result<Instruction> {
     let data = GeonftRequest::PlantTreasure(plant_request).try_to_vec()?;
+    Ok(Instruction {
+        program_id: *program_id,
+        accounts: vec![
+            AccountMeta::new(*program_instance, false),
+        ],
+        data,
+    })
+}
+
+fn create_claim_instruction(claim_request: ClaimRequest,
+                            program_id: &Pubkey,
+                            program_instance: &Pubkey) -> Result<Instruction> {
+    let data = GeonftRequest::ClaimTreasure(claim_request).try_to_vec()?;
     Ok(Instruction {
         program_id: *program_id,
         accounts: vec![

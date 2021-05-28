@@ -94,6 +94,14 @@ fn execute_plan(plan: Plan) -> Result<()> {
                     error!("{}", e);
                 }
             }
+            Step::UploadClaimToSolana => {
+                let r = solana::upload_claim(&pubkey, &config, &client,
+                                             &program_keypair,
+                                             &program_instance_account);
+                if let Err(e) = r {
+                    error!("{}", e);
+                }
+            }
             _ => { /* todo */ }
         }
     }
