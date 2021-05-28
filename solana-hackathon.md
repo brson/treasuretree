@@ -571,7 +571,7 @@ TODO:
 
 ```
 $ cargo build-bpf
-Failed to obtain package metadata: Error during execution of `cargo metadata`: error: failed to parse manifest at `/Users/aimeez/github/geonft/src/solanaprogram/Cargo.toml`
+Failed to obtain package metadata: Error during execution of `cargo metadata`: error: failed to parse manifest at `/<local_path>/geonft/src/solanaprogram/Cargo.toml`
 
 Caused by:
   library target names cannot contain hyphens: solana-program
