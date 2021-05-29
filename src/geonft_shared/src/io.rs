@@ -2,7 +2,7 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::{self, DirEntry, File, Metadata};
-use std::io::BufReader;
+use std::io::{BufReader, BufWriter};
 use geonft_data::{PlantRequest, ClaimRequest};
 
 pub static PLANT_DIR: &'static str = "data/plant";
@@ -142,4 +142,17 @@ pub fn get_all_sync_statuses() -> Result<HashMap<String, SyncStatus>> {
     }
 
     Ok(statuses)
+}
+
+pub fn record_sync_status(key: &str, status: SyncStatus) -> Result<()> {
+    fs::create_dir_all(SYNC_STATUS_DIR)?;
+
+    let path = format!("{}/{}", SYNC_STATUS_DIR, key);
+
+    let file = File::open(path)?;
+    let mut writer = BufWriter::new(file);
+
+    serde_json::to_writer(&mut writer, &status)?;
+
+    Ok(())
 }

@@ -8,7 +8,7 @@ use std::thread;
 use std::time::Duration;
 
 use geonft_data::{ClaimRequest, GeonftRequest, PlantRequest};
-use geonft_shared::io;
+use geonft_shared::io::{self, SyncStatus};
 
 mod ipfs;
 mod solana;
@@ -85,26 +85,28 @@ fn execute_plan(plan: Plan) -> Result<()> {
     for (pubkey, step) in plan.steps {
         info!("executing step {:?} for {}", step, pubkey);
 
-        match step {
-            Step::UploadPlantToSolana => {
-                let r = solana::upload_plant(&pubkey, &config, &client,
-                                             &program_keypair,
-                                             &program_instance_account);
-                if let Err(e) = r {
-                    error!("{}", e);
+        let r = || -> Result<()> {
+            match step {
+                Step::UploadPlantToSolana => {
+                    solana::upload_plant(&pubkey, &config, &client,
+                                         &program_keypair,
+                                         &program_instance_account)?;
+                    io::record_sync_status(&pubkey, SyncStatus::PlantSynced)?;
                 }
+                Step::UploadClaimToSolana => {
+                    solana::upload_claim(&pubkey, &config, &client,
+                                         &program_keypair,
+                                         &program_instance_account)?;
+                    io::record_sync_status(&pubkey, SyncStatus::ClaimSynced)?;
+                }
+                _ => { /* todo */ }
+            }
 
-                // TODO record SyncStatus
-            }
-            Step::UploadClaimToSolana => {
-                let r = solana::upload_claim(&pubkey, &config, &client,
-                                             &program_keypair,
-                                             &program_instance_account);
-                if let Err(e) = r {
-                    error!("{}", e);
-                }
-            }
-            _ => { /* todo */ }
+            Ok(())
+        }();
+
+        if let Err(e) = r {
+            error!("{}", e);
         }
     }
 
