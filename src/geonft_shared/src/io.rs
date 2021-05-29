@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Result, Context};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::{self, DirEntry, File, Metadata};
@@ -152,7 +152,7 @@ pub fn record_sync_status(key: &str, status: SyncStatus) -> Result<()> {
 
     let path = format!("{}/{}", SYNC_STATUS_DIR, key);
 
-    let file = File::open(path)?;
+    let file = File::create(path)?;
     let mut writer = BufWriter::new(file);
 
     serde_json::to_writer(&mut writer, &status)?;
@@ -173,18 +173,35 @@ pub struct TreasureTemplateData {
 
 pub fn load_treasure_data(public_key: &str) -> Result<TreasureTemplateData> {
     let public_key = public_key.to_string();
-    let path = format!("{}/{}", PLANT_DIR, public_key);
-    let file = fs::metadata(path)?;
-    let time = file.modified()?;
-    let planted_date_time = chrono::DateTime::<chrono::Local>::from(time);
-    let planted_date_time = planted_date_time.to_rfc2822();
 
     let public_url = format!("treasure/{}", public_key);
     let image_url = format!("treasure-images/{}", public_key);
 
-    let planted_by = "todo".to_string();
-    let claimed_date_time = "todo".to_string();
-    let claimed_by = "todo".to_string();
+    let plant_path = format!("{}/{}", PLANT_DIR, public_key);
+    let plant_file = File::open(plant_path)?;
+    let plant_meta = plant_file.metadata()?;
+    let plant_time = plant_meta.modified()?;
+    let plant_date_time = chrono::DateTime::<chrono::Local>::from(plant_time);
+    let planted_date_time = plant_date_time.to_rfc2822();
+    let plant_reader = BufReader::new(plant_file);
+    let plant_request: PlantRequest = serde_json::from_reader(plant_reader)?;
+    let planted_by = plant_request.account_public_key;
+
+    let claim_path = format!("{}/{}", CLAIM_DIR, public_key);
+    let claimed_date_time;
+    let claimed_by;
+    if let Ok(claim_file) = File::open(claim_path) {
+        let claim_meta = claim_file.metadata()?;
+        let claim_time = claim_meta.modified()?;
+        let claim_date_time = chrono::DateTime::<chrono::Local>::from(claim_time);
+        claimed_date_time = claim_date_time.to_rfc2822();
+        let claim_reader = BufReader::new(claim_file);
+        let claim_request: ClaimRequest = serde_json::from_reader(claim_reader)?;
+        claimed_by = claim_request.account_public_key;
+    } else {
+        claimed_date_time = "unclaimed".to_string();
+        claimed_by = "unclaimed".to_string();
+    }
 
     Ok(TreasureTemplateData {
         public_key,
