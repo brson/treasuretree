@@ -63,7 +63,8 @@ fn recent_page() -> Result<Template> {
         // and return any error.
         .collect::<Result<Vec<_>, _>>()?;
 
-    files.sort_by_key(|&(time, _)| time);
+    // Sort by time, reversed
+    files.sort_by(|&(time1, _), &(time2, _)| time2.cmp(&time1));
 
     let mut treasures = Vec::new();
 
