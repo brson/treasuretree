@@ -6,7 +6,7 @@ extern crate rocket;
 
 use anyhow::{anyhow, bail, Result};
 use geonft_data::PlantRequest;
-use geonft_shared::io;
+use geonft_shared::io::{self, TreasureTemplateData};
 use rocket::http::{ContentType, Method, RawStr};
 use rocket::response::{content::Html, Content, Responder};
 use rocket::Data;
@@ -69,24 +69,8 @@ fn recent_page() -> Result<Template> {
 
     for (time, dent) in files.into_iter().take(10) {
         let public_key = dent.file_name().into_string().expect("utf-8");
-        let public_url = format!("treasure/{}", public_key);
-        let image_url = format!("treasure-images/{}", public_key);
-        let planted_date_time = chrono::DateTime::<chrono::Local>::from(time);
-        let planted_date_time = planted_date_time.to_rfc2822();
-        let planted_by = "todo".to_string();
-        let claimed_date_time = "todo".to_string();
-        let claimed_by = "todo".to_string();
-        let data = TreasureTemplateData {
-            public_key,
-            public_url,
-            image_url,
-            planted_date_time,
-            planted_by,
-            claimed_date_time,
-            claimed_by,
-        };
-
-        treasures.push(data);
+        let treasure = io::load_treasure_data(&public_key)?;
+        treasures.push(treasure);
     }
 
     #[derive(Serialize)]
@@ -115,18 +99,7 @@ fn treasure_page(public_key: &RawStr) -> Result<Template> {
     let public_key = crypto::decode_treasure_public_key(&public_key)?;
     let public_key = crypto::encode_treasure_public_key(&public_key)?;
 
-    let path = format!("{}/{}", io::PLANT_DIR, public_key);
-    let file = fs::metadata(path)?;
-    let time = file.modified()?;
-    let planted_date_time = chrono::DateTime::<chrono::Local>::from(time);
-    let planted_date_time = planted_date_time.to_rfc2822();
-
-    let public_url = format!("treasure/{}", public_key);
-    let image_url = format!("treasure-images/{}", public_key);
-
-    let planted_by = "todo".to_string();
-    let claimed_date_time = "todo".to_string();
-    let claimed_by = "todo".to_string();
+    let treasure = io::load_treasure_data(&public_key)?;
 
     #[derive(Serialize)]
     struct TemplateData {
@@ -136,29 +109,10 @@ fn treasure_page(public_key: &RawStr) -> Result<Template> {
 
     let data = TemplateData {
         base_href: "..",
-        treasure: TreasureTemplateData {
-            public_key,
-            public_url,
-            image_url,
-            planted_date_time,
-            planted_by,
-            claimed_date_time,
-            claimed_by,
-        },
+        treasure,
     };
 
     Ok(Template::render("treasure", data))
-}
-
-#[derive(Serialize)]
-struct TreasureTemplateData {
-    public_key: String,
-    public_url: String,
-    image_url: String,
-    planted_date_time: String,
-    planted_by: String,
-    claimed_date_time: String,
-    claimed_by: String,
 }
 
 /// A treasure's image.

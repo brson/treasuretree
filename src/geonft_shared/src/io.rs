@@ -159,3 +159,40 @@ pub fn record_sync_status(key: &str, status: SyncStatus) -> Result<()> {
 
     Ok(())
 }
+
+#[derive(Serialize)]
+pub struct TreasureTemplateData {
+    pub public_key: String,
+    pub public_url: String,
+    pub image_url: String,
+    pub planted_date_time: String,
+    pub planted_by: String,
+    pub claimed_date_time: String,
+    pub claimed_by: String,
+}
+
+pub fn load_treasure_data(public_key: &str) -> Result<TreasureTemplateData> {
+    let public_key = public_key.to_string();
+    let path = format!("{}/{}", PLANT_DIR, public_key);
+    let file = fs::metadata(path)?;
+    let time = file.modified()?;
+    let planted_date_time = chrono::DateTime::<chrono::Local>::from(time);
+    let planted_date_time = planted_date_time.to_rfc2822();
+
+    let public_url = format!("treasure/{}", public_key);
+    let image_url = format!("treasure-images/{}", public_key);
+
+    let planted_by = "todo".to_string();
+    let claimed_date_time = "todo".to_string();
+    let claimed_by = "todo".to_string();
+
+    Ok(TreasureTemplateData {
+        public_key,
+        public_url,
+        image_url,
+        planted_date_time,
+        planted_by,
+        claimed_date_time,
+        claimed_by,
+    })
+}
