@@ -16,4 +16,14 @@
 
   <p>Claimed by: {{ treasure.claimed_by }}</p>
 
+  <div class="treasure-sync-section" id="{{ treasure.public_key }}">
+    <p>
+      Sync status:
+      <span class="sync-status">
+        {{ treasure.sync_status }}
+      </span>
+      <span class="spinner no-display"></span>
+    </p>
+  </div>
+
 </section>

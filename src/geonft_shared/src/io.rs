@@ -147,6 +147,14 @@ pub fn get_all_sync_statuses() -> Result<HashMap<String, SyncStatus>> {
     Ok(statuses)
 }
 
+fn get_sync_status(key: &str) -> Result<SyncStatus> {
+    let path = format!("{}/{}", SYNC_STATUS_DIR, key);
+    let file = File::open(path)?;
+    let reader = BufReader::new(file);
+    let status: SyncStatus = serde_json::from_reader(reader)?;
+    Ok(status)
+}
+
 pub fn record_sync_status(key: &str, status: SyncStatus) -> Result<()> {
     fs::create_dir_all(SYNC_STATUS_DIR)?;
 
@@ -169,6 +177,7 @@ pub struct TreasureTemplateData {
     pub planted_by: String,
     pub claimed_date_time: String,
     pub claimed_by: String,
+    pub sync_status: String,
 }
 
 pub fn load_treasure_data(public_key: &str) -> Result<TreasureTemplateData> {
@@ -203,6 +212,8 @@ pub fn load_treasure_data(public_key: &str) -> Result<TreasureTemplateData> {
         claimed_by = "unclaimed".to_string();
     }
 
+    let sync_status = get_ui_sync_status(&public_key)?;
+
     Ok(TreasureTemplateData {
         public_key,
         public_url,
@@ -211,5 +222,25 @@ pub fn load_treasure_data(public_key: &str) -> Result<TreasureTemplateData> {
         planted_by,
         claimed_date_time,
         claimed_by,
+        sync_status,
     })
+}
+
+fn get_ui_sync_status(public_key: &str) -> Result<String> {
+    let plant_path = format!("{}/{}", PLANT_DIR, public_key);
+    let claim_path = format!("{}/{}", CLAIM_DIR, public_key);
+    let have_plant = fs::metadata(plant_path).is_ok();
+    let have_claim = fs::metadata(claim_path).is_ok();
+    let sync_status = get_sync_status(public_key).ok();
+
+    Ok(match (have_plant, have_claim, sync_status) {
+        (false, _, _) => unreachable!(),
+        (true, false, None | Some(SyncStatus::BlobSynced)) => "unsynced",
+        (true, false, Some(SyncStatus::PlantSynced)) => "synced",
+        (true, false, Some(SyncStatus::ClaimSynced)) => unreachable!(),
+        (true, true, None
+                     | Some(SyncStatus::BlobSynced)
+                     | Some(SyncStatus::PlantSynced)) => "unsynced",
+        (true, true, Some(SyncStatus::ClaimSynced)) => "synced",
+    }.to_string())
 }
