@@ -111,6 +111,9 @@ pub fn get_claim(key: &str) -> Result<ClaimRequest> {
 }
 
 #[derive(Serialize, Deserialize)]
+#[derive(Debug)]
+#[derive(Eq, PartialEq)]
+#[derive(Copy, Clone)]
 pub enum SyncStatus {
     BlobSynced,
     PlantSynced,
