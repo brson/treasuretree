@@ -1299,6 +1299,33 @@ It seems our program is just running too much code now.
 That's a problem for tomorrow.
 
 
+## Getting beneath the instruction limit
+
+It's tomorrow.
+
+I ask in `#developer-support`:
+
+> My program fails to run with "Program failed to complete: exceeded maximum
+  number of instructions allowed (200000) at instruction #29900". Is it possible
+  to raise the instruction limit for a program?
+
+For the sake of getting this proof-of-concept done
+it would be easiest to just raise the limit,
+but there are definitely things we are doing in the program
+that we don't need to do,
+like deserializing keys and signatures from strings.
+
+I also know our data model is not following the Solana way &mdash;
+we are storing account records in hash tables when what we really should
+do is derive new Solana account keys from one master key,
+and create entirely new Solana accounts to hold their data.
+
+We don't have time to understand how to derive new accounts
+and store new data in time to make a demo for the hackathon
+so I hope we don't have to change that.
+
+
+
 # todo
 
 Transaction executed in slot 109259:
