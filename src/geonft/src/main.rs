@@ -65,29 +65,29 @@ fn recent_page() -> Result<Template> {
 
     files.sort_by_key(|&(time, _)| time);
 
-    let treasures = files
-        .into_iter()
-        .take(10)
-        .map(|(time, dent)| {
-            let public_key = dent.file_name().into_string().expect("utf-8");
-            let public_url = format!("treasure/{}", public_key);
-            let image_url = format!("treasure-images/{}", public_key);
-            let planted_date_time = chrono::DateTime::<chrono::Local>::from(time);
-            let planted_date_time = planted_date_time.to_rfc2822();
-            let planted_by = "todo".to_string();
-            let claimed_date_time = "todo".to_string();
-            let claimed_by = "todo".to_string();
-            TreasureTemplateData {
-                public_key,
-                public_url,
-                image_url,
-                planted_date_time,
-                planted_by,
-                claimed_date_time,
-                claimed_by,
-            }
-        })
-        .collect();
+    let mut treasures = Vec::new();
+
+    for (time, dent) in files.into_iter().take(10) {
+        let public_key = dent.file_name().into_string().expect("utf-8");
+        let public_url = format!("treasure/{}", public_key);
+        let image_url = format!("treasure-images/{}", public_key);
+        let planted_date_time = chrono::DateTime::<chrono::Local>::from(time);
+        let planted_date_time = planted_date_time.to_rfc2822();
+        let planted_by = "todo".to_string();
+        let claimed_date_time = "todo".to_string();
+        let claimed_by = "todo".to_string();
+        let data = TreasureTemplateData {
+            public_key,
+            public_url,
+            image_url,
+            planted_date_time,
+            planted_by,
+            claimed_date_time,
+            claimed_by,
+        };
+
+        treasures.push(data);
+    }
 
     #[derive(Serialize)]
     struct TemplateData {
