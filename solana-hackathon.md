@@ -197,7 +197,7 @@ TODO
 The install succeeds and I have the Solana tools:
 
 ```
-$ $ solana --version
+$ solana --version
 solana-cli 1.6.9 (src:9e42883d; feat:2960423209)
 ```
 
