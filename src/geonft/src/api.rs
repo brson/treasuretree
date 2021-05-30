@@ -40,6 +40,11 @@ pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<Pl
     let treasure_signature = crypto::decode_signature(&plant_info.treasure_signature)?;
     let account_signature = crypto::decode_signature(&plant_info.account_signature)?;
 
+    let filename = format!("{}/{}", io::PLANT_DIR, treasure_key_encode);
+    if Path::new(&filename).is_file() {
+        bail!("Treasure already exists")
+    }
+
     // todo check the treasure doesn't exist
     // todo validate image type
 
@@ -102,43 +107,43 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
     let filename = format!("{}/{}", io::PLANT_DIR, treasure_key_encode);
     if !Path::new(&filename).is_file() {
         bail!("Treasure doesn't exist")
-    } else {
-        let account_key_decode = crypto::decode_account_public_key(&claim_info.account_public_key)?;
-        let treasure_signature = crypto::decode_signature(&claim_info.treasure_signature)?;
-        let account_signature = crypto::decode_signature(&claim_info.account_signature)?;
-
-        // todo:
-        // - claim success and transfer asset
-        // - disable secret_key
-        // - sync to blockchain
-
-        crypto::verify_claim_request_for_treasure(
-            &treasure_key_decode,
-            &account_key_decode,
-            &treasure_signature,
-        )?;
-
-        crypto::verify_claim_request_for_account(
-            &account_key_decode,
-            &treasure_key_decode,
-            &account_signature,
-        )?;
-
-        let filename = format!("{}/{key}", io::CLAIM_DIR, key = treasure_key_encode);
-        fs::create_dir_all(io::CLAIM_DIR)?;
-
-        let mut file = File::create(filename)?;
-        serde_json::to_writer(file, &claim_info.0)?;
-
-        let return_url = format!(
-            "{host}/api/plant/{key}\n",
-            host = "http://localhost:8000",
-            key = treasure_key_encode
-        );
-
-        Ok(Json(ClaimResponse {
-            message: "Congrats! Treasure received!".to_string(),
-            return_url,
-        }))
     }
+
+    let account_key_decode = crypto::decode_account_public_key(&claim_info.account_public_key)?;
+    let treasure_signature = crypto::decode_signature(&claim_info.treasure_signature)?;
+    let account_signature = crypto::decode_signature(&claim_info.account_signature)?;
+
+    // todo:
+    // - claim success and transfer asset
+    // - disable secret_key
+    // - sync to blockchain
+
+    crypto::verify_claim_request_for_treasure(
+        &treasure_key_decode,
+        &account_key_decode,
+        &treasure_signature,
+    )?;
+
+    crypto::verify_claim_request_for_account(
+        &account_key_decode,
+        &treasure_key_decode,
+        &account_signature,
+    )?;
+
+    let filename = format!("{}/{key}", io::CLAIM_DIR, key = treasure_key_encode);
+    fs::create_dir_all(io::CLAIM_DIR)?;
+
+    let mut file = File::create(filename)?;
+    serde_json::to_writer(file, &claim_info.0)?;
+
+    let return_url = format!(
+        "{host}/api/plant/{key}\n",
+        host = "http://localhost:8000",
+        key = treasure_key_encode
+    );
+
+    Ok(Json(ClaimResponse {
+        message: "Congrats! Treasure received!".to_string(),
+        return_url,
+    }))
 }
