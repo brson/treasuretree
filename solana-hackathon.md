@@ -18,6 +18,8 @@ it was a good opportunity to give it a try.
   It is relatively simple.
 > Call `solana_logger::setup_with("solana=debug");` before your program starts,
   or set the envvar `RUST_LOG=solana_client=debug`.
+- TODO Signing and instruction budget
+- TODO Mapping account data
 
 
 [fpc]: https://github.com/solana-labs/solana-program-library/blob/master/feature-proposal/cli/src/main.rs
@@ -655,9 +657,7 @@ but now that I'm a developer and can talk in `#developer-support` I ask there:
   offset of -7680 exceeded max offset of -4096 by 3584 bytes, please minimize large stack variables".
   What can I do about this?
 
-TODO
-
-
+We'll get back to the Solana program later.
 
 
 
@@ -1323,6 +1323,114 @@ and create entirely new Solana accounts to hold their data.
 We don't have time to understand how to derive new accounts
 and store new data in time to make a demo for the hackathon
 so I hope we don't have to change that.
+
+After another day of hacking it is clear that two of our
+assumptions about what we could do on chain are wrong:
+
+1) We can't just store in our contract a large map
+   of account keys to account information.
+2) We can't do our own signature verification on-chain.
+   The instruction budget is just too low.
+
+Instead of storing a map of account data,
+I think we are expected to derive Solana accounts key from
+a base key, and create new Solana accounts to store their own
+finitely-sized records.
+
+Instead of doing our own signing on chain,
+I think we are expected to leverage Solana's runtime
+by doing any necessary signing with Solana accounts,
+passing those into transations with their instructions,
+as `AccountMeta` values,
+and have the runtime verify the accounts have signed
+the instruction.
+
+Both these things are forcing us into some tough,
+but doable, rework.
+
+Our program basically does five things:
+
+- Deserializes the instruction
+- Verify two signatures
+- Deserialize the program state
+- Add a record to a `HashMap` associated with an application (not Solana) account
+- Serialize the program state
+
+We find that:
+
+- Just deserializing our instruction puts us over the CPU budget
+- Verifying one signature puts us over the CPU budget
+- Serializing our program state triggers an access violation
+
+On the positive side,
+if we commento out our entire program,
+the client _can_ successfully execute the transactions
+it needs to.
+
+We think we know how to get around the dual problems
+of spending too much CPU deserializing our instructions,
+and too much CPU verifying signatures:
+
+We are passing two signatures in with our instructions,
+so we need to refactor our signing so that it is using Solana's
+built in accounts and signatures,
+let the runtime verify those signatures,
+not pass them in to the program.
+
+We are stumped about the remaining access violation though.
+It looks like this:
+
+```
+[2021-05-30T17:25:02Z INFO  geonft_sync] executing step UploadPlantToSolana for gtp1q282wzch5t6zltr2f9t8vp3uetdcyl5yucnfq08rmwvwavaszkcuq2u9xwq
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client] -32002 Transaction simulation failed: Error processing Instruction 0: Program failed to complete
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   1: Program HAmCuzqtJws96qkGctkeHrZcu21PFKNzKGKbHy2wWMxa invoke [1]
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   2: Program log: Geonft_solana entrypoint.
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   4: Program log: plant_treasure_with_key
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   5: Program HAmCuzqtJws96qkGctkeHrZcu21PFKNzKGKbHy2wWMxa consumed 38554 of 200000 compute units
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   6: Program failed to complete: Access violation in program section at address 0x100026a00 of size 8 by instruction #12466
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   7: Program HAmCuzqtJws96qkGctkeHrZcu21PFKNzKGKbHy2wWMxa failed: Program failed to complete
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client] 
+[2021-05-30T17:25:02Z ERROR geonft_sync] RPC response error -32002: Transaction simulation failed: Error processing Instruction 0: Program failed to complete [7 log messages]
+[2021-05-30T17:25:02Z INFO  geonft_sync] executing step UploadClaimToSolana for gtp1q282wzch5t6zltr2f9t8vp3uetdcyl5yucnfq08rmwvwavaszkcuq2u9xwq
+```
+
+I ask in `#developer-support`:
+
+> Are there any smart techniques for debugging an access violation in a solana
+  program? Right now I'm just commenting out code and msg! debugging to try to
+  identify what code is causing it.
+
+
+
+After minimizing our program code to pinpoint the access violation,
+we have a revelation.
+Here's what we have:
+
+```rust
+pub fn plant_treasure_with_key(
+    account: &AccountInfo,
+    plant_info: PlantRequestSolana,
+) -> Result<(), GeonftError> {
+    msg!("plant_treasure_with_key");
+    let mut treasure_data = Treasure::try_from_slice(&account.data.borrow())?;
+    
+    treasure_data.serialize(&mut &mut account.data.borrow_mut()[..])?;
+    Ok(())
+}
+```
+
+Here, `Treasure` is our program state,
+and the access violation happens when calling `Treasure::try_from_slice`.
+I realize that at no time have we executed any code
+to initalize our `account.data` to a valid `Treasure`.
+So I would expect this call to fail,
+but _not_ to trigger an access violation.
+
+What's happening?
+Is borsch running off the rails and doing an invalid memory access?
+
+We verify that our `account.data` buffer is filled with zeros initially.
+
 
 
 

@@ -134,6 +134,8 @@ fn execute_plan(plan: Plan) -> Result<()> {
 
         if let Err(e) = r {
             error!("{}", e);
+        } else {
+            info!("successfully executed step {:?} for {}", step, pubkey);
         }
     }
 

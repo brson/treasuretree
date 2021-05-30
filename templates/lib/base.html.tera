@@ -23,7 +23,7 @@
     <header>
 
       <section>
-        <h1><a href="./">Treasure Hunt</a></h1>
+        <h1><a href="./">Treasure Tree</a></h1>
       </section>
 
       <section>
@@ -39,7 +39,8 @@
 
       <section>
 
-        <p>Created by the committee for<br>Cocobutt <span id="heart">❤︎</span> Coconut</p>
+        <p>Created by the committee for<br>
+          Coconut <span id="heart">❤︎</span> Cocobutt</p>
 
       </section>
 
