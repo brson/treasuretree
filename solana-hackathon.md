@@ -1367,7 +1367,32 @@ if we commento out our entire program,
 the client _can_ successfully execute the transactions
 it needs to.
 
+We think we know how to get around the dual problems
+of spending too much CPU deserializing our instructions,
+and too much CPU verifying signatures:
 
+We are passing two signatures in with our instructions,
+so we need to refactor our signing so that it is using Solana's
+built in accounts and signatures,
+let the runtime verify those signatures,
+not pass them in to the program.
+
+We are stumped about the remaining access violation though.
+It looks like this:
+
+```
+[2021-05-30T17:25:02Z INFO  geonft_sync] executing step UploadPlantToSolana for gtp1q282wzch5t6zltr2f9t8vp3uetdcyl5yucnfq08rmwvwavaszkcuq2u9xwq
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client] -32002 Transaction simulation failed: Error processing Instruction 0: Program failed to complete
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   1: Program HAmCuzqtJws96qkGctkeHrZcu21PFKNzKGKbHy2wWMxa invoke [1]
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   2: Program log: Geonft_solana entrypoint.
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   4: Program log: plant_treasure_with_key
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   5: Program HAmCuzqtJws96qkGctkeHrZcu21PFKNzKGKbHy2wWMxa consumed 38554 of 200000 compute units
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   6: Program failed to complete: Access violation in program section at address 0x100026a00 of size 8 by instruction #12466
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   7: Program HAmCuzqtJws96qkGctkeHrZcu21PFKNzKGKbHy2wWMxa failed: Program failed to complete
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client] 
+[2021-05-30T17:25:02Z ERROR geonft_sync] RPC response error -32002: Transaction simulation failed: Error processing Instruction 0: Program failed to complete [7 log messages]
+[2021-05-30T17:25:02Z INFO  geonft_sync] executing step UploadClaimToSolana for gtp1q282wzch5t6zltr2f9t8vp3uetdcyl5yucnfq08rmwvwavaszkcuq2u9xwq
+```
 
 
 
