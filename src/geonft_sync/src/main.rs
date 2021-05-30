@@ -113,7 +113,7 @@ fn execute_plan(plan: Plan) -> Result<()> {
                     }
                 }
                 Step::UploadClaimToSolana => {
-                    if status == Some(SyncStatus::ClaimSynced) {
+                    if status == Some(SyncStatus::PlantSynced) {
                         solana::upload_claim(
                             &pubkey,
                             &config,
