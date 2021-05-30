@@ -103,7 +103,7 @@ pub fn get_program_instance_account(
 
     let account = client.get_account(&pubkey);
 
-    if !account.is_ok() {
+    if account.is_err() {
         info!("creating program instance at {}", pubkey);
 
         let contract_size = get_contract_size(client)?;
