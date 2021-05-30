@@ -18,6 +18,8 @@ it was a good opportunity to give it a try.
   It is relatively simple.
 > Call `solana_logger::setup_with("solana=debug");` before your program starts,
   or set the envvar `RUST_LOG=solana_client=debug`.
+- TODO Signing and instruction budget
+- TODO Mapping account data
 
 
 [fpc]: https://github.com/solana-labs/solana-program-library/blob/master/feature-proposal/cli/src/main.rs
@@ -655,9 +657,7 @@ but now that I'm a developer and can talk in `#developer-support` I ask there:
   offset of -7680 exceeded max offset of -4096 by 3584 bytes, please minimize large stack variables".
   What can I do about this?
 
-TODO
-
-
+We'll get back to the Solana program later.
 
 
 
@@ -1323,6 +1323,35 @@ and create entirely new Solana accounts to hold their data.
 We don't have time to understand how to derive new accounts
 and store new data in time to make a demo for the hackathon
 so I hope we don't have to change that.
+
+After another day of hacking it is clear that two of our
+assumptions about what we could do on chain are wrong:
+
+1) We can't just store in our contract a large map
+   of account keys to account information.
+2) We can't do our own signature verification on-chain.
+   The instruction budget is just too low.
+
+Instead of storing a map of account data,
+I think we are expected to derive Solana accounts key from
+a base key, and create new Solana accounts to store their own
+finitely-sized records.
+
+Instead of doing our own signing on chain,
+I think we are expected to leverage Solana's runtime
+by doing any necessary signing with Solana accounts,
+passing those into transations with their instructions,
+as `AccountMeta` values,
+and have the runtime verify the accounts have signed
+the instruction.
+
+Both these things are forcing us into some tough,
+but doable, rework.
+
+TODO
+
+
+
 
 
 
