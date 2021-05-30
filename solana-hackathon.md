@@ -1400,7 +1400,34 @@ I ask in `#developer-support`:
   program? Right now I'm just commenting out code and msg! debugging to try to
   identify what code is causing it.
 
-TODO
+
+
+After minimizing our program code to pinpoint the access violation,
+we have a revelation.
+Here's what we have:
+
+```rust
+pub fn plant_treasure_with_key(
+    account: &AccountInfo,
+    plant_info: PlantRequestSolana,
+) -> Result<(), GeonftError> {
+    msg!("plant_treasure_with_key");
+    let mut treasure_data = Treasure::try_from_slice(&account.data.borrow())?;
+    
+    treasure_data.serialize(&mut &mut account.data.borrow_mut()[..])?;
+    Ok(())
+}
+```
+
+Here, `Treasure` is our program state,
+and the access violation happens when calling `Treasure::try_from_slice`.
+I realize that at no time have we executed any code
+to initalize our `account.data` to a valid `Treasure`.
+So I would expect this call to fail,
+but _not_ to trigger an access violation.
+
+What's happening? Still debugging.
+
 
 
 
