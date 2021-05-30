@@ -1,2 +1,2 @@
 [global.limits]
-json = 4000000
+json = 20000000
