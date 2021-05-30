@@ -1348,7 +1348,25 @@ the instruction.
 Both these things are forcing us into some tough,
 but doable, rework.
 
-TODO
+Our program basically does five things:
+
+- Deserializes the instruction
+- Verify two signatures
+- Deserialize the program state
+- Add a record to a `HashMap` associated with an application (not Solana) account
+- Serialize the program state
+
+We find that:
+
+- Just deserializing our instruction puts us over the CPU budget
+- Verifying one signature puts us over the CPU budget
+- Serializing our program state triggers an access violation
+
+On the positive side,
+if we commento out our entire program,
+the client _can_ successfully execute the transactions
+it needs to.
+
 
 
 
