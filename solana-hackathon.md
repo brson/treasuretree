@@ -1394,6 +1394,13 @@ It looks like this:
 [2021-05-30T17:25:02Z INFO  geonft_sync] executing step UploadClaimToSolana for gtp1q282wzch5t6zltr2f9t8vp3uetdcyl5yucnfq08rmwvwavaszkcuq2u9xwq
 ```
 
+I ask in `#developer-support`:
+
+> Are there any smart techniques for debugging an access violation in a solana
+  program? Right now I'm just commenting out code and msg! debugging to try to
+  identify what code is causing it.
+
+TODO
 
 
 
