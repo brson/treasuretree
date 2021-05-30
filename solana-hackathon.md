@@ -1426,8 +1426,10 @@ to initalize our `account.data` to a valid `Treasure`.
 So I would expect this call to fail,
 but _not_ to trigger an access violation.
 
-What's happening? Still debugging.
+What's happening?
+Is borsch running off the rails and doing an invalid memory access?
 
+We verify that our `account.data` buffer is filled with zeros initially.
 
 
 
