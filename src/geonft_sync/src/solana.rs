@@ -164,19 +164,18 @@ pub fn upload_plant(
         account_public_key: crypto::decode_account_public_key_to_bytes(
             &plant_request.account_public_key,
         )?,
+        treasure_hash: hash.into_bytes(),
         treasure_public_key: crypto::decode_treasure_public_key_to_bytes(
             &plant_request.treasure_public_key,
         )?,
-        treasure_hash: hash.into_bytes(),
-        account_signature: crypto::decode_signature_to_bytes(&plant_request.account_signature)?,
-        treasure_signature: crypto::decode_signature_to_bytes(&plant_request.treasure_signature)?,
     };
     let inst = create_plant_instruction(plant_request, &program.pubkey(), program_account)?;
     let mut tx = Transaction::new_with_payer(&[inst], Some(&config.keypair.pubkey()));
     let blockhash = client.get_recent_blockhash()?.0;
     tx.try_sign(&[&config.keypair], blockhash)?;
-    client.send_and_confirm_transaction_with_spinner(&tx)?;
+    let sig = client.send_and_confirm_transaction_with_spinner(&tx)?;
 
+    info!("plant sig: {}", &sig);
     Ok(())
 }
 
@@ -195,8 +194,6 @@ pub fn upload_claim(
         treasure_public_key: crypto::decode_treasure_public_key_to_bytes(
             &claim_request.treasure_public_key,
         )?,
-        account_signature: crypto::decode_signature_to_bytes(&claim_request.account_signature)?,
-        treasure_signature: crypto::decode_signature_to_bytes(&claim_request.treasure_signature)?,
     };
 
     let inst = create_claim_instruction(claim_request, &program.pubkey(), program_account)?;
@@ -204,8 +201,9 @@ pub fn upload_claim(
     let mut tx = Transaction::new_with_payer(&[inst], Some(&config.keypair.pubkey()));
     let blockhash = client.get_recent_blockhash()?.0;
     tx.try_sign(&[&config.keypair], blockhash)?;
-    client.send_and_confirm_transaction_with_spinner(&tx)?;
+    let sig = client.send_and_confirm_transaction_with_spinner(&tx)?;
 
+    info!("claim sig: {}", &sig);
     Ok(())
 }
 
