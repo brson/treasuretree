@@ -6,20 +6,20 @@ use std::io::BufReader;
 use std::net::SocketAddr;
 use std::time::Duration;
 
-use geonft_shared::io;
+use geonft_data::{ClaimRequestSolana, GeonftRequestSolana, PlantRequestSolana};
 use geonft_nostd::crypto;
-use geonft_data::{GeonftRequestSolana, PlantRequestSolana, ClaimRequestSolana};
+use geonft_shared::io;
 
 use borsh::ser::BorshSerialize;
 use solana_client::rpc_client::RpcClient;
 use solana_client::thin_client::{self, ThinClient};
 use solana_sdk::account::Account;
 use solana_sdk::commitment_config::CommitmentConfig;
+use solana_sdk::instruction::{AccountMeta, Instruction};
 use solana_sdk::pubkey::Pubkey;
 use solana_sdk::signature::{read_keypair_file, Keypair, Signer};
 use solana_sdk::system_instruction;
 use solana_sdk::transaction::Transaction;
-use solana_sdk::instruction::{Instruction, AccountMeta};
 
 pub struct Config {
     pub json_rpc_url: String,
@@ -151,25 +151,28 @@ fn get_contract_size(client: &RpcClient) -> Result<usize> {
     Ok(10_000)
 }
 
-pub fn upload_plant(plant_key: &str,
-                    config: &Config,
-                    client: &RpcClient,
-                    program: &Keypair,
-                    program_account: &Pubkey) -> Result<()> {
+pub fn upload_plant(
+    plant_key: &str,
+    config: &Config,
+    client: &RpcClient,
+    program: &Keypair,
+    program_account: &Pubkey,
+) -> Result<()> {
     let plant_request = io::get_plant(plant_key)?;
     let hash = crypto::get_hash(&plant_request.image)?;
     let plant_request = PlantRequestSolana {
-        account_public_key: crypto::decode_account_public_key_to_bytes(&plant_request.account_public_key)?,
-        treasure_public_key: crypto::decode_treasure_public_key_to_bytes(&plant_request.treasure_public_key)?,
+        account_public_key: crypto::decode_account_public_key_to_bytes(
+            &plant_request.account_public_key,
+        )?,
+        treasure_public_key: crypto::decode_treasure_public_key_to_bytes(
+            &plant_request.treasure_public_key,
+        )?,
         treasure_hash: hash.into_bytes(),
         account_signature: crypto::decode_signature_to_bytes(&plant_request.account_signature)?,
         treasure_signature: crypto::decode_signature_to_bytes(&plant_request.treasure_signature)?,
     };
-    let inst = create_plant_instruction(plant_request,
-                                        &program.pubkey(),
-                                        program_account)?;
-    let mut tx = Transaction::new_with_payer(
-        &[inst], Some(&config.keypair.pubkey()));
+    let inst = create_plant_instruction(plant_request, &program.pubkey(), program_account)?;
+    let mut tx = Transaction::new_with_payer(&[inst], Some(&config.keypair.pubkey()));
     let blockhash = client.get_recent_blockhash()?.0;
     tx.try_sign(&[&config.keypair], blockhash)?;
     client.send_and_confirm_transaction_with_spinner(&tx)?;
@@ -177,25 +180,28 @@ pub fn upload_plant(plant_key: &str,
     Ok(())
 }
 
-pub fn upload_claim(claim_key: &str,
-                    config: &Config,
-                    client: &RpcClient,
-                    program: &Keypair,
-                    program_account: &Pubkey) -> Result<()> {
+pub fn upload_claim(
+    claim_key: &str,
+    config: &Config,
+    client: &RpcClient,
+    program: &Keypair,
+    program_account: &Pubkey,
+) -> Result<()> {
     let claim_request = io::get_claim(claim_key)?;
     let claim_request = ClaimRequestSolana {
-        account_public_key: crypto::decode_account_public_key_to_bytes(&claim_request.account_public_key)?,
-        treasure_public_key: crypto::decode_treasure_public_key_to_bytes(&claim_request.treasure_public_key)?,
+        account_public_key: crypto::decode_account_public_key_to_bytes(
+            &claim_request.account_public_key,
+        )?,
+        treasure_public_key: crypto::decode_treasure_public_key_to_bytes(
+            &claim_request.treasure_public_key,
+        )?,
         account_signature: crypto::decode_signature_to_bytes(&claim_request.account_signature)?,
         treasure_signature: crypto::decode_signature_to_bytes(&claim_request.treasure_signature)?,
     };
-    
-    let inst = create_claim_instruction(claim_request,
-                                        &program.pubkey(),
-                                        program_account)?;
 
-    let mut tx = Transaction::new_with_payer(
-        &[inst], Some(&config.keypair.pubkey()));
+    let inst = create_claim_instruction(claim_request, &program.pubkey(), program_account)?;
+
+    let mut tx = Transaction::new_with_payer(&[inst], Some(&config.keypair.pubkey()));
     let blockhash = client.get_recent_blockhash()?.0;
     tx.try_sign(&[&config.keypair], blockhash)?;
     client.send_and_confirm_transaction_with_spinner(&tx)?;
@@ -203,29 +209,28 @@ pub fn upload_claim(claim_key: &str,
     Ok(())
 }
 
-
-fn create_plant_instruction(plant_request: PlantRequestSolana,
-                            program_id: &Pubkey,
-                            program_instance: &Pubkey) -> Result<Instruction> {
+fn create_plant_instruction(
+    plant_request: PlantRequestSolana,
+    program_id: &Pubkey,
+    program_instance: &Pubkey,
+) -> Result<Instruction> {
     let data = GeonftRequestSolana::PlantTreasure(plant_request).try_to_vec()?;
     Ok(Instruction {
         program_id: *program_id,
-        accounts: vec![
-            AccountMeta::new(*program_instance, false),
-        ],
+        accounts: vec![AccountMeta::new(*program_instance, false)],
         data,
     })
 }
 
-fn create_claim_instruction(claim_request: ClaimRequestSolana,
-                            program_id: &Pubkey,
-                            program_instance: &Pubkey) -> Result<Instruction> {
+fn create_claim_instruction(
+    claim_request: ClaimRequestSolana,
+    program_id: &Pubkey,
+    program_instance: &Pubkey,
+) -> Result<Instruction> {
     let data = GeonftRequestSolana::ClaimTreasure(claim_request).try_to_vec()?;
     Ok(Instruction {
         program_id: *program_id,
-        accounts: vec![
-            AccountMeta::new(*program_instance, false),
-        ],
+        accounts: vec![AccountMeta::new(*program_instance, false)],
         data,
     })
 }

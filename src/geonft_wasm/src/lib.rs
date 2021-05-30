@@ -1,8 +1,8 @@
 mod treasure_qrcode;
 mod utils;
+use geonft_nostd::crypto::{self, Keypair};
 use rand::rngs::OsRng;
 use wasm_bindgen::prelude::*;
-use geonft_nostd::crypto::{self, Keypair};
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.

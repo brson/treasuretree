@@ -1,13 +1,13 @@
 #![allow(unused)]
 
 use anyhow::Result;
-use log::{info, error, warn};
+use log::{error, info, warn};
 use std::collections::HashMap;
 use std::net::SocketAddr;
 use std::thread;
 use std::time::Duration;
 
-use geonft_data::{GeonftRequestSolana, PlantRequestSolana, ClaimRequestSolana};
+use geonft_data::{ClaimRequestSolana, GeonftRequestSolana, PlantRequestSolana};
 use geonft_shared::io::{self, SyncStatus};
 
 mod ipfs;
@@ -96,29 +96,37 @@ fn execute_plan(plan: Plan) -> Result<()> {
                     } else {
                         warn!("unexpected sync status: {:?}", status);
                     }
-                },
+                }
                 Step::UploadPlantToSolana => {
                     if status == Some(SyncStatus::BlobSynced) {
-                        solana::upload_plant(&pubkey, &config, &client,
-                                             &program_keypair,
-                                             &program_instance_account)?;
+                        solana::upload_plant(
+                            &pubkey,
+                            &config,
+                            &client,
+                            &program_keypair,
+                            &program_instance_account,
+                        )?;
                         io::record_sync_status(&pubkey, SyncStatus::PlantSynced)?;
                         statuses.insert(pubkey, SyncStatus::PlantSynced);
                     } else {
                         warn!("unexpected sync status: {:?}", status);
                     }
-                },
+                }
                 Step::UploadClaimToSolana => {
                     if status == Some(SyncStatus::ClaimSynced) {
-                        solana::upload_claim(&pubkey, &config, &client,
-                                             &program_keypair,
-                                             &program_instance_account)?;
+                        solana::upload_claim(
+                            &pubkey,
+                            &config,
+                            &client,
+                            &program_keypair,
+                            &program_instance_account,
+                        )?;
                         io::record_sync_status(&pubkey, SyncStatus::ClaimSynced)?;
                         statuses.insert(pubkey, SyncStatus::ClaimSynced);
                     } else {
                         warn!("unexpected sync status: {:?}", status);
                     }
-                },
+                }
             }
 
             Ok(())

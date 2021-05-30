@@ -1,9 +1,9 @@
 use anyhow::Result;
+use geonft_data::{ClaimRequest, PlantRequest};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::{self, DirEntry, File, Metadata};
 use std::io::{BufReader, BufWriter};
-use geonft_data::{PlantRequest, ClaimRequest};
 
 pub static PLANT_DIR: &'static str = "data/plant";
 pub static CLAIM_DIR: &'static str = "data/claim";
@@ -110,10 +110,7 @@ pub fn get_claim(key: &str) -> Result<ClaimRequest> {
     Ok(req)
 }
 
-#[derive(Serialize, Deserialize)]
-#[derive(Debug)]
-#[derive(Eq, PartialEq)]
-#[derive(Copy, Clone)]
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Copy, Clone)]
 pub enum SyncStatus {
     BlobSynced,
     PlantSynced,
@@ -238,9 +235,10 @@ fn get_ui_sync_status(public_key: &str) -> Result<String> {
         (true, false, None | Some(SyncStatus::BlobSynced)) => "unsynced",
         (true, false, Some(SyncStatus::PlantSynced)) => "synced",
         (true, false, Some(SyncStatus::ClaimSynced)) => unreachable!(),
-        (true, true, None
-                     | Some(SyncStatus::BlobSynced)
-                     | Some(SyncStatus::PlantSynced)) => "unsynced",
+        (true, true, None | Some(SyncStatus::BlobSynced) | Some(SyncStatus::PlantSynced)) => {
+            "unsynced"
+        }
         (true, true, Some(SyncStatus::ClaimSynced)) => "synced",
-    }.to_string())
+    }
+    .to_string())
 }

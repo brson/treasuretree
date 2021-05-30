@@ -1,10 +1,7 @@
-use serde::{Serialize, Deserialize};
-use borsh::{BorshSerialize, BorshDeserialize};
+use borsh::{BorshDeserialize, BorshSerialize};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
-#[derive(BorshSerialize, BorshDeserialize)]
-#[derive(Serialize, Deserialize)]
-#[derive(Hash, Eq, PartialEq)]
+#[derive(Debug, BorshSerialize, BorshDeserialize, Serialize, Deserialize, Hash, Eq, PartialEq)]
 pub struct PlantRequest {
     /// The public key of the account that is planting the treasure
     pub account_public_key: String,
@@ -23,18 +20,13 @@ pub struct PlantRequest {
     pub treasure_signature: String,
 }
 
-#[derive(Debug)]
-#[derive(BorshSerialize, BorshDeserialize)]
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, BorshSerialize, BorshDeserialize, Serialize, Deserialize)]
 pub enum GeonftRequestSolana {
     PlantTreasure(PlantRequestSolana),
     ClaimTreasure(ClaimRequestSolana),
 }
 
-#[derive(Debug)]
-#[derive(BorshSerialize, BorshDeserialize)]
-#[derive(Serialize, Deserialize)]
-#[derive(Hash, Eq, PartialEq)]
+#[derive(Debug, BorshSerialize, BorshDeserialize, Serialize, Deserialize, Hash, Eq, PartialEq)]
 pub struct PlantRequestSolana {
     /// The public key of the account that is planting the treasure
     pub account_public_key: Vec<u8>,
@@ -53,10 +45,7 @@ pub struct PlantRequestSolana {
     pub treasure_signature: Vec<u8>,
 }
 
-#[derive(Debug)]
-#[derive(BorshSerialize, BorshDeserialize)]
-#[derive(Serialize, Deserialize)]
-#[derive(Hash, Eq, PartialEq)]
+#[derive(Debug, BorshSerialize, BorshDeserialize, Serialize, Deserialize, Hash, Eq, PartialEq)]
 pub struct ClaimRequestSolana {
     /// The public key of the claiming account, bech32 encoded
     pub account_public_key: Vec<u8>,
@@ -72,10 +61,7 @@ pub struct ClaimRequestSolana {
     pub treasure_signature: Vec<u8>,
 }
 
-#[derive(Debug)]
-#[derive(BorshSerialize, BorshDeserialize)]
-#[derive(Serialize, Deserialize)]
-#[derive(Hash, Eq, PartialEq)]
+#[derive(Debug, BorshSerialize, BorshDeserialize, Serialize, Deserialize, Hash, Eq, PartialEq)]
 pub struct ClaimRequest {
     /// The public key of the claiming account, bech32 encoded
     pub account_public_key: String,

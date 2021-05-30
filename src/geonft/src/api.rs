@@ -1,6 +1,6 @@
 use crate::crypto;
 use anyhow::{bail, Result};
-use geonft_data::{PlantRequest, ClaimRequest};
+use geonft_data::{ClaimRequest, PlantRequest};
 use geonft_shared::io;
 use rocket_contrib::{json::Json, templates::Template};
 use serde::{Deserialize, Serialize};
