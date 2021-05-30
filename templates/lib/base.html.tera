@@ -23,7 +23,7 @@
     <header>
 
       <section>
-        <h1><input type="button" id="top-button" value="Treasure Hunt"></h1>
+        <h1><a href="./">Treasure Hunt</a></h1>
       </section>
 
       <section>
