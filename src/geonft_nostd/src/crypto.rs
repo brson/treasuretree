@@ -141,7 +141,8 @@ pub fn decode_account_public_key(key: &str) -> Result<PublicKey> {
 }
 
 pub fn decode_account_public_key_to_bytes(key: &str) -> Result<Vec<u8>> {
-    todo!()
+    let key = decode_public_key(key, ACCOUNT_PUBLIC_KEY_HRP)?;
+    Ok(key.to_bytes().to_vec())
 }
 
 pub fn decode_treasure_public_key(key: &str) -> Result<PublicKey> {
@@ -149,7 +150,8 @@ pub fn decode_treasure_public_key(key: &str) -> Result<PublicKey> {
 }
 
 pub fn decode_treasure_public_key_to_bytes(key: &str) -> Result<Vec<u8>> {
-    todo!()
+    let key = decode_public_key(key, TREASURE_PUBLIC_KEY_HRP)?;
+    Ok(key.to_bytes().to_vec())
 }
 
 fn decode_public_key(key: &str, hrp: &str) -> Result<PublicKey> {
