@@ -140,8 +140,16 @@ pub fn decode_account_public_key(key: &str) -> Result<PublicKey> {
     decode_public_key(key, ACCOUNT_PUBLIC_KEY_HRP)
 }
 
+pub fn decode_account_public_key_to_bytes(key: &str) -> Result<Vec<u8>> {
+    todo!()
+}
+
 pub fn decode_treasure_public_key(key: &str) -> Result<PublicKey> {
     decode_public_key(key, TREASURE_PUBLIC_KEY_HRP)
+}
+
+pub fn decode_treasure_public_key_to_bytes(key: &str) -> Result<Vec<u8>> {
+    todo!()
 }
 
 fn decode_public_key(key: &str, hrp: &str) -> Result<PublicKey> {
@@ -156,7 +164,11 @@ fn decode_public_key(key: &str, hrp: &str) -> Result<PublicKey> {
     }
 
     let bytes = Vec::<u8>::from_base32(&data).e()?;
-    let key = PublicKey::from_sec1_bytes(&bytes).e()?;
+    Ok(public_key_from_bytes(&bytes)?)
+}
+
+pub fn public_key_from_bytes(key: &[u8]) -> Result<PublicKey> {
+    let key = PublicKey::from_sec1_bytes(key).e()?;
     Ok(key)
 }
 
@@ -281,8 +293,16 @@ pub fn encode_signature(sig: &Signature) -> Result<String> {
 
 // Decodes a base64 encoded signature
 pub fn decode_signature(sig: &str) -> Result<Signature> {
-    let decoded = base64::decode(sig.as_bytes()).e()?;
-    let signature = Signature::from_bytes(&decoded).e()?;
+    let decoded = decode_signature_to_bytes(sig)?;
+    Ok(signature_from_bytes(&decoded)?)
+}
+
+pub fn decode_signature_to_bytes(sig: &str) -> Result<Vec<u8>> {
+    Ok(base64::decode(sig.as_bytes()).e()?)
+}
+
+pub fn signature_from_bytes(sig: &[u8]) -> Result<Signature> {
+    let signature = Signature::from_bytes(&sig).e()?;
     Ok(signature)
 }
 
