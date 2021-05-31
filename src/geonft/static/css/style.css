@@ -14,7 +14,7 @@
 }
 
 body {
-    font-size: 150%;
+    font-size: 100%;
 }
 
 * {
@@ -322,13 +322,13 @@ video {
     max-width: 100%;
 }
 
-span.action-row {
+div.action-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
 }
 
-span.action-row > * {
+div.action-row > * {
     margin: 1rem;
 }
 
