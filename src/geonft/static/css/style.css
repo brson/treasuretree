@@ -32,11 +32,20 @@ span.file-input > label {
     font-weight: bold;
     letter-spacing: 0.1em;
     font-variant: small-caps;
-    font-size: 120%;
+    font-size: 200%;
+}
+
+h1 a {
+    font-size: 100%;
 }
 
 p.treasure-p a {
     font-variant: none;
+}
+
+p.success-message {
+    font-weight: bold;
+    font-size: 200%;
 }
 
 
@@ -48,16 +57,16 @@ p.treasure-p a {
     color: inherit;
     border-color: rgb(70%, 70%, 70%);
     --text-color: rgb(40%, 40%, 40%);
-    --action-color: hsl(300, 75%, 75%); /* magenta */
+    --action-color: hsl(300, 75%, 70%); /* magenta */
     --action-color-dark: hsl(300, 50%, 60%);
     --action-color-light: hsl(300, 50%, 95%);
-    --logo-color: hsl(180, 75%, 75%); /* cyan */
+    --logo-color: hsl(180, 75%, 70%); /* cyan */
     --logo-color-dark: hsl(180, 50%, 60%);
     --logo-color-light: hsl(180, 50%, 95%);
-    --header-color: hsl(30, 75%, 75%); /* orange */
+    --header-color: hsl(30, 75%, 70%); /* orange */
     --header-color-dark: hsl(30, 50%, 60%);
     --header-color-light: hsl(30, 75%, 95%);
-    --success-color: hsl(90, 75%, 75%); /* orange */
+    --success-color: hsl(90, 75%, 70%); /* green */
     --success-color-dark: hsl(90, 50%, 60%);
     --success-color-light: hsl(90, 75%, 95%);
 }
