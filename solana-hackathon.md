@@ -1317,6 +1317,8 @@ I ask in `#developer-support`:
   number of instructions allowed (200000) at instruction #29900". Is it possible
   to raise the instruction limit for a program?
 
+(I think I recall that somebody answered this question, and the cap is fixed).
+
 For the sake of getting this proof-of-concept done
 it would be easiest to just raise the limit,
 but there are definitely things we are doing in the program
@@ -1408,7 +1410,10 @@ I ask in `#developer-support`:
   program? Right now I'm just commenting out code and msg! debugging to try to
   identify what code is causing it.
 
-
+I don't think anybody answers this question,
+but a lot of messages scrolled by,
+and I find it difficult to identify messages mentioning
+or replying to me in Discord.
 
 After minimizing our program code to pinpoint the access violation,
 we have a revelation.
