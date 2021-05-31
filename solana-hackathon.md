@@ -34,6 +34,14 @@ it was a good opportunity to give it a try.
   compatibility with the `Error` trait.
 - 4K BPF stack frames means some crates don't work,
   including `ed25519-dalek`.
+- `HashMap` doesn't work in a Solana program and the failure
+  mode is a runtime "access violation".
+
+
+## Questions
+
+- Is it possible to see the panic message from a panicking
+  Solana program?
 
 
 ## Today's plan
@@ -1430,6 +1438,29 @@ What's happening?
 Is borsch running off the rails and doing an invalid memory access?
 
 We verify that our `account.data` buffer is filled with zeros initially.
+
+After some experimenting we realize that `HashMap` simply doesn't work
+within a Solana program,
+and this manifests as an access violation.
+I am guessing that `HasMap` operations panic,
+and we didn't get to see the panic message.
+Is it possible to see the panic message?
+
+We switch to a `BTreeMap` and things start proceeding more smoothly.
+
+We still need to check if our program state is initialized.
+Looking at an SPL example the pattern I see for this looks
+sketchy,
+and I don't want to think to hard about what it is doing,
+so I do something obvious to me:
+
+I reserve byte 1 of the program data for an "initialized" flag,
+and serialize to the remaining slice of the program data.
+
+
+
+
+
 
 
 
