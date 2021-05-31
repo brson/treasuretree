@@ -1449,10 +1449,9 @@ Is it possible to see the panic message?
 We switch to a `BTreeMap` and things start proceeding more smoothly.
 
 We still need to check if our program state is initialized.
-Looking at an SPL example the pattern I see for this looks
-sketchy,
-and I don't want to think to hard about what it is doing,
-so I do something obvious to me:
+Instead of understanding the proper pattern for this
+by reading the SPL examples,
+I do something obvious to me:
 
 I reserve byte 1 of the program data for an "initialized" flag,
 and serialize to the remaining slice of the program data.
