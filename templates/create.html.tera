@@ -20,7 +20,7 @@ Create a Treasure Key
 <section>
 
   <p>
-    <input type="button" id="create-button" value="Create QR Code">
+    <input type="button" id="create-button" value="Create Treasure Key">
     <span id="create-spinner" class="spinner no-display"></span>
   </p>
 

@@ -35,7 +35,13 @@ span.file-input > label {
     font-size: 200%;
 }
 
+a {
+    text-transform: uppercase;
+}
+
 h1 a {
+    text-transform: none;
+    font-variant: small-caps;
     font-size: 100%;
 }
 
@@ -283,8 +289,8 @@ section {
     margin-right: auto;
 }
 
-p, h1, h2, li {
-    margin: 2rem;
+p, h1, h2, ul {
+    margin: 1rem;
 }
 
 header h1 {
@@ -319,6 +325,15 @@ p.success-message {
 img,
 video {
     max-width: 100%;
+}
+
+span.action-item {
+    display: flex;
+    align-items: center;
+}
+
+span.action-item > * {
+    margin: 1rem;
 }
 
 /* special file input button handling */
