@@ -14,7 +14,7 @@
 }
 
 body {
-    font-size: 100%;
+    font-size: 150%;
 }
 
 * {
@@ -32,7 +32,7 @@ span.file-input > label {
     font-weight: bold;
     letter-spacing: 0.1em;
     font-variant: small-caps;
-    font-size: 200%;
+    font-size: 150%;
 }
 
 a {
@@ -51,7 +51,7 @@ p.treasure-p a {
 
 p.success-message {
     font-weight: bold;
-    font-size: 200%;
+    font-size: 150%;
 }
 
 
@@ -284,7 +284,7 @@ section {
 }
 
 section {
-    max-width: 80ch;
+    max-width: 60ch;
     margin-left: auto;
     margin-right: auto;
 }
