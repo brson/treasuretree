@@ -44,8 +44,19 @@ pub fn process_instruction(
 
 #[derive(BorshDeserialize, BorshSerialize, Debug)]
 struct Treasure {
-    plant_treasure: HashMap<Vec<u8>, PlantRequestSolana>,
-    claim_treasure: HashMap<Vec<u8>, ClaimRequestSolana>,
+    plant_treasure: HashMap<Vec<u8>, PlantTreasure>,
+    claim_treasure: HashMap<Vec<u8>, ClaimTreasure>,
+}
+
+#[derive(BorshDeserialize, BorshSerialize, Debug)]
+struct PlantTreasure {
+    account_pubkey: Vec<u8>,
+    treasure_hash: Vec<u8>
+}
+
+#[derive(BorshDeserialize, BorshSerialize, Debug)]
+struct ClaimTreasure {
+    account_pubkey: Vec<u8>
 }
 
 pub fn plant_treasure_with_key(
@@ -53,18 +64,21 @@ pub fn plant_treasure_with_key(
     plant_info: PlantRequestSolana,
 ) -> Result<(), GeonftError> {
     msg!("plant_treasure_with_key");
-/*
+
     let mut treasure_data = Treasure::try_from_slice(&account.data.borrow())?;
     treasure_data
         .plant_treasure
         .insert(
             plant_info.treasure_public_key.to_vec(),
-            plant_info
+            PlantTreasure {
+                account_pubkey: plant_info.account_public_key,
+                treasure_hash: plant_info.treasure_hash
+            }
         );
     
     Ok(treasure_data.serialize(&mut &mut account.data.borrow_mut()[..])?)
-     */
-    Ok(())
+
+//    Ok(())
 }
 
 pub fn claim_treasure_with_key(
@@ -77,9 +91,11 @@ pub fn claim_treasure_with_key(
     msg!("get treasure_data");
     msg!("account.data: {:?}", &account.data.borrow()[..30]);
     
-    let treasure_data = Treasure::try_from_slice(&account.data.borrow());
+    let mut treasure_data = Treasure::try_from_slice(&account.data.borrow())?;
     msg!("treasure_data result: {:?}", &treasure_data);
-/*    if !treasure_data
+
+
+    if !treasure_data
         .plant_treasure
         .contains_key(treasure_pubkey)
     {
@@ -89,14 +105,16 @@ pub fn claim_treasure_with_key(
             .claim_treasure
             .insert(
                 treasure_pubkey.to_vec(),
-                claim_info
-);*/
-    msg!("before serialize");
-    
-//    treasure_data.serialize(&mut &mut account.data.borrow_mut()[..])?;
-//    msg!("before ok");
-    Ok(())
-//    }
+                ClaimTreasure {
+                    account_pubkey: claim_info.account_public_key
+                }
+            );
+
+        msg!("before serialize");
+        
+        Ok(treasure_data.serialize(&mut &mut account.data.borrow_mut()[..])?)
+//        msg!("before ok");
+    }
 }
 
 pub enum GeonftError {
