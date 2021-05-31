@@ -81,7 +81,7 @@ body {
     background-color: white;
 }
 
-p, li {
+p {
     color: var(--text-color);
 }
 
@@ -289,7 +289,7 @@ section {
     margin-right: auto;
 }
 
-p, h1, h2, ul {
+p, h1, h2 {
     margin: 1rem;
 }
 
@@ -307,11 +307,6 @@ footer p {
     text-align: center;
 }
 
-ul {
-    padding-left: 0;
-    list-style: none;
-}
-
 a {
     padding: 0.2em 0.5em 0.2em 0.5em;
 }
@@ -327,12 +322,13 @@ video {
     max-width: 100%;
 }
 
-span.action-item {
+span.action-row {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
 }
 
-span.action-item > * {
+span.action-row > * {
     margin: 1rem;
 }
 

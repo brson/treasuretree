@@ -19,14 +19,16 @@ Plant a Treasure
 
 <section>
 
-  <p>
-    <span class="file-input">
-      <input type="file" id="image-upload-button">
-      <label for="image-upload-button">Upload Image</label>
+  <div>
+    <span class="action-row">
+      <span class="file-input">
+        <input type="file" id="image-upload-button">
+        <label for="image-upload-button">Upload Image</label>
+      </span>
+      <input type="button" id="use-test-image-button" value="Use Test Image">
+      <span id="file-spinner" class="spinner no-display"></span>
     </span>
-    <input type="button" id="use-test-image-button" value="Use Test Image">
-    <span id="file-spinner" class="spinner no-display"></span>
-  </p>
+  </div>
 
   <p><img id="treasure-image" class="no-display"></p>
 

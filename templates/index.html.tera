@@ -15,32 +15,30 @@ Actions Menu
 {% block body %}
 
 <section>
-  <ul>
-    <li>
-      <span class="action-item">
-        <a href="create">create</a>
-        <span>a new treasure key</span>
-      </span>
-    </li>
-    <li>
-      <span class="action-item">
-        <a href="plant">plant</a>
-        <span>a treasure with its key</span>
-      </span>
-    </li>
-    <li>
-      <span class="action-item">
-        <a href="claim">claim</a>
-        <span>a planted treasure with its key</span>
-      </span>
-    </li>
-    <li>
-      <span class="action-item">
-        <a href="recent">recent</a>
-        <span>planted treasures</span>
-      </span>
-    </li>
-  </ul>
+  <div>
+    <span class="action-row">
+      <a href="create">create</a>
+      <span>a new treasure key</span>
+    </span>
+  </div>
+  <div>
+    <span class="action-row">
+      <a href="plant">plant</a>
+      <span>a treasure with its key</span>
+    </span>
+  </div>
+  <div>
+    <span class="action-row">
+      <a href="claim">claim</a>
+      <span>a planted treasure with its key</span>
+    </span>
+  </div>
+  <div>
+    <span class="action-row">
+      <a href="recent">recent</a>
+      <span>planted treasures</span>
+    </span>
+  </div>
 </section>
 
 {% endblock body %}
