@@ -168,6 +168,7 @@ pub fn record_sync_status(key: &str, status: SyncStatus) -> Result<()> {
 #[derive(Serialize)]
 pub struct TreasureTemplateData {
     pub public_key: String,
+    pub public_key_abbrev: String,
     pub public_url: String,
     pub image_url: String,
     pub planted_date_time: String,
@@ -180,6 +181,8 @@ pub struct TreasureTemplateData {
 pub fn load_treasure_data(public_key: &str) -> Result<TreasureTemplateData> {
     let public_key = public_key.to_string();
 
+    let public_key_abbrev: String = public_key.chars().take(14).collect();
+    let public_key_abbrev = format!("{}…", public_key_abbrev);
     let public_url = format!("treasure/{}", public_key);
     let image_url = format!("treasure-images/{}", public_key);
 
@@ -213,6 +216,7 @@ pub fn load_treasure_data(public_key: &str) -> Result<TreasureTemplateData> {
 
     Ok(TreasureTemplateData {
         public_key,
+        public_key_abbrev,
         public_url,
         image_url,
         planted_date_time,

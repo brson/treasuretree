@@ -1,12 +1,14 @@
 <section>
 
-  <p>
+  <p><a href="{{ treasure.public_url }}" class="image-link"><img src="{{ treasure.image_url }}"></a></p>
+
+  <p class="treasure-p">
     <a href="{{ treasure.public_url }}">
-      <span class="breakable">{{ treasure.public_key }}</span>
+      <span class="breakable">{{ treasure.public_key_abbrev }}</span>
     </a>
   </p>
 
-  <p><img src="{{ treasure.image_url }}"></p>
+  <p>Id: <span class="breakable">{{ treasure.public_key }}</span></p>
 
   <p>Planted on: {{ treasure.planted_date_time }}</p>
 
