@@ -10,11 +10,11 @@
 
   <p>Planted on: {{ treasure.planted_date_time }}</p>
 
-  <p>Planted by: {{ treasure.planted_by }}</p>
+  <p>Planted by: <span class="breakable">{{ treasure.planted_by }}<span></p>
 
   <p>Claimed on: {{ treasure.claimed_date_time }}</p>
 
-  <p>Claimed by: {{ treasure.claimed_by }}</p>
+  <p>Claimed by: <span class="breakable">{{ treasure.claimed_by }}<span></p>
 
   <div class="treasure-sync-section" id="{{ treasure.public_key }}">
     <p>
