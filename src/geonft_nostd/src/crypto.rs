@@ -66,7 +66,7 @@ pub fn keypair_from_treasure_secret_key(key: &str) -> Result<Keypair> {
     Ok(keypair)
 }
 
-pub fn keypair_to_treasure_secret_url(keypair: &Keypair) -> Result<String> {
+pub fn keypair_to_treasure_secret_claim_url(keypair: &Keypair) -> Result<String> {
     let secret_key_string = encode_treasure_secret_key(&keypair.secret)?;
     let url = format!("{}{}", TREASURE_SECRET_URL_PREFIX, secret_key_string);
     Ok(url)

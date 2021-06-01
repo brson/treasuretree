@@ -54,10 +54,10 @@ pub fn treasure_secret_key_to_public_key(key: &str) -> Option<String> {
 }
 
 #[wasm_bindgen]
-pub fn treasure_secret_key_to_secret_url(key: &str) -> Option<String> {
+pub fn treasure_secret_key_to_secret_claim_url(key: &str) -> Option<String> {
     crypto::keypair_from_treasure_secret_key(key)
         .ok()
-        .map(|kp| crypto::keypair_to_treasure_secret_url(&kp).ok())
+        .map(|kp| crypto::keypair_to_treasure_secret_claim_url(&kp).ok())
         .flatten()
 }
 
