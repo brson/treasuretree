@@ -1497,7 +1497,19 @@ The same type of errors:
 [2021-05-30T15:54:29Z DEBUG solana_client::rpc_client]   6: Program 4oZHXZX89vMFNTyqqWYqM4EuN2Q9pec1Q8kT18ThhYY7 failed: Program failed to complete
 ```
 
-We comment all the content inside the two methods, then it works:
+We comment all the content inside the two methods,
+
+```rust
+pub fn plant_treasure(
+    account: &AccountInfo,
+    plant_info: PlantRequestSolana,
+) -> Result<(), GeonftError> {
+    msg!("plant_treasure");
+    Ok(())
+}
+```
+
+then it works:
 
 ```
 [2021-05-30T16:14:58Z INFO  geonft_sync] making new plan
