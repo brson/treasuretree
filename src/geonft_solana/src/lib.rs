@@ -1,5 +1,6 @@
 use anyhow::anyhow;
 use borsh::{BorshDeserialize, BorshSerialize};
+use solana_program::borsh::try_from_slice_unchecked;
 use geonft_data::{ClaimRequestSolana, GeonftRequestSolana, PlantRequestSolana};
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
@@ -9,7 +10,7 @@ use solana_program::{
     program_error::ProgramError,
     pubkey::Pubkey,
 };
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 // Declare and export the program's entrypoint
 entrypoint!(process_instruction);
@@ -29,43 +30,57 @@ pub fn process_instruction(
         return Err(ProgramError::IncorrectProgramId);
     }
 
-    msg!("Geonft_solana entrypoint.");
+    msg!("Geonft_solana entrypoint");
+
+    if account.data.borrow()[0] == 0 {
+        msg!("init starts");
+        let init_treasure = Treasure {
+            plant_treasure: BTreeMap::new(),
+            claim_treasure: BTreeMap::new()
+        };
+
+        init_treasure.serialize(&mut &mut account.data.borrow_mut()[1..])?;
+        account.data.borrow_mut()[0] = 1;
+    }
+
+    let mut treasure_data = try_from_slice_unchecked(&account.data.borrow()[1..])?;
 
     let geonft_data = GeonftRequestSolana::try_from_slice(geonft_data)?;
     match geonft_data {
         GeonftRequestSolana::PlantTreasure(plant_info) => {
-            Ok(plant_treasure_with_key(&account, plant_info)?)
+            plant_treasure_with_key(plant_info, &mut treasure_data)?;
         }
         GeonftRequestSolana::ClaimTreasure(claim_info) => {
-            Ok(claim_treasure_with_key(&account, claim_info)?)
+            claim_treasure_with_key(claim_info, &mut treasure_data)?;
         }
     }
+
+    Ok(treasure_data.serialize(&mut &mut account.data.borrow_mut()[1..])?)
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Debug)]
-struct Treasure {
-    plant_treasure: HashMap<Vec<u8>, PlantTreasure>,
-    claim_treasure: HashMap<Vec<u8>, ClaimTreasure>,
+pub struct Treasure {
+    plant_treasure: BTreeMap<Vec<u8>, PlantTreasure>,
+    claim_treasure: BTreeMap<Vec<u8>, ClaimTreasure>,
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Debug)]
-struct PlantTreasure {
+pub struct PlantTreasure {
     account_pubkey: Vec<u8>,
     treasure_hash: Vec<u8>
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Debug)]
-struct ClaimTreasure {
+pub struct ClaimTreasure {
     account_pubkey: Vec<u8>
 }
 
 pub fn plant_treasure_with_key(
-    account: &AccountInfo,
     plant_info: PlantRequestSolana,
+    treasure_data: &mut Treasure
 ) -> Result<(), GeonftError> {
     msg!("plant_treasure_with_key");
 
-    let mut treasure_data = Treasure::try_from_slice(&account.data.borrow())?;
     treasure_data
         .plant_treasure
         .insert(
@@ -76,24 +91,16 @@ pub fn plant_treasure_with_key(
             }
         );
     
-    Ok(treasure_data.serialize(&mut &mut account.data.borrow_mut()[..])?)
-
-//    Ok(())
+    Ok(())
 }
 
 pub fn claim_treasure_with_key(
-    account: &AccountInfo,
     claim_info: ClaimRequestSolana,
+    treasure_data: &mut Treasure
 ) -> Result<(), GeonftError> {
     msg!("claim_treasure_with_key");
 
     let treasure_pubkey = &claim_info.treasure_public_key;
-    msg!("get treasure_data");
-    msg!("account.data: {:?}", &account.data.borrow()[..30]);
-    
-    let mut treasure_data = Treasure::try_from_slice(&account.data.borrow())?;
-    msg!("treasure_data result: {:?}", &treasure_data);
-
 
     if !treasure_data
         .plant_treasure
@@ -110,10 +117,7 @@ pub fn claim_treasure_with_key(
                 }
             );
 
-        msg!("before serialize");
-        
-        Ok(treasure_data.serialize(&mut &mut account.data.borrow_mut()[..])?)
-//        msg!("before ok");
+        Ok(())
     }
 }
 
