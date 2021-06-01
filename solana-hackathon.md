@@ -1395,7 +1395,7 @@ It looks like this:
 [2021-05-30T17:25:02Z DEBUG solana_client::rpc_client] -32002 Transaction simulation failed: Error processing Instruction 0: Program failed to complete
 [2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   1: Program HAmCuzqtJws96qkGctkeHrZcu21PFKNzKGKbHy2wWMxa invoke [1]
 [2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   2: Program log: Geonft_solana entrypoint.
-[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   4: Program log: plant_treasure_with_key
+[2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   4: Program log: plant_treasure
 [2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   5: Program HAmCuzqtJws96qkGctkeHrZcu21PFKNzKGKbHy2wWMxa consumed 38554 of 200000 compute units
 [2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   6: Program failed to complete: Access violation in program section at address 0x100026a00 of size 8 by instruction #12466
 [2021-05-30T17:25:02Z DEBUG solana_client::rpc_client]   7: Program HAmCuzqtJws96qkGctkeHrZcu21PFKNzKGKbHy2wWMxa failed: Program failed to complete
@@ -1420,11 +1420,11 @@ we have a revelation.
 Here's what we have:
 
 ```rust
-pub fn plant_treasure_with_key(
+pub fn plant_treasure(
     account: &AccountInfo,
     plant_info: PlantRequestSolana,
 ) -> Result<(), GeonftError> {
-    msg!("plant_treasure_with_key");
+    msg!("plant_treasure");
     let mut treasure_data = Treasure::try_from_slice(&account.data.borrow())?;
     
     treasure_data.serialize(&mut &mut account.data.borrow_mut()[..])?;
@@ -1447,7 +1447,7 @@ We verify that our `account.data` buffer is filled with zeros initially.
 After some experimenting we realize that `HashMap` simply doesn't work
 within a Solana program,
 and this manifests as an access violation.
-I am guessing that `HasMap` operations panic,
+I am guessing that `HashMap` operations panic,
 and we didn't get to see the panic message.
 Is it possible to see the panic message?
 
@@ -1525,7 +1525,7 @@ Transaction executed in slot 3911:
     Program 4oZHXZX89vMFNTyqqWYqM4EuN2Q9pec1Q8kT18ThhYY7 invoke [1]
     Program log: Geonft_solana entrypoint.
     Program log: plant info: PlantRequestSolana { account_public_key: [3, 247, 45, 126, 202, 34, 84, 253, 76, 107, 14, 82, 154, 242, 118, 89, 103, 231, 79, 10, 156, 184, 59, 91, 55, 56, 242, 31, 47, 189, 40, 243, 254], treasure_public_key: [3, 253, 160, 206, 146, 30, 86, 132, 155, 83, 128, 181, 164, 177, 148, 236, 236, 16, 196, 168, 53, 152, 241, 163, 127, 48, 109, 215, 77, 240, 234, 84, 198], treasure_hash: [56, 53, 98, 53, 55, 51, 52, 48, 48, 52, 50, 55, 97, 53, 99, 51, 54, 51, 56, 98, 54, 101, 50, 53, 48, 98, 53, 99, 99, 101, 101, 56, 52, 102, 50, 51, 101, 99, 51, 53, 100, 50, 101, 101, 48, 54, 52, 100, 100, 50, 53, 56, 55, 48, 97, 54, 51, 54, 100, 53, 99, 50, 97, 101], account_signature: [147, 234, 106, 90, 118, 177, 195, 131, 167, 4, 186, 75, 106, 4, 153, 117, 195, 211, 49, 116, 90, 107, 139, 26, 217, 12, 126, 203, 241, 49, 43, 1, 14, 13, 66, 250, 114, 162, 31, 157, 154, 121, 147, 255, 31, 227, 196, 138, 183, 14, 65, 142, 189, 84, 137, 115, 254, 122, 68, 153, 50, 186, 201, 7], treasure_signature: [49, 215, 248, 202, 187, 16, 109, 230, 246, 30, 88, 196, 238, 31, 69, 210, 61, 211, 230, 101, 127, 86, 248, 81, 151, 102, 211, 243, 199, 1, 167, 75, 90, 248, 146, 31, 0, 192, 12, 203, 250, 218, 72, 66, 19, 103, 114, 191, 202, 54, 50, 145, 182, 125, 216, 5, 157, 129, 74, 62, 94, 245, 201, 255] }
-    Program log: plant_treasure_with_key
+    Program log: plant_treasure
     Program 4oZHXZX89vMFNTyqqWYqM4EuN2Q9pec1Q8kT18ThhYY7 consumed 75027 of 200000 compute units
     Program 4oZHXZX89vMFNTyqqWYqM4EuN2Q9pec1Q8kT18ThhYY7 success
     Transaction executed in slot 3913:
@@ -1535,7 +1535,7 @@ Transaction executed in slot 3911:
     Program 4oZHXZX89vMFNTyqqWYqM4EuN2Q9pec1Q8kT18ThhYY7 invoke [1]
     Program log: Geonft_solana entrypoint.
     Program log: claim info: ClaimRequestSolana { account_public_key: [2, 172, 49, 243, 56, 197, 210, 198, 69, 77, 66, 57, 24, 99, 237, 69, 225, 87, 154, 134, 218, 14, 250, 153, 34, 162, 38, 181, 185, 36, 144, 61, 28], treasure_public_key: [3, 253, 160, 206, 146, 30, 86, 132, 155, 83, 128, 181, 164, 177, 148, 236, 236, 16, 196, 168, 53, 152, 241, 163, 127, 48, 109, 215, 77, 240, 234, 84, 198], account_signature: [142, 255, 131, 233, 84, 150, 23, 44, 204, 223, 173, 104, 210, 226, 231, 174, 117, 108, 90, 74, 37, 187, 15, 26, 179, 113, 175, 152, 80, 12, 74, 185, 112, 50, 120, 242, 75, 116, 102, 112, 100, 136, 42, 238, 163, 36, 206, 66, 27, 140, 41, 89, 255, 194, 68, 121, 119, 247, 186, 93, 157, 192, 177, 241], treasure_signature: [47, 176, 201, 3, 89, 90, 29, 141, 9, 212, 157, 46, 7, 46, 209, 80, 10, 241, 201, 251, 160, 248, 108, 190, 90, 50, 195, 51, 230, 156, 25, 93, 21, 172, 70, 236, 218, 186, 214, 157, 177, 34, 75, 221, 87, 189, 244, 219, 65, 56, 67, 47, 76, 212, 191, 153, 132, 114, 135, 12, 193, 189, 201, 166] }
-    Program log: claim_treasure_with_key
+    Program log: claim_treasure
     Program 4oZHXZX89vMFNTyqqWYqM4EuN2Q9pec1Q8kT18ThhYY7 consumed 57775 of 200000 compute units
     Program 4oZHXZX89vMFNTyqqWYqM4EuN2Q9pec1Q8kT18ThhYY7 success
 Transaction executed in slot 3914:
