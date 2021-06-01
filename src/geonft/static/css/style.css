@@ -420,3 +420,10 @@ span.spinner {
     vertical-align: middle;
 }
 
+
+/* ----- */
+/* hacks */
+/* ----- */
+input {
+    -webkit-appearance: none;
+}
