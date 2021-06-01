@@ -1,7 +1,7 @@
 use anyhow::anyhow;
 use borsh::{BorshDeserialize, BorshSerialize};
-use solana_program::borsh::try_from_slice_unchecked;
 use geonft_data::{ClaimRequestSolana, GeonftRequestSolana, PlantRequestSolana};
+use solana_program::borsh::try_from_slice_unchecked;
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint,
@@ -36,7 +36,7 @@ pub fn process_instruction(
         msg!("init starts");
         let init_treasure = Treasure {
             plant_treasure: BTreeMap::new(),
-            claim_treasure: BTreeMap::new()
+            claim_treasure: BTreeMap::new(),
         };
 
         init_treasure.serialize(&mut &mut account.data.borrow_mut()[1..])?;
@@ -67,55 +67,48 @@ pub struct Treasure {
 #[derive(BorshDeserialize, BorshSerialize, Debug)]
 pub struct PlantTreasure {
     account_pubkey: Vec<u8>,
-    treasure_hash: Vec<u8>
+    treasure_hash: Vec<u8>,
 }
 
 #[derive(BorshDeserialize, BorshSerialize, Debug)]
 pub struct ClaimTreasure {
-    account_pubkey: Vec<u8>
+    account_pubkey: Vec<u8>,
 }
 
 pub fn plant_treasure_with_key(
     plant_info: PlantRequestSolana,
-    treasure_data: &mut Treasure
+    treasure_data: &mut Treasure,
 ) -> Result<(), GeonftError> {
     msg!("plant_treasure_with_key");
 
-    treasure_data
-        .plant_treasure
-        .insert(
-            plant_info.treasure_public_key.to_vec(),
-            PlantTreasure {
-                account_pubkey: plant_info.account_public_key,
-                treasure_hash: plant_info.treasure_hash
-            }
-        );
-    
+    treasure_data.plant_treasure.insert(
+        plant_info.treasure_public_key.to_vec(),
+        PlantTreasure {
+            account_pubkey: plant_info.account_public_key,
+            treasure_hash: plant_info.treasure_hash,
+        },
+    );
+
     Ok(())
 }
 
 pub fn claim_treasure_with_key(
     claim_info: ClaimRequestSolana,
-    treasure_data: &mut Treasure
+    treasure_data: &mut Treasure,
 ) -> Result<(), GeonftError> {
     msg!("claim_treasure_with_key");
 
     let treasure_pubkey = &claim_info.treasure_public_key;
 
-    if !treasure_data
-        .plant_treasure
-        .contains_key(treasure_pubkey)
-    {
+    if !treasure_data.plant_treasure.contains_key(treasure_pubkey) {
         Err(GeonftError::AnyhowError(anyhow!("Treasure doesn't exist")))
-    } else { 
-        treasure_data
-            .claim_treasure
-            .insert(
-                treasure_pubkey.to_vec(),
-                ClaimTreasure {
-                    account_pubkey: claim_info.account_public_key
-                }
-            );
+    } else {
+        treasure_data.claim_treasure.insert(
+            treasure_pubkey.to_vec(),
+            ClaimTreasure {
+                account_pubkey: claim_info.account_public_key,
+            },
+        );
 
         Ok(())
     }
