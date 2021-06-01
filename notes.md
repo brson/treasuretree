@@ -1,21 +1,18 @@
 # mvp
 
-- clean up ui on mobile
-- make claim?key=foo work
-  - when the key doesn't exist redirect to plant page
-  - when the key does exist
+- make claim?key=foo redirect to plant when treasure doesn't exist
 - load the treasure section into the claim page
   - with key=foo
   - without key=foo
-- make create page support multiple qrs
 - make create page style correctly for printing
-- (stretch) extract geo metadata from images
 - prepare logo
 - integrate logo into header
-- redesign landing page
 
 # todo
 
+- redesign landing page
+- (stretch) extract geo metadata from images
+- make create page support multiple qrs
 - change hrp's of treasure keys to match scheme of account keys
 - add newtypes for treasure/account keys/signatures
 - run rustfmt and clippy
