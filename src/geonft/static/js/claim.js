@@ -117,3 +117,34 @@ await initSecretScanner({
     onEndSecretScan: onEndSecretScan
 });
 
+async function treasureExists(){
+    let requestInfo = {
+        treasure_public_key: treasurePublicKey
+    };
+
+    let response = await fetch("api/exists", {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(requestInfo)
+    });
+
+    console.log(response);
+
+    if (!response.ok) {
+        // TODO
+        console.log("something wrong with search response");
+    }
+
+    let jsonResponse = await response.json();
+
+    if (jsonResponse.treasure_exists == false) {
+        if (window.confirm("Treasure doesn't exist, do you want to plant one?")) {
+            window.open("plant?key="+treasureSecretKey, "_self");
+        } 
+    }
+}
+
+await treasureExists();
