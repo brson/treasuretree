@@ -312,6 +312,7 @@ a {
     padding: 0.2em 0.5em 0.2em 0.5em;
 }
 
+a.a-button,
 input,
 span.file-input > label,
 p.success-message {
