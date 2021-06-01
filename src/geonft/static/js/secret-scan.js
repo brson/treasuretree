@@ -45,15 +45,11 @@ async function initSecretScanner(callbacks) {
 
 let qrScanButton = document.getElementById("qrscan-button");
 let qrCancelButton = document.getElementById("qrscan-cancel-button");
-let treasureClaimUrlElt = document.getElementById("treasure-claim-url");
 let secretKeyInput = document.getElementById("treasure-secret-key");
-let publicKeyElt = document.getElementById("treasure-public-key");
 
 console.assert(qrScanButton);
 console.assert(qrCancelButton);
 console.assert(secretKeyInput);
-console.assert(treasureClaimUrlElt);
-console.assert(publicKeyElt);
 
 console.assert(initWasm);
 
@@ -70,9 +66,7 @@ qrScanButton.addEventListener("click", async () => {
     console.assert(onBeginSecretScan);
     onBeginSecretScan();
 
-    treasureClaimUrlElt.innerText = null;
     secretKeyInput.value = null;
-    publicKeyElt.innerText = null;
 
     treasureClaimUrl = null;
     treasureSecretKey = null;
@@ -104,9 +98,7 @@ qrScanButton.addEventListener("click", async () => {
             return;
         }
 
-        treasureClaimUrlElt.innerText = url;
         secretKeyInput.value = secretKey_;
-        publicKeyElt.innerText = publicKey_;
 
         treasureClaimUrl = url;
         treasureSecretKey = secretKey_;
@@ -147,9 +139,6 @@ secretKeyInput.addEventListener("input", async () => {
     console.assert(onBeginSecretScan);
     onBeginSecretScan();
 
-    treasureClaimUrlElt.innerText = null;
-    publicKeyElt.innerText = null;
-
     treasureClaimUrl = null;
     treasureSecretKey = null;
     treasurePublicKey = null;
@@ -163,9 +152,6 @@ secretKeyInput.addEventListener("input", async () => {
         // TODO
         return;
     }
-
-    publicKeyElt.innerText = publicKey_;
-    treasureClaimUrlElt.innerText = treasureClaimUrl_;
 
     treasureClaimUrl = treasureClaimUrl_;
     treasureSecretKey = secretKey_;
