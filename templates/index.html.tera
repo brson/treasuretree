@@ -15,12 +15,22 @@ Actions Menu
 {% block body %}
 
 <section>
-  <ul>
-    <li><a href="create">create</a> a new treasure key (QR code)
-    <li><a href="plant">plant</a> a treasure with its key
-    <li><a href="claim">claim</a> a planted treasure with its key
-    <li><a href="recent">recent</a>ly planted treasures
-  </ul>
+  <div class="action-row">
+    <a href="create">create</a>
+    <span>a new treasure key</span>
+  </div>
+  <div class="action-row">
+    <a href="plant">plant</a>
+    <span>a treasure with its key</span>
+  </div>
+  <div class="action-row">
+    <a href="claim">claim</a>
+    <span>a planted treasure with its key</span>
+  </div>
+  <div class="action-row">
+    <a href="recent">recent</a>
+    <span>planted treasures</span>
+  </div>
 </section>
 
 {% endblock body %}

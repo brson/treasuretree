@@ -10,7 +10,7 @@
 /* ----- */
 
 :root {
-    font-size; 1rem;
+    font-size: 1rem;
 }
 
 body {
@@ -32,7 +32,26 @@ span.file-input > label {
     font-weight: bold;
     letter-spacing: 0.1em;
     font-variant: small-caps;
-    font-size: 120%;
+    font-size: 150%;
+}
+
+a {
+    text-transform: uppercase;
+}
+
+h1 a {
+    text-transform: none;
+    font-variant: small-caps;
+    font-size: 100%;
+}
+
+p.treasure-p a {
+    font-variant: none;
+}
+
+p.success-message {
+    font-weight: bold;
+    font-size: 150%;
 }
 
 
@@ -44,16 +63,16 @@ span.file-input > label {
     color: inherit;
     border-color: rgb(70%, 70%, 70%);
     --text-color: rgb(40%, 40%, 40%);
-    --action-color: hsl(300, 75%, 75%); /* magenta */
+    --action-color: hsl(300, 75%, 70%); /* magenta */
     --action-color-dark: hsl(300, 50%, 60%);
     --action-color-light: hsl(300, 50%, 95%);
-    --logo-color: hsl(180, 75%, 75%); /* cyan */
+    --logo-color: hsl(180, 75%, 70%); /* cyan */
     --logo-color-dark: hsl(180, 50%, 60%);
     --logo-color-light: hsl(180, 50%, 95%);
-    --header-color: hsl(30, 75%, 75%); /* orange */
+    --header-color: hsl(30, 75%, 70%); /* orange */
     --header-color-dark: hsl(30, 50%, 60%);
     --header-color-light: hsl(30, 75%, 95%);
-    --success-color: hsl(90, 75%, 75%); /* orange */
+    --success-color: hsl(90, 75%, 70%); /* green */
     --success-color-dark: hsl(90, 50%, 60%);
     --success-color-light: hsl(90, 75%, 95%);
 }
@@ -62,7 +81,7 @@ body {
     background-color: white;
 }
 
-p, li {
+p {
     color: var(--text-color);
 }
 
@@ -129,6 +148,12 @@ span.file-input > label {
     box-shadow: 0px 0px var(--box-shadow-border-blur) var(--box-shadow-border-width) var(--action-color-light) inset;
 }
 
+a.image-link {
+    border-width: 0;
+    box-shadow: none;
+    background-color: inherit;
+}
+
 input[type="text"] {
     background-color: var(--action-color-light);
     color: var(--text-color);
@@ -169,6 +194,10 @@ span.file-input > input:not(:disabled) ~ label:hover {
         0px 0px 1px 3px var(--action-color-dark);
 }
 
+a.image-link:hover {
+    box-shadow: none;
+}
+
 header h1 a:active {
     color: var(--logo-color);
     background-color: var(--logo-color-light);
@@ -181,6 +210,10 @@ span.file-input > label:active {
     color: var(--action-color);
     background-color: var(--action-color-light);
     text-shadow: none;
+}
+
+a.image-link:active {
+    background-color: inherit;
 }
 
 /* TODO: disable file input? */
@@ -251,13 +284,13 @@ section {
 }
 
 section {
-    max-width: 80ch;
+    max-width: 60ch;
     margin-left: auto;
     margin-right: auto;
 }
 
-p, h1, h2, li {
-    margin: 2rem;
+p, h1, h2 {
+    margin: 1rem;
 }
 
 header h1 {
@@ -265,14 +298,13 @@ header h1 {
     margin-right: 0rem;
 }
 
-footer p {
-    margin-top: 2rem;
+p.treasure-p {
     text-align: center;
 }
 
-ul {
-    padding-left: 0;
-    list-style: none;
+footer p {
+    margin-top: 2rem;
+    text-align: center;
 }
 
 a {
@@ -288,6 +320,16 @@ p.success-message {
 img,
 video {
     max-width: 100%;
+}
+
+div.action-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+div.action-row > * {
+    margin: 1rem;
 }
 
 /* special file input button handling */
@@ -378,3 +420,10 @@ span.spinner {
     vertical-align: middle;
 }
 
+
+/* ----- */
+/* hacks */
+/* ----- */
+input {
+    -webkit-appearance: none;
+}

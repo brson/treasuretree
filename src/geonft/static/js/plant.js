@@ -92,7 +92,7 @@ useTestImageButton.addEventListener("click", async () => {
         ];
         let idx = Math.floor(Math.random() * choices.length);
         let hue = choices[idx];
-        let color = `hsl(${hue}, 75%, 75%)`;
+        let color = `hsl(${hue}, 75%, 70%)`;
         return color;
     }
 
