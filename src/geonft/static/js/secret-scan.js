@@ -51,6 +51,14 @@ console.assert(qrScanButton);
 console.assert(qrCancelButton);
 console.assert(secretKeyInput);
 
+let treasureLinkPElt = document.getElementById("scan-treasure-link-p");
+let treasureLinkAElt = document.getElementById("scan-treasure-link-a");
+let treasureLinkSpanElt = document.getElementById("scan-treasure-link-span");
+
+console.assert(treasureLinkPElt);
+console.assert(treasureLinkAElt);
+console.assert(treasureLinkSpanElt);
+
 console.assert(initWasm);
 
 QrScanner.WORKER_PATH = "js/lib/qr-scanner-worker.min.js";
@@ -121,8 +129,8 @@ qrScanButton.addEventListener("click", async () => {
         qrCancelButton.disabled = true;
         secretKeyInput.disabled = false;
         video.classList.add("no-display");
-        console.assert(onEndSecretScan);
-        onEndSecretScan();
+
+        doEndSecretScan(wasm);
     }
 
     qrScanner.start();
@@ -157,8 +165,7 @@ secretKeyInput.addEventListener("input", async () => {
     treasureSecretKey = secretKey_;
     treasurePublicKey = publicKey_;
 
-    console.assert(onEndSecretScan);
-    onEndSecretScan();
+    doEndSecretScan(wasm);
 });
 
 
@@ -187,6 +194,22 @@ async function loadFromUrl() {
         treasurePublicKey = publicKey_;
         treasureClaimUrl = url;
 
-        onEndSecretScan();    
+        doEndSecretScan(wasm);
     }    
+}
+
+function doEndSecretScan(wasm) {
+    if (treasurePublicKey) {
+        let treasureLinkUrl = wasm.treasure_public_key_to_treasure_url(treasurePublicKey);
+        let treasureAbbrev = wasm.treasure_public_key_to_abbrev(treasurePublicKey);
+
+        treasureLinkAElt.href = treasureLinkUrl;
+        treasureLinkSpanElt.innerText = treasureAbbrev;
+        treasureLinkPElt.classList.remove("no-display");
+    } else {
+        treasureLinkPElt.classList.add("no-display");
+    }
+
+    console.assert(onEndSecretScan);
+    onEndSecretScan();
 }

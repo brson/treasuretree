@@ -1,3 +1,7 @@
+extern crate alloc;
+
+use alloc::format;
+
 mod treasure_qrcode;
 mod utils;
 use geonft_nostd::crypto::{self, Keypair};
@@ -147,6 +151,16 @@ fn new_keypair() -> Keypair {
 #[wasm_bindgen]
 pub fn get_hash(data: &str) -> Option<String> {
     crypto::get_hash(data).ok()
+}
+
+#[wasm_bindgen]
+pub fn treasure_public_key_to_treasure_url(key: &str) -> String {
+    format!("treasure/{}", key)
+}
+
+#[wasm_bindgen]
+pub fn treasure_public_key_to_abbrev(key: &str) -> String {
+    geonft_nostd::abbrev_pubkey(key)
 }
 
 #[wasm_bindgen]

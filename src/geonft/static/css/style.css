@@ -303,6 +303,10 @@ p.treasure-p {
     text-align: center;
 }
 
+p#scan-treasure-link-p.treasure-p {
+    margin: 2rem;
+}
+
 footer p {
     margin-top: 2rem;
     text-align: center;

@@ -1483,6 +1483,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "geonft_data",
+ "geonft_nostd",
  "serde",
  "serde_json",
 ]
