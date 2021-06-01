@@ -156,7 +156,7 @@ secretKeyInput.addEventListener("input", async () => {
 
     let secretKey_ = secretKeyInput.value;
     let publicKey_ = wasm.treasure_secret_key_to_public_key(secretKey_);
-    let treasureClaimUrl_ = wasm.treasure_secret_key_to_secret_url(secretKey_);
+    let treasureClaimUrl_ = wasm.treasure_secret_key_to_secret_claim_url(secretKey_);
 
     if (publicKey_ == null || treasureClaimUrl_ == null) {
         console.error("unable to decode key");
