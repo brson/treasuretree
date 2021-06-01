@@ -1,11 +1,5 @@
 # mvp
 
-- make claim?key=foo redirect to plant when treasure doesn't exist
-- load the treasure section into the claim page
-  - with key=foo
-  - without key=foo
-- make create page style correctly for printing
-- prepare logo
 - integrate logo into header
 
 # todo

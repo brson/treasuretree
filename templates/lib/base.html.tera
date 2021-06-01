@@ -12,6 +12,9 @@
 
     <link rel="stylesheet" href="css/style.css">
 
+    {% block styles %}
+    {% endblock styles %}
+
     <!-- don't ask for a favicon -->
     <link rel="shortcut icon" href="#" />
 

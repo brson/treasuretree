@@ -1,0 +1,21 @@
+@media print {
+    header {
+        display: none;
+    }
+
+    footer {
+        display: none;
+    }
+
+    section {
+        display: none;
+    }
+
+    div#qrs > section {
+        display: block;
+    }
+
+    section {
+        border: 0;
+    }
+}
