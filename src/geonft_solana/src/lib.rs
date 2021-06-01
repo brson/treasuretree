@@ -48,10 +48,10 @@ pub fn process_instruction(
     let geonft_data = GeonftRequestSolana::try_from_slice(geonft_data)?;
     match geonft_data {
         GeonftRequestSolana::PlantTreasure(plant_info) => {
-            plant_treasure_with_key(plant_info, &mut treasure_data)?;
+            plant_treasure(plant_info, &mut treasure_data)?;
         }
         GeonftRequestSolana::ClaimTreasure(claim_info) => {
-            claim_treasure_with_key(claim_info, &mut treasure_data)?;
+            claim_treasure(claim_info, &mut treasure_data)?;
         }
     }
 
@@ -75,11 +75,11 @@ pub struct ClaimTreasure {
     account_pubkey: Vec<u8>,
 }
 
-pub fn plant_treasure_with_key(
+pub fn plant_treasure(
     plant_info: PlantRequestSolana,
     treasure_data: &mut Treasure,
 ) -> Result<(), GeonftError> {
-    msg!("plant_treasure_with_key");
+    msg!("plant_treasure");
 
     treasure_data.plant_treasure.insert(
         plant_info.treasure_public_key.to_vec(),
@@ -92,11 +92,11 @@ pub fn plant_treasure_with_key(
     Ok(())
 }
 
-pub fn claim_treasure_with_key(
+pub fn claim_treasure(
     claim_info: ClaimRequestSolana,
     treasure_data: &mut Treasure,
 ) -> Result<(), GeonftError> {
-    msg!("claim_treasure_with_key");
+    msg!("claim_treasure");
 
     let treasure_pubkey = &claim_info.treasure_public_key;
 
