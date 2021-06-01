@@ -182,8 +182,6 @@ async function loadFromUrl() {
         }
         
         secretKeyInput.value = secretKey_;
-        publicKeyElt.innerText = publicKey_;
-        treasureClaimUrlElt.innerText = url;
 
         treasureSecretKey = secretKey_;
         treasurePublicKey = publicKey_;
