@@ -23,7 +23,10 @@ pub fn create_qrcode() -> Option<String> {
 
 #[wasm_bindgen]
 pub fn sanity_check_treasure_secret_url(url: &str) -> bool {
-    url.starts_with(crypto::TREASURE_SECRET_URL_PREFIX)
+    url.starts_with(crypto::TREASURE_SECRET_PLANT_URL_PREFIX)
+        || url.starts_with(crypto::TREASURE_SECRET_CLAIM_URL_PREFIX)
+        || url.starts_with(crypto::TREASURE_SECRET_PLANT_URL_PREFIX_LOCAL)
+        || url.starts_with(crypto::TREASURE_SECRET_CLAIM_URL_PREFIX_LOCAL)
 }
 
 #[wasm_bindgen]

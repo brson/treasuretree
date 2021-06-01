@@ -17,7 +17,10 @@ pub static ACCOUNT_SECRET_KEY_HRP: &'static str = "gas";
 pub static ACCOUNT_PUBLIC_KEY_HRP: &'static str = "gap";
 pub static TREASURE_SECRET_KEY_HRP: &'static str = "gts";
 pub static TREASURE_PUBLIC_KEY_HRP: &'static str = "gtp";
-pub static TREASURE_SECRET_URL_PREFIX: &'static str = "http://localhost:8000/claim?key=";
+pub static TREASURE_SECRET_PLANT_URL_PREFIX: &'static str = "https://treasuretree.org/plant?key=";
+pub static TREASURE_SECRET_CLAIM_URL_PREFIX: &'static str = "https://treasuretree.org/claim?key=";
+pub static TREASURE_SECRET_PLANT_URL_PREFIX_LOCAL: &'static str = "http://localhost:8000/plant?key=";
+pub static TREASURE_SECRET_CLAIM_URL_PREFIX_LOCAL: &'static str = "http://localhost:8000/claim?key=";
 
 pub struct Keypair {
     pub secret: SecretKey,
@@ -68,17 +71,26 @@ pub fn keypair_from_treasure_secret_key(key: &str) -> Result<Keypair> {
 
 pub fn keypair_to_treasure_secret_claim_url(keypair: &Keypair) -> Result<String> {
     let secret_key_string = encode_treasure_secret_key(&keypair.secret)?;
-    let url = format!("{}{}", TREASURE_SECRET_URL_PREFIX, secret_key_string);
+    let url = format!("{}{}", TREASURE_SECRET_CLAIM_URL_PREFIX, secret_key_string);
     Ok(url)
 }
 
 pub fn treasure_secret_url_to_keypair(url: &str) -> Result<Keypair> {
-    if !url.starts_with(TREASURE_SECRET_URL_PREFIX) {
+    if url.starts_with(TREASURE_SECRET_PLANT_URL_PREFIX) {
+        let key = url.split_at(TREASURE_SECRET_PLANT_URL_PREFIX.len()).1;
+        keypair_from_treasure_secret_key(key)
+    } else if url.starts_with(TREASURE_SECRET_CLAIM_URL_PREFIX) {
+        let key = url.split_at(TREASURE_SECRET_CLAIM_URL_PREFIX.len()).1;
+        keypair_from_treasure_secret_key(key)
+    } else if url.starts_with(TREASURE_SECRET_PLANT_URL_PREFIX_LOCAL) {
+        let key = url.split_at(TREASURE_SECRET_PLANT_URL_PREFIX_LOCAL.len()).1;
+        keypair_from_treasure_secret_key(key)
+    } else if url.starts_with(TREASURE_SECRET_CLAIM_URL_PREFIX_LOCAL) {
+        let key = url.split_at(TREASURE_SECRET_CLAIM_URL_PREFIX_LOCAL.len()).1;
+        keypair_from_treasure_secret_key(key)
+    } else {
         bail!("incorrect URL prefix for secret key");
     }
-
-    let key = url.split_at(TREASURE_SECRET_URL_PREFIX.len()).1;
-    keypair_from_treasure_secret_key(key)
 }
 
 pub fn encode_account_secret_key(key: &SecretKey) -> Result<String> {
