@@ -118,6 +118,10 @@ await initSecretScanner({
 });
 
 async function treasureExists(){
+    if (!treasurePublicKey) {
+        return;
+    }
+
     let requestInfo = {
         treasure_public_key: treasurePublicKey
     };
