@@ -16,19 +16,19 @@ Actions Menu
 
 <section>
   <div class="action-row">
-    <a href="create">create</a>
+    <a href="create" class="a-button">create</a>
     <span>a new treasure key</span>
   </div>
   <div class="action-row">
-    <a href="plant">plant</a>
+    <a href="plant" class="a-button">plant</a>
     <span>a treasure with its key</span>
   </div>
   <div class="action-row">
-    <a href="claim">claim</a>
+    <a href="claim" class="a-button">claim</a>
     <span>a planted treasure with its key</span>
   </div>
   <div class="action-row">
-    <a href="recent">recent</a>
+    <a href="recent" class="a-button">recent</a>
     <span>planted treasures</span>
   </div>
 </section>
