@@ -15,11 +15,6 @@ initAccount({
     onAccountSecretKeyChanged: onAccountSecretKeyChanged
 });
 
-initSecretScanner({
-    onBeginSecretScan: onBeginSecretScan,
-    onEndSecretScan: onEndSecretScan
-});
-
 let treasureClaimed = false;
 
 let claimButton = document.getElementById("claim-button");
@@ -41,7 +36,7 @@ claimButton.addEventListener("click", async () => {
 
     try {
         let wasm = await initWasm();
-
+        
         let treasureSignature = wasm.sign_claim_with_treasure_secret_key(treasureSecretKey, accountPublicKey);
         let accountSignature = wasm.sign_claim_with_account_secret_key(accountSecretKey, treasurePublicKey);
 
@@ -116,3 +111,9 @@ function onBeginSecretScan() {
 function onEndSecretScan() {
     maybeEnableClaimButton();
 }
+
+await initSecretScanner({
+    onBeginSecretScan: onBeginSecretScan,
+    onEndSecretScan: onEndSecretScan
+});
+

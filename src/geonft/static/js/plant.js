@@ -15,10 +15,6 @@ initAccount({
     onAccountSecretKeyChanged: onAccountSecretKeyChanged,
 });
 
-initSecretScanner({
-    onBeginSecretScan: onBeginSecretScan,
-    onEndSecretScan: onEndSecretScan
-});
 
 let treasureImageBlob = null;
 let treasurePlanted = false;
@@ -217,3 +213,8 @@ function onBeginSecretScan() {
 function onEndSecretScan() {
     maybeEnablePlantButton();
 }
+
+await initSecretScanner({
+    onBeginSecretScan: onBeginSecretScan,
+    onEndSecretScan: onEndSecretScan
+});

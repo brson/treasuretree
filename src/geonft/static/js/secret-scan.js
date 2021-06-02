@@ -28,7 +28,8 @@ let treasurePublicKey = null;
 let onBeginSecretScan = null;
 let onEndSecretScan = null;
 
-function initSecretScanner(callbacks) {
+
+async function initSecretScanner(callbacks) {
     console.assert(!onBeginSecretScan);
     console.assert(!onEndSecretScan);
     console.assert(callbacks.onBeginSecretScan);
@@ -36,6 +37,8 @@ function initSecretScanner(callbacks) {
 
     onBeginSecretScan = callbacks.onBeginSecretScan;
     onEndSecretScan = callbacks.onEndSecretScan;
+
+    await loadFromUrl();
 }
 
 /* The rest of the globals are implementation details */
@@ -171,3 +174,35 @@ secretKeyInput.addEventListener("input", async () => {
     console.assert(onEndSecretScan);
     onEndSecretScan();
 });
+
+
+async function loadFromUrl() {
+    let params = new URLSearchParams(document.location.search.substring(1));
+    let key = params.get("key");
+    if (key != null) {
+
+        onBeginSecretScan();
+        
+        let url = document.location.href;
+        console.log(url);
+
+        let wasm = await initWasm();
+
+        let secretKey_ = wasm.treasure_secret_url_to_secret_key(url);
+        let publicKey_ = wasm.treasure_secret_url_to_public_key(url);
+
+        if (secretKey_ == null || publicKey_ == null) {
+            console.error("unable to decode key from URL");
+        }
+        
+        secretKeyInput.value = secretKey_;
+        publicKeyElt.innerText = publicKey_;
+        treasureClaimUrlElt.innerText = url;
+
+        treasureSecretKey = secretKey_;
+        treasurePublicKey = publicKey_;
+        treasureClaimUrl = url;
+
+        onEndSecretScan();    
+    }    
+}
