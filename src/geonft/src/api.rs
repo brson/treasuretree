@@ -137,7 +137,7 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
     serde_json::to_writer(file, &claim_info.0)?;
 
     let return_url = format!(
-        "{host}/api/plant/{key}\n",
+        "{host}/treasure/{key}\n",
         host = "http://localhost:8000",
         key = treasure_key_encode
     );
