@@ -45,7 +45,6 @@ pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<Pl
         bail!("Treasure already exists")
     }
 
-    // todo check the treasure doesn't exist
     // todo validate image type
 
     // todo: get_hash from decoded_image
