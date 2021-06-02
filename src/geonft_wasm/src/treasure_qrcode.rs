@@ -14,7 +14,7 @@ pub struct UniqueCode {
 pub fn init_random_qrcode() -> Result<UniqueCode> {
     let keypair = super::new_keypair();
     let secret_key_string = crypto::encode_treasure_secret_key(&keypair.secret)?;
-    let url = crypto::keypair_to_treasure_secret_url(&keypair)?;
+    let url = crypto::keypair_to_treasure_secret_claim_url(&keypair)?;
     let qrcode = QrCode::encode_text(&url, QrCodeEcc::Low).unwrap();
 
     Ok(UniqueCode {
