@@ -181,8 +181,7 @@ pub struct TreasureTemplateData {
 pub fn load_treasure_data(public_key: &str) -> Result<TreasureTemplateData> {
     let public_key = public_key.to_string();
 
-    let public_key_abbrev: String = public_key.chars().take(14).collect();
-    let public_key_abbrev = format!("{}…", public_key_abbrev);
+    let public_key_abbrev = geonft_nostd::abbrev_pubkey(&public_key);
     let public_url = format!("treasure/{}", public_key);
     let image_url = format!("treasure-images/{}", public_key);
 
