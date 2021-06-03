@@ -112,11 +112,6 @@ function onEndSecretScan() {
     maybeEnableClaimButton();
 }
 
-await initSecretScanner({
-    onBeginSecretScan: onBeginSecretScan,
-    onEndSecretScan: onEndSecretScan
-});
-
 async function treasureExists(){
     if (!treasurePublicKey) {
         return;
@@ -151,4 +146,14 @@ async function treasureExists(){
     }
 }
 
-await treasureExists();
+
+
+window.addEventListener('DOMContentLoaded', async () => {
+    await initSecretScanner({
+        onBeginSecretScan: onBeginSecretScan,
+        onEndSecretScan: onEndSecretScan
+    });
+    await treasureExists();
+
+    console.log("initSecretScanner");
+});

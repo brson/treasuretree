@@ -214,7 +214,10 @@ function onEndSecretScan() {
     maybeEnablePlantButton();
 }
 
-await initSecretScanner({
-    onBeginSecretScan: onBeginSecretScan,
-    onEndSecretScan: onEndSecretScan
+window.addEventListener('DOMContentLoaded', async () => {
+    await initSecretScanner({
+        onBeginSecretScan: onBeginSecretScan,
+        onEndSecretScan: onEndSecretScan
+    });
+    console.log("initSecretScanner");
 });
