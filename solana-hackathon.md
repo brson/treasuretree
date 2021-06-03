@@ -1554,3 +1554,38 @@ Transaction executed in slot 3914:
   Signature: 62115YUrWWGSHhGq8BiskEbYafZGy3hcYYzwDx6dokBd2PExNSo7MakYdbib74nd2QXBdCf7WGRnjZvyRnQxTRRK
   Status: Ok
 ```
+
+
+
+`try_from_slice` panic.
+> error: "Not all bytes read"
+
+```
+[2021-06-01T03:12:20Z INFO  geonft_sync::solana] program id: ntD3L4eNx9iLhfgMt6dKqxHqqxUyraA4TTJJq3Fzuoi
+[2021-06-01T03:12:20Z INFO  geonft_sync::solana] program account: Account { lamports: 1141440 data.len: 36 owner: BPFLoaderUpgradeab1e11111111111111111111111 executable: true rent_epoch: 0 data: 02000000e6619133622738619d5137530e273089d3816f4163c3c640625973d71a980bf9 }
+[2021-06-01T03:12:20Z INFO  geonft_sync::solana] program account pubkey: 7CeQGFq8GdYWZCxVkKWTbErPj4ECE6M6Tjp5L73ukm5S
+[2021-06-01T03:12:20Z INFO  geonft_sync::solana] program instance account: Account { lamports: 70490880 data.len: 10000 owner: ntD3L4eNx9iLhfgMt6dKqxHqqxUyraA4TTJJq3Fzuoi executable: false rent_epoch: 0 data: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 }
+[2021-06-01T03:12:20Z INFO  geonft_sync] executing step UploadPlantToSolana for gtp1q0av2y3acvsmeq6nepdw9hnts5sptmpp97rt4h5xltajxx9d7kqnxkecltt
+[2021-06-01T03:12:20Z DEBUG solana_client::rpc_client] -32002 Transaction simulation failed: Error processing Instruction 0: Program failed to complete
+[2021-06-01T03:12:20Z DEBUG solana_client::rpc_client]   1: Program ntD3L4eNx9iLhfgMt6dKqxHqqxUyraA4TTJJq3Fzuoi invoke [1]
+[2021-06-01T03:12:20Z DEBUG solana_client::rpc_client]   2: Program log: Geonft_solana entrypoint
+[2021-06-01T03:12:20Z DEBUG solana_client::rpc_client]   3: Program log: init starts
+[2021-06-01T03:12:20Z DEBUG solana_client::rpc_client]   4: Program log: finish init. account.data: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[2021-06-01T03:12:20Z DEBUG solana_client::rpc_client]   5: Program log: treasure_data result: Err(Custom { kind: InvalidData, error: "Not all bytes read" })
+[2021-06-01T03:12:20Z DEBUG solana_client::rpc_client]   6: Program log: after treasure_data from try_from_slice
+[2021-06-01T03:12:20Z DEBUG solana_client::rpc_client]   7: Program log: libstd rust_begin_panic
+[2021-06-01T03:12:20Z DEBUG solana_client::rpc_client]   8: Program log: panicked at 'called `Result::unwrap()` on an `Err` value: Custom { kind: InvalidData, error: "Not all bytes read" }', src/geonft_solana/src/lib.rs:56:68
+[2021-06-01T03:12:20Z DEBUG solana_client::rpc_client]   9: Program ntD3L4eNx9iLhfgMt6dKqxHqqxUyraA4TTJJq3Fzuoi consumed 200000 of 200000 compute units
+[2021-06-01T03:12:20Z DEBUG solana_client::rpc_client]  10: Program failed to complete: BPF program panicked
+[2021-06-01T03:12:20Z DEBUG solana_client::rpc_client]  11: Program ntD3L4eNx9iLhfgMt6dKqxHqqxUyraA4TTJJq3Fzuoi failed: Program failed to complete
+[2021-06-01T03:12:20Z DEBUG solana_client::rpc_client] 
+[2021-06-01T03:12:20Z ERROR geonft_sync] RPC response error -32002: Transaction simulation failed: Error processing Instruction 0: Program failed to complete [11 log messages]
+```
+
+use `try_from_slice_unchecked` (we have to downgrade our borsh to 0.8), and it works.
+
+```
+[2021-06-01T03:37:46Z DEBUG solana_client::rpc_client]   3: Program log: finish init. account.data: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[2021-06-01T03:37:46Z DEBUG solana_client::rpc_client]   4: Program log: treasure_data result: Ok(Treasure { plant_treasure: {}, claim_treasure: {} })
+```
+
