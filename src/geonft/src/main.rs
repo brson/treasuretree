@@ -160,6 +160,7 @@ fn main() {
                 treasure_image,
                 api::plant_treasure_with_key,
                 api::claim_treasure_with_key,
+                api::treasure_exists,
             ],
         )
         .launch();

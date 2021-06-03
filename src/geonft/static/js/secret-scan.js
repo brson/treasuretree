@@ -194,7 +194,7 @@ async function loadFromUrl() {
         if (secretKey_ == null || publicKey_ == null) {
             console.error("unable to decode key from URL");
         }
-        
+
         secretKeyInput.value = secretKey_;
         publicKeyElt.innerText = publicKey_;
         treasureClaimUrlElt.innerText = url;
