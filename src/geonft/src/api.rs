@@ -164,14 +164,14 @@ pub fn treasure_exists(treasure: Json<TreasureRequest>) -> Result<Json<TreasureR
 
     let filename = format!("{}/{}", io::PLANT_DIR, treasure_key_encode);
     println!("filename: {}", filename);
-    
+
     if Path::new(&filename).is_file() {
         Ok(Json(TreasureResponse {
-            treasure_exists: true
+            treasure_exists: true,
         }))
     } else {
         Ok(Json(TreasureResponse {
-            treasure_exists: false
+            treasure_exists: false,
         }))
     }
 }
