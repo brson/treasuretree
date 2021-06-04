@@ -13,7 +13,7 @@ that would sync the data from our in-development web app,
 [Treasure Tree],
 to the Solana blockchain.
 Though it has a web server and centralized storage backend,
-the app was already developed with a simple data model
+the app was developed with a simple data model
 that was intended to be blockchain-compatible,
 such that the whole thing could be implemented
 without a web server.
@@ -28,8 +28,9 @@ but I've attempted to sum up useful observations here.
 
 In general
 we enjoyed the experience,
-and it was mostly free from
-frustrating obstacles that were irrelevant to writing code.
+and it presented relatively fewer
+frustrating obstacles that were irrelevant to writing code
+than we've experienced previously.
 
 
 ### Things we liked
@@ -38,17 +39,20 @@ frustrating obstacles that were irrelevant to writing code.
   most Solana subjects, are up to date, and interesting to read.
 - The [Solana Program Library][spl] is a great resource for learning
   Solana programming the hard way.
-  It contains a bunch of the real-world Solana code that runs Solana,
+  It contains a bunch of production Solana code,
   but is also presented in a way that can be used as a learning tool.
   Smart use of resources.
 - The Solana toolset and custom toolchain installed easily and
   didn't cause us any grief.
 - Setting up a devnet is easy.
 - The Solana programming model doesn't impose typical "smart contract" abstractions
-  on the implementation; it just you a relatively low-level entry point
+  on the implementation; it just gives you a low-level entry point
   function, a buffer of data for your program to interepret,
   and an SDK full of tools. No DSLs here.
 - Solana programs are called "programs", not "smart contracts".
+- Although at the time it _felt_ like a lot of the questions we
+  asked in Discord went unanswered, in retrospect, many of them
+  did get some kind of answer. A healthy sign I think.
 
 
 ### Things we learned
@@ -59,30 +63,41 @@ frustrating obstacles that were irrelevant to writing code.
 - In general,
   you'll be ripgrepping the [Solana Program Library][spl] a lot
   to figure out how things work.
+- For Rust RPC clients, of the seemingly multiple options in the `solana_client`
+  crate, use `RpcClient`. That is the type used in the SPL. We initially tried to use
+  `ThinClient`, but that doesn't seem to be the right type to use.
+- The [`solana_cli_config`] crate will help you read the contents of Solana's config files.
 - Call `solana_logger::setup_with("solana=debug");` before your program starts,
-  or set the envvar `RUST_LOG=solana_client=debug`.
+  or set the envvar `RUST_LOG=solana_client=debug`. This will show the logs
+  from your program when it errors.
+- Use [`try_from_slice_unchecked`] to deserialize from buffers that are
+  larger than the exact size of the serialized object. [`try_from_slice`]
+  panics when the buffer is not exactly the right size.
+- When your program succeeds the logs show up in the output of the `solana logs`
+  command.
 - The instruction budget is very limited &mdash;
-  we were not able to verify a single k256 ecdsa signature on-chain
+  we were not able to verify a single K-256 ECDSA signature on-chain
   within the limit, as such
-- Doing your own signature verification in-contract is probably not
+- Doing your own signature verification in-program is probably not
   the way to use Solana. The Solana runtime can verify multiple account signatures
   before your program ever runs, so a Solana program seemingly needs to be designed
   to leverage that capability when signature verification is needed.
-- TODO Mapping account data
-
+- Solana programs have a pre-allocated and bounded storage size.
+  This means it is probably an anti-pattern to store key-value maps
+  directly. What seems to be an intended pattern for key-value storage
+  is to derive the keys as Solana accounts from a single base key,
+  and store the values in those accounts.
 
 [docs.solana.com]: https://docs.solana.com
 [fpc]: https://github.com/solana-labs/solana-program-library/blob/master/feature-proposal/cli/src/main.rs
 [spl]: https://github.com/solana-labs/solana-program-library
 [solscript]: https://gist.github.com/brson/29f82547df862161dda8cbc92de6ab37#file-solana-script-sh-L19
-
+[`try_from_slice_unchecked`]: https://docs.rs/solana-sdk/1.6.9/solana_sdk/borsh/fn.try_from_slice_unchecked.html
+[`try_from_slice`]: https://docs.rs/borsh/0.8.2/borsh/de/trait.BorshDeserialize.html#method.try_from_slice
 
 ### Things that annoyed us
 
-- At least one function, `read_keypair_file`, returned `Box<dyn Error>`,
-  which can't be trivially converted to `anyhow::Error` with `?`.
-  Errors in Rust really need to be `Err + Send + Sync + 'static` unless there
-  is great reason not to.
+- The Rust API documentation is insufficient.
 - Solana programs having access to the standard library,
   but a not-quite compatible version of the standard library,
   was the source of multiple confusions, including
@@ -91,8 +106,12 @@ frustrating obstacles that were irrelevant to writing code.
   We spent hours looking for our bug when we should have just not
   used `HashMap`.
 - `time` and `anyhow` don't build against Solana's `std`.
-  `anyhow` can be built with `std` feature off, but that loses
+  `anyhow` can be built with the `std` feature off, but that loses
   compatibility with the `Error` trait.
+- At least one function, `read_keypair_file`, returned `Box<dyn Error>`,
+  which can't be trivially converted to `anyhow::Error` with the `?` operator.
+  Errors in Rust really need to be `Error + Send + Sync + 'static` unless there
+  is great reason not to.
 - 4K BPF stack frames means some crates don't work,
   including `ed25519-dalek`. First time I've ever encountered a limit
   like this.
@@ -108,11 +127,15 @@ frustrating obstacles that were irrelevant to writing code.
   It just happens, but is discouraging.
 
 
-### Questions we had
+### Questions we still have
 
 - What advantages does Solana get by targeting BPF vs some other VM?
 - Is it possible to see the panic message from a panicking
   Solana program?
+- Which client type in `solana_client` "should" we use?
+  We initially tried `ThinClient` but ended up with `RpcClient`.
+- What does "spinner" mean in the context of
+  [`RpcClient::send_and_confirm_transaction_with_spinner`]?
 
 
 ### The outcome
@@ -139,7 +162,7 @@ and programs have fixed storage space.
 As it stands our Solana contract does not properly verify the
 signatures it needs to &mdash;
 it just accepts its input as valid.
-We need to restructure our cryptographic code within the rest
+To fix this we need to restructure our cryptographic code within the rest
 of our application to do more Solana-specific signing operations.
 This is a bit of a bummer, as we were hoping to keep
 the application logic blockchain-agnostic.
@@ -148,12 +171,21 @@ We also didn't explore making our "treasures" work as NFTs.
 Just ran out of time.
 
 
+## TOC
 
-## The journey begins
-
-The rest of this post is written
-stream-of-conscious style,
-as we hacked our way through Solana.
+- [The first day's plan](#user-content-the-first-days-plan)
+- [Installing the Solana SDK](#user-content-installing-the-solana-sdk)
+- [Looking at the install script](#user-content-looking-at-the-install-script)
+- [Running a devnet](#user-content-running-a-devnet)
+- [Why eBPF?](#user-content-why-ebpf)
+- [The Helloworld application](#user-content-the-helloworld-application)
+- [A look at the Rust contract](#user-content-a-look-at-the-rust-contract)
+- [Integrating Solana into our project](#user-content-integrating-solana-into-our-project)
+- [Writing a Solana program in Rust](#user-content-writing-a-solana-program-in-rust)
+- [Writing a Solana client in Rust](#user-content-writing-a-solana-client-in-rust)
+- [Reproducing the Helloworld example client but in Rust](#user-content-reproducing-the-helloworld-example-client-but-in-rust)
+- [Building a Solana instruction](#user-content-building-a-solana-instruction)
+- [Getting beneath the instruction limit](#user-content-getting-beneath-the-instruction-limit)
 
 
 ## The first day's plan
@@ -463,6 +495,9 @@ I ask starry
 
 > Are there any blogs or benchmarks about solana's jit compiler I can check out?
 
+They say
+
+> not yet, we haven't enabled it yet
 
 Maybe my skepticism is betrayed by the questions themselves,
 but I do suspect BPF provides little advantage to Solana,
@@ -728,10 +763,7 @@ Now that we have the tools,
 and a basic understanding of how to set up a Solana program and client,
 let's think about integrating Solana into our own project.
 
-
-## An overview of our project
-
-It is called [Treasure Tree][geonft] (formerly "geonft").
+The project is called [Treasure Tree][geonft] (formerly "geonft").
 and it is a real-world treasure hunt where the treasures are NFTs.
 In it,
 
@@ -827,7 +859,11 @@ I ask in `#hack-rust-support`
 > After adding ed25519-dalek crate to my solana program, I get (non-fatal) errors when building that say "Stack
  offset of -7680 exceeded max offset of -4096 by 3584 bytes, please minimize large stack variables". What can I do about this?
 
-And also:
+I am thinking the `#hack-*` channels are low volume and not the place
+to be asking Solana dev questions.
+All the normal dev channels require proper permissions to talk in them,
+and I don't see how to get those permissions,
+so I ask in `#hack-questions`:
 
 > Can I get access to the #developer-support channel?
 
@@ -881,15 +917,7 @@ I ask in `#hack-rust-support`:
 >
 > https://github.com/solana-labs/solana-program-library/blob/master/feature-proposal/cli/src/main.rs
 
-I am thinking the `#hack-*` channels are low volume and not the place
-to be asking Solana dev questions.
-All the normal dev channels require proper permissions to talk in them,
-and I don't see how to get those permissions,
-so I ask in `#hack-questions`:
-
-> How can I get permission to talk in the #developer-support channel?
-
-Well, the `solana_client` crate has several clients,
+The `solana_client` crate has several clients,
 but I am eyeing [`ThinClient`] as the one I "should" use,
 just on a hunch.
 
@@ -953,19 +981,22 @@ out how to connect to a solana node and query something.
 
 
 
-## Reproducing the Helloworld example client in Rust
+## Reproducing the Helloworld example client but in Rust
 
-Since there don't seem to be Rust client examples to work off of,
-I'm going to proceed by following the [Helloworld typescript client][tsc],
-and trying to do what it does step by step.
+While there are Rust client programs in the SPL,
+there isn't a Helloworld equivalent client written in Rust.
+
+I decide to proceed by following the [Helloworld typescript client][tsc],
+and trying to do what it does step by step,
+while using Rust APIs.
 
 [tsc]: https://github.com/solana-labs/example-helloworld/tree/master/src/client
 
 The first thing it does is "establish a connection",
 and while I've already written code for that,
 the TypeScript code also calls the `getVersion` RPC method,
-which seems like a better way to smoke-test the connection that
-calling ``get_epoch_info` like I am now.
+which seems like a better way to smoke-test the connection than
+calling `get_epoch_info` like I am now.
 
 So I refactor my code to create an `establish_connection` method,
 and look for how to call `getVersion` from Rust.
@@ -984,10 +1015,10 @@ It contains multiple `RpcClient`s.
 I wonder if I should be using `RpcClient` directly and not `ThinClient`,
 though `RpcClient` doesn't implement the `SyncClient` trait that it
 seems like I would want access to.
-I just don't see a way to access `ThinClient`s `RpcClient`,
+I just don't see a way to access `ThinClient`'s `RpcClient`,
 and since some of the methods on `ThinClient` are just
 delegating to `RpcClient` I suspect the API is a bit underbaked.
-I think I can't submit transactions with just `RpcClient`,
+I think maybe I can't submit transactions with just `RpcClient`,
 but for now I need access to `RpcClient` so I am going
 to create that instead of `ThinClient`.
 
@@ -1036,6 +1067,7 @@ which will presumably parse that blob.
 After some further hacking I realize that `Account` is deserializeble via serde,
 but I'm beginning to think this `Account` is not the same as the `Account` type
 in the TypeScript API.
+
 I'm doing something wrong.
 
 I take a look at the source for the ["SPL Token program command line utility"][splt].
@@ -1044,7 +1076,7 @@ which seems useful,
 but upon inspection doesn't obviously get me from a keypair file to something usable in-memory.
 
 [splt]: https://github.com/solana-labs/solana-program-library/tree/master/token/cli
-[`solana-cli-config`]: https://docs.rs/solana-cli-config/1.6.9/solana_cli_config/
+[`solana_cli_config`]: https://docs.rs/solana-cli-config/1.6.9/solana_cli_config/
 
 OK, there are a lot of concepts to digest in this token program.
 I am feeling overwhelmed.
@@ -1061,8 +1093,7 @@ pull the RPC address and keypair file out of that,
 and use the SDK to load the keypair.
 
 I run into problems with the error types returned by the SDK.
-
-Functions like `read_keypair_file` return `Box<dyn Error>`:
+The function `read_keypair_file` returns `Box<dyn Error>`:
 
 ```rust
 pub fn read_keypair_file<F: AsRef<Path>>(
@@ -1090,7 +1121,6 @@ error[E0277]: `dyn std::error::Error` cannot be shared between threads safely
 ```
 
 Errors in Rust that are not `Error + Send + Sync + 'static` are a pain.
-Is there a good reason this error type is just `Error`?
 
 After some hacking,
 cribbing from both the "feature proposal" Rust client
@@ -1195,7 +1225,7 @@ so maybe I just picked too big a number.
 
 I try the same call with `data_len` as 100.
 
-And that works.
+And that works. I was just specifying a data length that was too large.
 
 Strange error,
 but I think I understand:
@@ -1211,9 +1241,10 @@ so I set it to 10_000 for now,
 and verify that I am allowed to store at least that many bytes.
 
 
-## Building an instruction
+## Building a Solana instruction
 
-Today my task is to build an instruction to execute the "plant" verb.
+Today my task is to build an instruction to execute the "plant" verb
+from the client.
 Something I think I am going to like about Solana is that
 the on-chain program just recieves a blob of bytes,
 called an "instruction",
@@ -1237,9 +1268,11 @@ I'm cribbing off the [`token` program][tpg] from the Solana Program Library.
 [tpg]: https://github.com/solana-labs/solana-program-library/blob/master/token/program/src/instruction.rs
 
 
-I discover the token program client is calling `RpcClient::send_and_confirm_transaction_with_spinner`
+I discover the token program client is calling [`RpcClient::send_and_confirm_transaction_with_spinner`]
 to execute its transaction,
 and am intrigued by what "spinner" means in this context.
+
+[`RpcClient::send_and_confirm_transaction_with_spinner`]: https://docs.rs/solana-client/1.6.9/solana_client/rpc_client/struct.RpcClient.html#method.send_and_confirm_transaction_with_spinner
 
 After I write my instruction-building and transaction-executing `upload_plant`
 method,
@@ -1302,8 +1335,9 @@ fn create_plant_instruction(plant_request: PlantRequestHash,
 }
 ```
 
-where `program_instance` is the account my program is running under.
-After making that change I still had another error:
+where `program_instance` is the account my program is running under,
+makes progress,
+though after making that change I still had another error:
 
 ```
 [2021-05-28T15:33:35Z ERROR geonft_sync] not enough signers
@@ -1329,6 +1363,10 @@ And get another error:
 ```
 [2021-05-28T15:44:26Z ERROR geonft_sync] keypair-pubkey mismatch
 ```
+
+I am clearly just flailing at the code,
+and don't understand what I am supposed to do when it comes
+to accounts and signing.
 
 At this point my `upload_plant` function looks like
 
@@ -1447,7 +1485,7 @@ decision,
 but we are committed to it for now,
 and I think it can still work.
 
-We just have to choose an async crypto crate that
+We just have to choose a crypto crate that
 doesn't create huge stack frames.
 
 In the meantime I file an [issue against `curve25519-dalek`][dalek-issue] asking
@@ -1455,8 +1493,8 @@ about putting their lookup tables in boxes.
 
 [dalek-issue]: https://github.com/dalek-cryptography/curve25519-dalek/issues/355
 
-In the meantime I switch from ed25519 to ECDSa va the `k256` crate.
-It only takes a couple hours.
+Then I switch from ed25519 to ECDSA via the `k256` crate.
+It only takes a couple of hours.
 
 And now I no longer have the access violation errors.
 I have new errors:
@@ -1519,7 +1557,7 @@ assumptions about what we could do on chain are wrong:
    The instruction budget is just too low.
 
 Instead of storing a map of account data,
-I think we are expected to derive Solana accounts key from
+I think we are expected to derive Solana account keys from
 a base key, and create new Solana accounts to store their own
 finitely-sized records.
 
@@ -1536,7 +1574,7 @@ but doable, rework.
 
 Our program basically does five things:
 
-- Deserializes the instruction
+- Deserialize the instruction
 - Verify two signatures
 - Deserialize the program state
 - Add a record to a `HashMap` associated with an application (not Solana) account
@@ -1549,7 +1587,7 @@ We find that:
 - Serializing our program state triggers an access violation
 
 On the positive side,
-if we commento out our entire program,
+if we comment out our entire program,
 the client _can_ successfully execute the transactions
 it needs to.
 
@@ -1639,6 +1677,20 @@ and serialize to the remaining slice of the program data.
 
 
 
+
+
+<!--
+
+## Some other bits
+
+When we created our program state on chain,
+we overallocated the amount of space we would need.
+
+The borsch [`try_from_slice`] method
+
+
+[`try_from_slice_unchecked`]: https://docs.rs/solana-sdk/1.6.9/solana_sdk/borsh/fn.try_from_slice_unchecked.html
+[`try_from_slice`]: https://docs.rs/borsh/0.8.2/borsh/de/trait.BorshDeserialize.html#method.try_from_slice
 
 
 
@@ -1765,3 +1817,4 @@ use `try_from_slice_unchecked` (we have to downgrade our borsh to 0.8), and it w
 [2021-06-01T03:37:46Z DEBUG solana_client::rpc_client]   4: Program log: treasure_data result: Ok(Treasure { plant_treasure: {}, claim_treasure: {} })
 ```
 
+-->
