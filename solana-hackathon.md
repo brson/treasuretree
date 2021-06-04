@@ -1,50 +1,122 @@
+# First impressions of Rust programming on Solana
+
 Since trying out Rust programming on several other Rust blockchains,
 we've been looking forward to test-driving Solana.
-With Solana hosting a hackathon during May,
+And with Solana [hosting a hackathon][hackdocs] during May,
 it was a good opportunity to give it a try.
-
-
-- [The hackathon doc page][hackdocs]
-
 
 [hackdocs]: https://github.com/solana-labs/solana-season
 
+During the hackathon we attempted to create a "sync bot",
+that would sync the data from our in-development web app,
+[Treasure Tree],
+to the Solana blockchain.
+Though it has a web server and centralized storage backend,
+the app was already developed with a simple data model
+that was intended to be blockchain-compatible,
+such that the whole thing could be implemented
+without a web server.
+
+[Treasure Tree]: https://github.com/brson/geonft
 
 
-## Tips
+## TL;DR
+
+This blog is long and meandering,
+but I've attempted to sum up useful observations here.
+
+In general
+we enjoyed the experience,
+and it was mostly free from
+frustrating obstacles that were irrelevant to writing code.
+
+
+### Things we liked
+
+- The main documentation at [docs.solana.com] are a good entry point for
+  most Solana subjects, are up to date, and interesting to read.
+- The [Solana Program Library][spl] is a great resource for learning
+  Solana programming the hard way.
+  It contains a bunch of the real-world Solana code that runs Solana,
+  but is also presented in a way that can be used as a learning tool.
+  Smart use of resources.
+- The Solana toolset and custom toolchain installed easily and
+  didn't cause us any grief.
+- Setting up a devnet is easy.
+- The Solana programming model doesn't impose typical "smart contract" abstractions
+  on the implementation; it just you a relatively low-level entry point
+  function, a buffer of data for your program to interepret,
+  and an SDK full of tools. No DSLs here.
+- Solana programs are called "programs", not "smart contracts".
+
+
+### Things we learned
 
 - For writing Rust client code,
   crib off of the [`feature_proposal` client][fcp].
   It is relatively simple.
-> Call `solana_logger::setup_with("solana=debug");` before your program starts,
+- In general,
+  you'll be ripgrepping the [Solana Program Library][spl] a lot
+  to figure out how things work.
+- Call `solana_logger::setup_with("solana=debug");` before your program starts,
   or set the envvar `RUST_LOG=solana_client=debug`.
+- [Solana's install script][solscript] is forked from rustup-init.sh,
+  which I wrote. I am proud.
 - TODO Signing and instruction budget
 - TODO Mapping account data
 
 
+[docs.solana.com]: https://docs.solana.com
 [fpc]: https://github.com/solana-labs/solana-program-library/blob/master/feature-proposal/cli/src/main.rs
+[spl]: https://github.com/solana-labs/solana-program-library
+[solscript]: https://gist.github.com/brson/29f82547df862161dda8cbc92de6ab37#file-solana-script-sh-L19
 
 
-## Annoyances
+### Things that annoyed us
 
-- Functions like `read_keypair_file` return `Box<dyn Error>`,
+- At least one function, `read_keypair_file`, returned `Box<dyn Error>`,
   which can't be trivially converted to `anyhow::Error` with `?`.
-- `time` and `anyhow` not building against Solana's `std`.
+  Errors in Rust really need to be `Err + Send + Sync + 'static` unless there
+  is great reason not to.
+- Solana programs having access to the standard library,
+  but a not-quite compatible version of the standard library,
+  was the source of multiple confusions, including
+- `HashMap` seems to just panic on any operation,
+  which manifests as a mysterious access violation.
+  We spent hours looking for our bug when we should have just not
+  used `HashMap`.
+- `time` and `anyhow` don't build against Solana's `std`.
   `anyhow` can be built with `std` feature off, but that loses
   compatibility with the `Error` trait.
-- 4K BPF stack frames means some crates don't work,
-  including `ed25519-dalek`.
 - `HashMap` doesn't work in a Solana program and the failure
   mode is a runtime "access violation".
+- 4K BPF stack frames means some crates don't work,
+  including `ed25519-dalek`. First time I've ever encountered a limit
+  like this.
+- As with previous experiences, we found the online hackathon format
+  uninspiring, and mostly didn't participate.
+- It felt like many questions on Discord went unanswered.
+  This was annoying,
+  but also understandable, and not out of the ordinary for an
+  open source project. Sometimes nobody steps up to help.
+  It just happens, but is discouraging.
 
 
-## Questions
+### Questions we had
 
+- What advantages does Solana get by targeting BPF vs some other VM?
 - Is it possible to see the panic message from a panicking
   Solana program?
 
 
-## Today's plan
+## The journey
+
+The rest of this post is written
+stream-of-conscious style,
+as we hacked our way through the Solana wilderness.
+
+
+## The first day's plan
 
 Today is the 17th.
 The hackathon began on the 15th,
