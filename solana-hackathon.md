@@ -1,10 +1,11 @@
 # First impressions of Rust programming on Solana
 
 Since trying out Rust programming on several other Rust blockchains,
-we've been looking forward to test-driving Solana.
+[Aimee] and I have been looking forward to test-driving Solana.
 And with Solana [hosting a hackathon][hackdocs] during May,
 it was a good opportunity to give it a try.
 
+[Aimee]: https://github.com/Aimeedeer
 [hackdocs]: https://github.com/solana-labs/solana-season
 
 During the hackathon we attempted to create a "sync bot",
@@ -53,16 +54,20 @@ frustrating obstacles that were irrelevant to writing code.
 ### Things we learned
 
 - For writing Rust client code,
-  crib off of the [`feature_proposal` client][fcp].
+  crib off of the [`feature_proposal` client][fpc].
   It is relatively simple.
 - In general,
   you'll be ripgrepping the [Solana Program Library][spl] a lot
   to figure out how things work.
 - Call `solana_logger::setup_with("solana=debug");` before your program starts,
   or set the envvar `RUST_LOG=solana_client=debug`.
-- [Solana's install script][solscript] is forked from rustup-init.sh,
-  which I wrote. I am proud.
-- TODO Signing and instruction budget
+- The instruction budget is very limited &mdash;
+  we were not able to verify a single k256 ecdsa signature on-chain
+  within the limit, as such
+- Doing your own signature verification in-contract is probably not
+  the way to use Solana. The Solana runtime can verify multiple account signatures
+  before your program ever runs, so a Solana program seemingly needs to be designed
+  to leverage that capability when signature verification is needed.
 - TODO Mapping account data
 
 
@@ -88,11 +93,12 @@ frustrating obstacles that were irrelevant to writing code.
 - `time` and `anyhow` don't build against Solana's `std`.
   `anyhow` can be built with `std` feature off, but that loses
   compatibility with the `Error` trait.
-- `HashMap` doesn't work in a Solana program and the failure
-  mode is a runtime "access violation".
 - 4K BPF stack frames means some crates don't work,
   including `ed25519-dalek`. First time I've ever encountered a limit
   like this.
+- `cargo build-bpf` behaves differently than `cargo-build` in several situations,
+  including missing the `-p` flag, and not working with libraries
+  containing hyphens in their name.
 - As with previous experiences, we found the online hackathon format
   uninspiring, and mostly didn't participate.
 - It felt like many questions on Discord went unanswered.
@@ -109,11 +115,45 @@ frustrating obstacles that were irrelevant to writing code.
   Solana program?
 
 
-## The journey
+### The outcome
+
+It went pretty well!
+
+We managed to create a "sync bot" that was able to mirror
+the state of our centralized web app on the blockchain,
+and set it up on a server at [treasuretree.org],
+running against a local devnet.
+
+[treasuretree.org]: https://treasuretree.org
+
+We did find that some of our assumptions about the types of code
+we could run on-chain were wrong. In particular we:
+
+- planned to verify signatures ourselves
+- planned to store unbounded key-value maps
+
+Neither of these are easy or proper to do on Solana:
+signature verification just requires too many CPU cycles;
+and programs have fixed storage space.
+
+As it stands our Solana contract does not properly verify the
+signatures it needs to &mdash;
+it just accepts its input as valid.
+We need to restructure our cryptographic code within the rest
+of our application to do more Solana-specific signing operations.
+This is a bit of a bummer, as we were hoping to keep
+the application logic blockchain-agnostic.
+
+We also didn't explore making our "treasures" work as NFTs.
+Just ran out of time.
+
+
+
+## The journey begins
 
 The rest of this post is written
 stream-of-conscious style,
-as we hacked our way through the Solana wilderness.
+as we hacked our way through Solana.
 
 
 ## The first day's plan
@@ -155,7 +195,7 @@ I want to install the Solana SDK, tools, or whatever I need.
 I assume there's something SDK-like I need.
 
 The [hackathon docs][hackdocs] contains some educational links,
-and I folow the firt to the [Solana docs website][soldocs].
+and I folow the first to the [Solana docs website][soldocs].
 
 [soldocs]: https://docs.solana.com/
 
@@ -187,17 +227,17 @@ as the "examples" page proceeds directly from "Helloworld",
 to "Break",
 which is an entirely different example.
 Though the instructions do say to continue to the Helloworld readme,
-Aimee succombs to this confusion,
+Aimee succumbs to this confusion,
 and proceeds to try to follow "Break".
 The correct thing to do is stop here,
 navigate to the Helloworld readme,
 and continue there.
 
-There are enough docs for this example,
+This example is so well documented
 that the README has a table of contents.
 I am encouraged by this.
 
-This requires node > 14.
+This example requires node > 14.
 Aimee immediately runs into problems on mac:
 she seems to have node 10,
 tries to upgrade with brew,
@@ -256,7 +296,7 @@ and then
 # and runs it.
 ```
 
-This is a clone of [rustup's install script][rustup-init],
+This is a fork of [rustup's install script][rustup-init],
 which I wrote,
 and which,
 [as I discovered previously][dfin],
@@ -271,7 +311,19 @@ I see a peculiar comment at the top:
 { # this ensures the entire script is downloaded #
 ```
 
-TODO
+This isn't in the `rustup-init.sh` script.
+I haven't seen this technique before of just throwing a set
+of braces around the entire shell script,
+and wonder how compatible it is.
+
+Scripts downloaded from the internet and immediately piped through
+an interpreter need to guard against issues where the script
+fails to download fully but is still partially executed.
+
+`rustup-init.sh` attempts to achieve this by essentially not executing
+any code until a single function call at the end of the script.
+I can imagine a scenario where the brace-around-everything technique
+could catch an error that `rustup-init.sh` doesn`t.
 
 
 ## Running a devnet
@@ -303,10 +355,10 @@ What does this tell us?
 - We have an account keypair set up for us,
   the exact purpose for which is not clear,
   but I assume is a dev keypair
-- "Commitment: confirmed" &mdash: I have no idea. Wat?
+- "Commitment: confirmed" &mdash; I have no idea.
 
 The next instruction is to create a keypair,
-but I `solana config` says I already have a keypair.
+but `solana config` says I already have a keypair.
 I am guessing I have previously installed the Solana SDK,
 and it is an old keypair.
 I begin to generate a new one:
@@ -372,9 +424,9 @@ the docs have directed me well,
 the tooling has worked cleanly.
 
 
-## eBPF
+## Why eBPF?
 
-After reading [a about Solana's use of BPF][bpfdoc],
+After reading [about Solana's use of BPF][bpfdoc],
 I ask in their Discord a question that I have been wondering for a few weeks:
 
 [bpfdoc]: https://docs.solana.com/developing/on-chain-programs/overview
@@ -386,15 +438,38 @@ I ask in their Discord a question that I have been wondering for a few weeks:
 Nobody answers,
 but I may have asked in the wrong channel.
 
-A ask again in #hack-blockchain-support:
+A ask again in `#hack-blockchain-support`:
 
 > What advantages does solana get from targeting eBPF, vs any other instruction
   set, for its VM? Been trying to get an answer to this for awhile.
 
-Somebody respons by pinging "chase || solana",
+Somebody responds by pinging "chase || solana",
 and asking them to ask a Solana dev to explain,
 but that explanation never comes.
 
+Some days later I ask in `#developer-support`:
+
+> What advantages does Solana get from targeting BPF vs some other VM?
+
+"starry" says
+
+> fast JIT compiling
+
+I am frustrated.
+This is such an insufficient answer,
+and I have asked this question so many times.
+
+I ask starry
+
+> Are there any blogs or benchmarks about solana's jit compiler I can check out?
+
+
+Maybe my skepticism is betrayed by the questions themselves,
+but I do suspect BPF provides little advantage to Solana,
+and is more a liability,
+considering the developer effort that must have gone into
+producing custom Rust toolchains to support the project.
+Not a lot of languages can target BPF.
 
 
 ## The Helloworld application
@@ -593,8 +668,31 @@ there's very little magic here &mdash;
 you define an entry point,
 and you get a blob of instruction data,
 and its up to you to use the SDK to interpret it.
-This contrasts with NEAR and Ink,
-that both have complex macros that do a bunch of setup and dispatch before main.
+
+The `entrypoint!` macro [does very little][epm].
+This is all of it:
+
+```rust
+#[macro_export]
+macro_rules! entrypoint {
+    ($process_instruction:ident) => {
+        /// # Safety
+        #[no_mangle]
+        pub unsafe extern "C" fn entrypoint(input: *mut u8) -> u64 {
+            let (program_id, accounts, instruction_data) =
+                unsafe { $crate::entrypoint::deserialize(input) };
+            match $process_instruction(&program_id, &accounts, &instruction_data) {
+                Ok(()) => $crate::entrypoint::SUCCESS,
+                Err(error) => error.into(),
+            }
+        }
+        $crate::custom_heap_default!();
+        $crate::custom_panic_default!();
+    };
+}
+```
+
+[epm]: https://github.com/solana-labs/solana/blob/a911ae00baa9bb7031041add14c5185c86376afb/sdk/program/src/entrypoint.rs#L42
 
 Personally, I like to understand what is happening under the hood,
 and dislike hiding magic in macros where reasonable,
@@ -624,7 +722,7 @@ I submit [a PR to update the lockfile][lockfile].
 [lockfile]: https://github.com/solana-labs/example-helloworld/pull/216
 
 
-## Integrating solana into our project
+## Integrating Solana into our project
 
 Now that we have the tools,
 and a basic understanding of how to set up a Solana program and client,
@@ -633,8 +731,8 @@ let's think about integrating Solana into our own project.
 
 ## An overview of our project
 
-It is called [geonft].
-and it is a toy that connects NFTs to the physical world.
+It is called [Treasure Tree][geonft] (formerly "geonft").
+and it is a real-world treasure hunt where the treasures are NFTs.
 In it,
 
 - treasure _planters_ physically plant QR codes containing secret keys,
@@ -653,16 +751,17 @@ make the treasures transactable as NFTs;
 and to create a service that syncs the state of these treasures
 from the centralized service onto the blockchain.
 
+[Rocket]: https://rocket.rs
 
 
-### Writing a solana program in Rust
+### Writing a Solana program in Rust
 
-Aimee is responsible for writing our Solana program (aka smart contract),
+Aimee is responsible for writing our Solana program
 that handles the "plant" and "claim" actions.
 She has written these two functions previously in our Rocket backend,
 and now she is reimplementing them on-chain.
 
-TODO:
+We immediately run into a surprising error:
 
 ```
 $ cargo build-bpf
@@ -672,8 +771,10 @@ Caused by:
   library target names cannot contain hyphens: solana-program
   ```
 
-
-
+Seems like a limitation of `cargo build-bpf` &mdash;
+standard cargo doesn't do this.
+Fixing it is simple &mdash;
+just change the crate name to not contain a hyphen.
 
 We run into a problem when adding our `geonft_solana` program to a workspace.
 Because we are trying to use the `anyhow` crate in multiple crates,
@@ -686,6 +787,10 @@ and so doesn't build,
 seemingly because of missing backtraces
 in the Solana implementation of `std`.
 
+(That `anyhow` doesn't build with `cargo build-bpf`
+without disabling the `std` feature is also surprising,
+as the Solana BPF target includes `std`.)
+
 We add `resolver = "2"` to our workspace to fix this,
 but find an additional wrinkle that the bpf toolchain is still
 on Rust 1.50,
@@ -693,11 +798,10 @@ where the v2 crate resolver was unstable,
 so have also add `carge-features = ["resolver"]`.
 
 Futthermore,
-`cargo build-bpf` doesn't accpt a `-p` parameter,
+`cargo build-bpf` doesn't accept a `-p` parameter,
 so it seems like a bpf program probably shouldn't be part of a workspace.
 For now we do have it in our workspace though,
 and just `cd` into the `geonft_solana` directory to build it.
-
 
 When we add ed25519-dalek to our dependencies we start seeing errors
 about large stack frames,
@@ -718,12 +822,12 @@ Error: Function _ZN209_$LT$curve25519_dalek..window..NafLookupTable8$LT$curve255
 
 ```
 
-I ask in #hack-rust-support
+I ask in `#hack-rust-support`
 
 > After adding ed25519-dalek crate to my solana program, I get (non-fatal) errors when building that say "Stack
  offset of -7680 exceeded max offset of -4096 by 3584 bytes, please minimize large stack variables". What can I do about this?
 
-And again:
+And also:
 
 > Can I get access to the #developer-support channel?
 
@@ -744,7 +848,7 @@ We'll get back to the Solana program later.
 
 
 
-## Writing a solana client in Rust
+## Writing a Solana client in Rust
 
 I am writing a program whose job is to sync the application state
 from our centralized Rocket application to Solana.
