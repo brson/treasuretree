@@ -763,7 +763,7 @@ Now that we have the tools,
 and a basic understanding of how to set up a Solana program and client,
 let's think about integrating Solana into our own project.
 
-The project is called [Treasure Tree][geonft] (formerly "geonft").
+The project is called [Treasure Tree][geonft] (formerly "geonft"),
 and it is a real-world treasure hunt where the treasures are NFTs.
 In it,
 
