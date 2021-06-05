@@ -44,7 +44,6 @@ It has this dual centralized/blockchain architecture for two reasons:
 - We wanted a responsive and simple user experience that requires no knowledge
   of blockchains or &mdash; especially &mdash; blockchain wallets.
 - We wanted to prototype the app quickly without dealing with blockchain programming,
-  which is, in our experience, not very fun.
 - We wanted to be able to experiment with multiple blockchains while keeping the blockchain
   components isolated from the main logic of the app.
 
