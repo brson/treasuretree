@@ -1443,7 +1443,7 @@ y instruction #29814
  [6 log messages]
 ```
 
-This definitely looks like my old compiler warning
+This definitely looks like our old compiler warning
 about our solana program having too-large stack offsets
 finally causing us a problem.
 
