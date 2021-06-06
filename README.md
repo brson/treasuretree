@@ -20,10 +20,12 @@ such that treasure hunters can view new treasures on the website
 and use the coordinates to hunt for them.
 
 This was created as part of the [Solana Season Hackathon][ssh].
-See a [demo video here][vid] showing how it is intended to be played.
+See a [demo video here][vid] showing how it is intended to be played,
+and the (draft) [blog about our experience][blog].
 
 [ssh]: https://github.com/solana-labs/solana-season
 [vid]: https://youtu.be/uc2MUdDo4xs
+[blog]: solana-hackathon.md
 
 See it live at [treasuretree.org],
 but note that
