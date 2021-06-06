@@ -1,4 +1,4 @@
-![logo](images/treasure-tree-medium.png)
+![logo](images/treasure-tree-medium-white.png)
 
 # TreasureTree
 
