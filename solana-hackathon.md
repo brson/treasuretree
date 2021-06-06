@@ -1406,7 +1406,7 @@ I think I'll go read some solana docs about accounts
 and transaction signing.
 
 I figure out just by hunch that I was incorrectly
-telling Solana to require a signature from by program account key,
+telling Solana to require a signature from my program account key,
 which was derived from my program ID,
 and for which I don't have the secret key to sign with.
 I change my corresponding `AccountMeta` declaration:
