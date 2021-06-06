@@ -28,9 +28,8 @@ but I've attempted to sum up useful observations here.
 
 In general
 we enjoyed the experience,
-and it presented relatively fewer
-frustrating obstacles that were irrelevant to writing code
-than we've experienced previously.
+and it presented relatively few
+frustrating obstacles to writing the code we wanted.
 
 
 ### Things we liked
