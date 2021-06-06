@@ -76,7 +76,7 @@ frustrating obstacles to writing the code we wanted.
   command.
 - The instruction budget is very limited &mdash;
   we were not able to verify a single K-256 ECDSA signature on-chain
-  within the limit, therefore,
+  within the limit, as such
 - doing your own signature verification in-program is probably not
   the way to use Solana. The Solana runtime can verify multiple account signatures
   before your program ever runs, so a Solana program seemingly needs to be designed
@@ -99,7 +99,7 @@ frustrating obstacles to writing the code we wanted.
 - The Rust API documentation is insufficient.
 - Solana programs having access to the standard library,
   but a not-quite compatible version of the standard library,
-  was the source of multiple confusions, including
+  was the source of multiple confusions, including:
 - `HashMap` seems to just panic on any operation,
   which manifests as a mysterious access violation.
   We spent hours looking for our bug when we should have just not
