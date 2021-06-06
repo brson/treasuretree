@@ -136,6 +136,9 @@ frustrating obstacles to writing the code we wanted.
   We tried to use it but that seemed to be a wrong choice.
 - What does "spinner" mean in the context of
   [`RpcClient::send_and_confirm_transaction_with_spinner`]?
+- What is the best pattern for initializing a Solana program's state?
+  We reserved a single byte at the beginning of our account data
+  to use as an "initialized" flag.
 
 
 ### The outcome
