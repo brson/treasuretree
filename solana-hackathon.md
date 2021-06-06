@@ -85,7 +85,7 @@ frustrating obstacles to writing the code we wanted.
 - Solana programs have a pre-allocated and bounded storage size.
   This means it is probably an anti-pattern to store key-value maps
   directly. What seems to be an intended pattern for key-value storage
-  is to derive the keys as Solana accounts from a single base key,
+  is to derive the keys as Solana accounts from a single base account,
   and store the values in those accounts.
 
 [docs.solana.com]: https://docs.solana.com
