@@ -169,6 +169,9 @@ the application logic blockchain-agnostic.
 We also didn't explore making our in-game "treasures" work as NFTs.
 Just ran out of time.
 
+We plan to continue hacking on this until we can get
+a viable MVP running on the live network.
+
 
 ## TOC
 
