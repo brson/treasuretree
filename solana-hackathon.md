@@ -56,12 +56,12 @@ frustrating obstacles to writing the code we wanted.
 
 ### Things we learned
 
-- For writing Rust client code,
-  crib off of the [`feature_proposal` client][fpc].
-  It is relatively simple.
 - In general,
   you'll be ripgrepping the [Solana Program Library][spl] a lot
   to figure out how things work.
+- For writing Rust client code,
+  crib off of the [`feature_proposal` client][fpc].
+  It is relatively simple.
 - For Rust RPC clients, of the seemingly multiple options in the `solana_client`
   crate, use `RpcClient`. That is the type used in the SPL. We initially tried to use
   `ThinClient`, but that doesn't seem to be the right type to use.
