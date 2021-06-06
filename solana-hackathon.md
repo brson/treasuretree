@@ -52,6 +52,7 @@ frustrating obstacles to writing the code we wanted.
 - Although at the time it _felt_ like a lot of the questions we
   asked in Discord went unanswered, in retrospect, many of them
   did get some kind of answer. A healthy sign I think.
+- The developer channels on the Solana Discord are active.
 
 
 ### Things we learned
