@@ -131,8 +131,8 @@ frustrating obstacles to writing the code we wanted.
 - What advantages does Solana get by targeting BPF vs some other VM?
 - Is it possible to see the panic message from a panicking
   Solana program?
-- Which client type in `solana_client` "should" we use?
-  We initially tried `ThinClient` but ended up with `RpcClient`.
+- What is `ThinClient` in `solana_client` for?
+  We tried to use it but that seemed to be a wrong choice.
 - What does "spinner" mean in the context of
   [`RpcClient::send_and_confirm_transaction_with_spinner`]?
 
