@@ -166,7 +166,7 @@ of our application to do more Solana-specific signing operations.
 This is a bit of a bummer, as we were hoping to keep
 the application logic blockchain-agnostic.
 
-We also didn't explore making our "treasures" work as NFTs.
+We also didn't explore making our in-game "treasures" work as NFTs.
 Just ran out of time.
 
 
