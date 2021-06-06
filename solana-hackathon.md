@@ -1682,6 +1682,23 @@ I reserve byte 1 of the program data for an "initialized" flag,
 and serialize to the remaining slice of the program data.
 
 
+## Wrapping it up and pretending it works
+
+At this point we were a few days from the end of the hackathon.
+We didn't achieve everything we set out to,
+and had more problems to solve,
+but we were at a good stopping point,
+with a vaguelly-working client successfully executing
+the yet-incomplete on-chain program.
+
+So we spent the last few days cleaning up the UI,
+deploying it to [treasuretree.org],
+recording [a demo],
+and submitting it to the hackathon judges.
+
+[treasuretree.org]: https://treasuretree.org
+[a demo]: https://youtu.be/uc2MUdDo4xs
+
 
 
 
