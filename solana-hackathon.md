@@ -192,6 +192,7 @@ a viable MVP running on the live network.
 - [Reproducing the Helloworld example client but in Rust](#user-content-reproducing-the-helloworld-example-client-but-in-rust)
 - [Building a Solana instruction](#user-content-building-a-solana-instruction)
 - [Getting beneath the instruction limit](#user-content-getting-beneath-the-instruction-limit)
+- [Wrapping it up](#user-content-wrapping-it-up)
 
 
 ## The first day's plan
@@ -1682,7 +1683,7 @@ I reserve byte 1 of the program data for an "initialized" flag,
 and serialize to the remaining slice of the program data.
 
 
-## Wrapping it up and pretending it works
+## Wrapping it up
 
 At this point we were a few days from the end of the hackathon.
 We didn't achieve everything we set out to,
