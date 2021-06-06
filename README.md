@@ -53,13 +53,13 @@ It is written mostly in Rust and consists of several crates:
 
 - [`geonft`]: a [Rocket] web server, serving static pages, a JSON-based API,
   and a WASM blob for use by the client,
-- [`geonft_wasm`]: Rust code, mostly crypto, used by the web app,
+- [`geonft_wasm`]: Rust code used by the web app,
 - [`geonft_solana`]: a Solana program that implements a similar API
   to the web API,
 - [`geonft_sync`]: a bot that synchronizes state between the backend of
   the web app and the blockchain,
 - [`geonft_data`]: no-std data types shared between crates,
-- [`geonft_nostd`]: no-std code shared between crates,
+- [`geonft_nostd`]: no-std code shared between crates, mostly crypto.
 - [`geonft_shared`]: std code shared between crates.
 
 (The original name of this project was "geonft").
@@ -84,9 +84,9 @@ The code is full of quick hacks and missing cases,
 and is in a frankly embarassing shape.
 
 The Solana integration is the barest prototype.
-During the hackathon we ran into problems with several of our
-architectural assumptions,
-and have not fixed them yet.
+During the hackathon we had to overcome the learning curve,
+and ran into problems with several of our
+architectural assumptions which have not been fixed yet.
 
 In particular,
 the Solana program doesn't actually verify the signatures
@@ -94,6 +94,13 @@ necessary to validate the transactions it is executing.
 It'll accept most any garbage.
 This is because we couldn't do the signature verification
 within the on-chain CPU budget.
-Fixing this requires some deep,
-but probably not difficult,
-architectural changes.
+Fixing this requires some architectural changes.
+
+Geographic coordinates of treasures are not yet displayed on the web app.
+
+Access control for planters is not implemented
+in an economically viable way for on-chain activity &mdash;
+it would be expensive if many people began planting treasures.
+
+Images are stored on a central server,
+but should be pinned to IPFS.
