@@ -76,8 +76,8 @@ frustrating obstacles to writing the code we wanted.
   command.
 - The instruction budget is very limited &mdash;
   we were not able to verify a single K-256 ECDSA signature on-chain
-  within the limit, as such
-- Doing your own signature verification in-program is probably not
+  within the limit, therefore,
+- doing your own signature verification in-program is probably not
   the way to use Solana. The Solana runtime can verify multiple account signatures
   before your program ever runs, so a Solana program seemingly needs to be designed
   to leverage that capability when signature verification is needed.
