@@ -23,7 +23,7 @@ This was created as part of the [Solana Season Hackathon][ssh].
 See a [demo video here][vid] showing how it is intended to be played.
 
 [ssh]: https://github.com/solana-labs/solana-season
-[vid]: todo
+[vid]: https://youtu.be/uc2MUdDo4xs
 
 See it live at [treasuretree.org],
 but note that
