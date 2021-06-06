@@ -1,3 +1,5 @@
+![logo](images/treasure-tree-medium.png)
+
 # TreasureTree
 
 A real-world treasure hunt game where the treasures are
