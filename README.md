@@ -13,7 +13,7 @@ performed by two roles:
 Each treasure is unique,
 and once claimed may not be claimed again.
 
-To each treasure is attached a picture,
+Each treasure is associated with a picture,
 which is intended to be a photograph taken from a phone.
 From the photo are extracted the geographic coordinates of the treasure,
 such that treasure hunters can view new treasures on the website
