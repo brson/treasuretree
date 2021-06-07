@@ -27,8 +27,15 @@
 
     <header>
 
-      <section>
-        <h1><a href="./">Treasure Tree</a></h1>
+      <section id="title-section">
+        <h1>
+          <a href="./">
+            <span>
+              <span>Treasure Tree</span>
+              <img src="images/treasure-tree-medium-white.png" alt="logo">
+            </span>
+          </a>
+        </h1>
       </section>
 
       <section>

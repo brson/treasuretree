@@ -294,9 +294,39 @@ p, h1, h2 {
     margin: 1rem;
 }
 
-header h1 {
+/*header h1 {
     text-align: right;
     margin-right: 0rem;
+}*/
+
+header section#title-section {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+header section#title-section img {
+    height: 100px;
+    width: 100px;
+}
+
+header section#title-section > h1 {
+    text-align: right;
+    margin: 0;
+}
+
+header section#title-section > h1 > a {
+    display: inline-block;
+    height: 100px;
+}
+
+header section#title-section > h1 > a > span {
+    display: flex;
+    align-items: center;
+}
+
+header section#title-section > h1 > a > span > :nth-child(1) {
+    margin-right: 1rem;
 }
 
 p.treasure-p {
