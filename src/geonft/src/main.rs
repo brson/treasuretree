@@ -1,3 +1,5 @@
+//! The geonft Rocket web application
+
 #![allow(unused)]
 #![feature(decl_macro, proc_macro_hygiene)]
 
