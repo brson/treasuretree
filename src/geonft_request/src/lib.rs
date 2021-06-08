@@ -71,4 +71,3 @@ pub struct ClaimRequestSolana {
     /// A public key to represent the treasure, bech32 encoded
     pub treasure_public_key: Vec<u8>,
 }
-
