@@ -3,7 +3,7 @@
 
 {% block title %}
 
-Claim a Treasure
+Let's Claim a Treasure!
 
 {% endblock title %}
 

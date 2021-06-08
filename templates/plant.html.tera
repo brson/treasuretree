@@ -3,7 +3,7 @@
 
 {% block title %}
 
-Plant a Treasure
+Let's Plant a Treasure!
 
 {% endblock title %}
 

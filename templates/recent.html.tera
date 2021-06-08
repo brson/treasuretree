@@ -3,7 +3,7 @@
 
 {% block title %}
 
-Recently Planted Treasures
+Somebody Planted Treasures!
 
 {% endblock title %}
 

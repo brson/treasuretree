@@ -3,7 +3,7 @@
 
 {% block title %}
 
-Actions Menu
+I Love Nature!
 
 {% endblock title %}
 
