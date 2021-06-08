@@ -9,8 +9,8 @@ use geonft_shared::io;
 use rocket_contrib::json::Json;
 use serde::{Deserialize, Serialize};
 use std::fs::{self, File};
-use std::path::Path;
 use std::io::BufWriter;
+use std::path::Path;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PlantResponse;
