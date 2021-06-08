@@ -1,5 +1,5 @@
 use anyhow::Result;
-use geonft_data::{ClaimRequest, PlantRequest};
+use geonft_request::{ClaimRequest, PlantRequest};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::{self, DirEntry, File, Metadata};

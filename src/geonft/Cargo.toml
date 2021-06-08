@@ -5,7 +5,7 @@ authors = ["Brian Anderson <andersrb@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-geonft_data = { path = "../geonft_data" }
+geonft_request = { path = "../geonft_request" }
 geonft_nostd = { path = "../geonft_nostd" }
 geonft_shared = { path = "../geonft_shared" }
 

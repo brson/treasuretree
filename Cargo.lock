@@ -1406,8 +1406,8 @@ dependencies = [
  "base64 0.13.0",
  "bech32",
  "chrono",
- "geonft_data",
  "geonft_nostd",
+ "geonft_request",
  "geonft_shared",
  "image",
  "rand 0.7.3",
@@ -1416,16 +1416,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sha256",
-]
-
-[[package]]
-name = "geonft_data"
-version = "0.1.0"
-dependencies = [
- "borsh",
- "borsh-derive",
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -1441,13 +1431,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "geonft_request"
+version = "0.1.0"
+dependencies = [
+ "borsh",
+ "borsh-derive",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "geonft_shared"
 version = "0.1.0"
 dependencies = [
  "anyhow",
  "chrono",
- "geonft_data",
  "geonft_nostd",
+ "geonft_request",
  "serde",
  "serde_json",
 ]
@@ -1459,8 +1459,8 @@ dependencies = [
  "anyhow",
  "borsh",
  "borsh-derive",
- "geonft_data",
  "geonft_nostd",
+ "geonft_request",
  "solana-program",
  "solana-program-test",
  "solana-sdk",
@@ -1474,8 +1474,8 @@ dependencies = [
  "borsh",
  "dirs",
  "env_logger",
- "geonft_data",
  "geonft_nostd",
+ "geonft_request",
  "geonft_shared",
  "log 0.4.14",
  "serde_json",

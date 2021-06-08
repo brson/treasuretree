@@ -5,7 +5,7 @@
 extern crate rocket;
 
 use anyhow::{anyhow, bail, Result};
-use geonft_data::PlantRequest;
+use geonft_request::PlantRequest;
 use geonft_shared::io::{self, TreasureTemplateData};
 use rocket::http::{ContentType, Method, RawStr};
 use rocket::response::{content::Html, Content, Responder};

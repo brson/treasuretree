@@ -7,7 +7,7 @@ use std::net::SocketAddr;
 use std::thread;
 use std::time::Duration;
 
-use geonft_data::{ClaimRequestSolana, GeonftRequestSolana, PlantRequestSolana};
+use geonft_request::{ClaimRequestSolana, GeonftRequestSolana, PlantRequestSolana};
 use geonft_shared::io::{self, SyncStatus};
 
 mod solana;

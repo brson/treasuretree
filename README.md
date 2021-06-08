@@ -54,28 +54,25 @@ It has this dual centralized/blockchain architecture for two reasons:
 It is written mostly in Rust and consists of several crates:
 
 - [`geonft`]: a [Rocket] web server, serving static pages, a JSON-based API,
-  and a WASM blob for use by the client,
-- [`geonft_wasm`]: Rust code used by the web app,
+  and a WASM blob for use by the client.
+- [`geonft_wasm`]: Rust code used by the web app.
 - [`geonft_solana`]: a Solana program that implements a similar API
-  to the web API,
+  to the web API.
 - [`geonft_sync`]: a bot that synchronizes state between the backend of
-  the web app and the blockchain,
-- [`geonft_data`]: no-std data types shared between crates,
+  the web app and the blockchain.
+- [`geonft_request`]: no-std data types used in both Rocket and Solana APIs,
+  these define the basic actions in the game.
 - [`geonft_nostd`]: no-std code shared between crates, mostly crypto.
-- [`geonft_shared`]: std code shared between crates.
+- [`geonft_shared`]: std code shared between crates, mostly I/O.
 
 (The original name of this project was "geonft").
 
-The split between `geonft_data` and `geonft_nostd` was to work around
-now-forgotten problems compiling certain crates for Solana.
-
 [Rocket]: https://rocket.rs
-
 [`geonft`]: src/geonft
 [`geonft_wasm`]: src/geonft_wasm
 [`geonft_solana`]: src/geonft_solana
 [`geonft_sync`]: src/geonft_sync
-[`geonft_data`]: src/geonft_data
+[`geonft_request`]: src/geonft_request
 [`geonft_nostd`]: src/geonft_nostd
 [`geonft_shared`]: src/geonft_shared
 

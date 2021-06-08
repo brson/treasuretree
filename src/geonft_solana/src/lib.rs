@@ -1,6 +1,6 @@
 use anyhow::anyhow;
 use borsh::{BorshDeserialize, BorshSerialize};
-use geonft_data::{ClaimRequestSolana, GeonftRequestSolana, PlantRequestSolana};
+use geonft_request::{ClaimRequestSolana, GeonftRequestSolana, PlantRequestSolana};
 use solana_program::borsh::try_from_slice_unchecked;
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
@@ -19,7 +19,7 @@ entrypoint!(process_instruction);
 pub fn process_instruction(
     program_id: &Pubkey,
     accounts: &[AccountInfo],
-    geonft_data: &[u8],
+    geonft_request: &[u8],
 ) -> ProgramResult {
     let accounts_iter = &mut accounts.iter();
     let account = next_account_info(accounts_iter)?;
@@ -45,8 +45,8 @@ pub fn process_instruction(
 
     let mut treasure_data = try_from_slice_unchecked(&account.data.borrow()[1..])?;
 
-    let geonft_data = GeonftRequestSolana::try_from_slice(geonft_data)?;
-    match geonft_data {
+    let geonft_request = GeonftRequestSolana::try_from_slice(geonft_request)?;
+    match geonft_request {
         GeonftRequestSolana::PlantTreasure(plant_info) => {
             plant_treasure(plant_info, &mut treasure_data)?;
         }
