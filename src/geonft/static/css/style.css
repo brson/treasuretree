@@ -156,6 +156,7 @@ a.image-link {
 }
 
 a.image-link img#github-icon {
+    margin-top: 1rem;
     width: 32px;
     height: 32px;
 }
