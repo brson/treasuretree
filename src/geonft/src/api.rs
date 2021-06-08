@@ -1,3 +1,7 @@
+//! Rocket API calls
+//!
+//! These are all mounted under `/api/` and only used from JS.
+
 use crate::crypto;
 use anyhow::{bail, Result};
 use geonft_request::{ClaimRequest, PlantRequest};
