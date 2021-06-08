@@ -10,7 +10,6 @@ use std::time::Duration;
 use geonft_data::{ClaimRequestSolana, GeonftRequestSolana, PlantRequestSolana};
 use geonft_shared::io::{self, SyncStatus};
 
-mod ipfs;
 mod solana;
 
 fn main() -> Result<()> {
