@@ -1,27 +1,21 @@
 //! The geonft Rocket web application
 
-#![allow(unused)]
 #![feature(decl_macro, proc_macro_hygiene)]
 
 #[macro_use]
 extern crate rocket;
 
-use anyhow::{anyhow, bail, Result};
+use anyhow::Result;
 use geonft_request::PlantRequest;
 use geonft_shared::io::{self, TreasureTemplateData};
-use rocket::http::{ContentType, Method, RawStr};
-use rocket::response::{content::Html, Content, Responder};
-use rocket::Data;
+use rocket::http::{ContentType, RawStr};
+use rocket::response::Content;
 use rocket_contrib::serve::StaticFiles;
-use rocket_contrib::{json::Json, templates::Template};
-use serde::{Deserialize, Serialize};
+use rocket_contrib::templates::Template;
+use serde::Serialize;
 use serde_json::json;
-use std::fmt;
 use std::fs::{self, DirEntry, File, Metadata};
-use std::io::prelude::*;
 use std::io::BufReader;
-use std::path::{Path, PathBuf};
-use std::time::SystemTime;
 
 mod api;
 mod crypto;

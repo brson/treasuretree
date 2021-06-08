@@ -8,10 +8,8 @@ use geonft_request::{ClaimRequest, PlantRequest};
 use geonft_shared::io;
 use rocket_contrib::{json::Json, templates::Template};
 use serde::{Deserialize, Serialize};
-use serde_json::json;
-use std::fmt;
-use std::fs::{self, DirEntry, File, Metadata};
-use std::path::{Path, PathBuf};
+use std::fs::{self, File};
+use std::path::Path;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PlantResponse;
