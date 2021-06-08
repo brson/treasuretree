@@ -6,10 +6,11 @@ use crate::crypto;
 use anyhow::{bail, Result};
 use geonft_request::{ClaimRequest, PlantRequest};
 use geonft_shared::io;
-use rocket_contrib::{json::Json, templates::Template};
+use rocket_contrib::json::Json;
 use serde::{Deserialize, Serialize};
 use std::fs::{self, File};
 use std::path::Path;
+use std::io::BufWriter;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PlantResponse;
@@ -62,7 +63,8 @@ pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<Pl
     let filename = format!("{}/{key}", io::PLANT_DIR, key = treasure_key_encode);
     fs::create_dir_all(io::PLANT_DIR)?;
 
-    let mut file = File::create(filename)?;
+    let file = File::create(filename)?;
+    let file = BufWriter::new(file);
     serde_json::to_writer(file, &plant_info.0)?;
 
     Ok(Json(PlantResponse))
@@ -112,14 +114,9 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
     let filename = format!("{}/{key}", io::CLAIM_DIR, key = treasure_key_encode);
     fs::create_dir_all(io::CLAIM_DIR)?;
 
-    let mut file = File::create(filename)?;
+    let file = File::create(filename)?;
+    let file = BufWriter::new(file);
     serde_json::to_writer(file, &claim_info.0)?;
-
-    let return_url = format!(
-        "{host}/treasure/{key}\n",
-        host = "http://localhost:8000",
-        key = treasure_key_encode
-    );
 
     Ok(Json(ClaimResponse))
 }

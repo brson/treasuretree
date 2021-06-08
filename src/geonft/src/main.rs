@@ -62,7 +62,7 @@ fn recent_page() -> Result<Template> {
 
     let mut treasures = Vec::new();
 
-    for (time, dent) in files.into_iter().take(10) {
+    for (_, dent) in files.into_iter().take(10) {
         let public_key = dent.file_name().into_string().expect("utf-8");
         let treasure = io::load_treasure_data(&public_key)?;
         treasures.push(treasure);
