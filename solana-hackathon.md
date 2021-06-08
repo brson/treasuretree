@@ -18,10 +18,10 @@ that was intended to be blockchain-compatible,
 such that the whole thing could be implemented
 without a web server.
 
-[Treasure Tree]: https://github.com/brson/geonft
+[Treasure Tree]: https://github.com/brson/treasuretree
 
 
-## TL;DR
+## Summaries
 
 This blog is long and meandering,
 but I've attempted to sum up useful observations here.
@@ -30,6 +30,8 @@ In general
 we enjoyed the experience,
 and it presented relatively few
 frustrating obstacles to writing the code we wanted.
+We felt excited about the code we were writing
+and looked forward to writing more.
 
 
 ### Things we liked
@@ -49,10 +51,10 @@ frustrating obstacles to writing the code we wanted.
   function, a buffer of data for your program to interepret,
   and an SDK full of tools. No DSLs here.
 - Solana programs are called "programs", not "smart contracts".
+- The developer channels on the Solana Discord are active.
 - Although at the time it _felt_ like a lot of the questions we
   asked in Discord went unanswered, in retrospect, many of them
   did get some kind of answer. A healthy sign I think.
-- The developer channels on the Solana Discord are active.
 
 
 ### Things we learned
@@ -70,11 +72,11 @@ frustrating obstacles to writing the code we wanted.
 - Call `solana_logger::setup_with("solana=debug");` before your program starts,
   or set the envvar `RUST_LOG=solana_client=debug`. This will show the logs
   from your program when it errors.
+- When your program succeeds the logs show up in the output of the `solana logs`
+  command.
 - Use [`try_from_slice_unchecked`] to deserialize from buffers that are
   larger than the exact size of the serialized object. [`try_from_slice`]
   panics when the buffer is not exactly the right size.
-- When your program succeeds the logs show up in the output of the `solana logs`
-  command.
 - The instruction budget is very limited &mdash;
   we were not able to verify a single K-256 ECDSA signature on-chain
   within the limit, as such
@@ -98,13 +100,13 @@ frustrating obstacles to writing the code we wanted.
 ### Things that annoyed us
 
 - The Rust API documentation is insufficient.
-- Solana programs having access to the standard library,
-  but a not-quite compatible version of the standard library,
-  was the source of multiple confusions, including:
+- Solana programs have access to the standard library,
+  but it is a not-quite compatible version of the standard library.
+  This was the source of multiple confusions, including:
 - `HashMap` seems to just panic on any operation,
   which manifests as a mysterious access violation.
   We spent hours looking for our bug when we should have just not
-  used `HashMap`.
+  used `HashMap`; and
 - `time` and `anyhow` don't build against Solana's `std`.
   `anyhow` can be built with the `std` feature off, but that loses
   compatibility with the `Error` trait.
@@ -113,8 +115,9 @@ frustrating obstacles to writing the code we wanted.
   Errors in Rust really need to be `Error + Send + Sync + 'static` unless there
   is great reason not to.
 - 4K BPF stack frames means some crates don't work,
-  including `ed25519-dalek`. First time I've ever encountered a limit
-  like this.
+  including `ed25519-dalek`.
+  Big stack frames trigger an access violation at runtime.
+  First time I've ever encountered a limit like this.
 - `cargo build-bpf` behaves differently than `cargo-build` in several situations,
   including missing the `-p` flag, and not working with libraries
   containing hyphens in their name.
@@ -129,9 +132,8 @@ frustrating obstacles to writing the code we wanted.
 
 ### Questions we still have
 
-- What advantages does Solana get by targeting BPF vs some other VM?
-- Is it possible to see the panic message from a panicking
-  Solana program?
+- How do unimplemented features of `std` manifest at runtime?
+  Errors? Panics? Aborts? Is it consistent?
 - What is `ThinClient` in `solana_client` for?
   We tried to use it but that seemed to be a wrong choice.
 - What does "spinner" mean in the context of
@@ -177,7 +179,7 @@ We plan to continue hacking on this until we can get
 a viable MVP running on the live network.
 
 
-## TOC
+## Table of contents
 
 - [The first day's plan](#user-content-the-first-days-plan)
 - [Installing the Solana SDK](#user-content-installing-the-solana-sdk)
@@ -192,6 +194,7 @@ a viable MVP running on the live network.
 - [Reproducing the Helloworld example client but in Rust](#user-content-reproducing-the-helloworld-example-client-but-in-rust)
 - [Building a Solana instruction](#user-content-building-a-solana-instruction)
 - [Getting beneath the instruction limit](#user-content-getting-beneath-the-instruction-limit)
+- [A few more obstacles](#user-content-a-few-more-obstacles)
 - [Wrapping it up](#user-content-wrapping-it-up)
 
 
@@ -506,12 +509,20 @@ They say
 
 > not yet, we haven't enabled it yet
 
-Maybe my skepticism is betrayed by the questions themselves,
-but I do suspect BPF provides little advantage to Solana,
-and is more a liability,
-considering the developer effort that must have gone into
-producing custom Rust toolchains to support the project.
-Not a lot of languages can target BPF.
+After some shower-based ruminating,
+this answer though does jog a memory.
+I have spoken with Anatoly about this subject in the distant past,
+and I recall now that the BPF instruction set has a design that is easy to translate to x86.
+So it might be that simple JITting and performance is the reason for choosing BPF.
+
+Interestingly,
+I believe this is also part of the reason [Nervos]
+uses RISC-V &mdash;
+its simple register and instruction set is easy to map to x86.
+
+[Nervos]: https://github.com/nervosnetwork
+
+
 
 
 ## The Helloworld application
@@ -770,7 +781,7 @@ Now that we have the tools,
 and a basic understanding of how to set up a Solana program and client,
 let's think about integrating Solana into our own project.
 
-The project is called [Treasure Tree][geonft] (formerly "geonft"),
+The project is called [Treasure Tree][treasuretree],
 and it is a real-world treasure hunt where the treasures are NFTs.
 In it,
 
@@ -781,7 +792,7 @@ As such, there are only two verbs in our app,
 _plant_, and _claim_, and executing either
 involves the creation and verification of a few cryptographic signatures.
 
-[geonft]: https://github.com/brson/geonft
+[treasuretree]: https://github.com/brson/treasuretree
 
 We have already prototyped the application as a conventional webapp using [Rocket].
 Our goal for this hackathon is to implement the two verbs, plant and claim,
@@ -791,6 +802,9 @@ and to create a service that syncs the state of these treasures
 from the centralized service onto the blockchain.
 
 [Rocket]: https://rocket.rs
+
+Note that internally the project is called "geonft",
+which code snippits herein will reference.
 
 
 ### Writing a Solana program in Rust
@@ -1608,6 +1622,13 @@ built in accounts and signatures,
 let the runtime verify those signatures,
 not pass them in to the program.
 
+Moving the signature validation out of the program
+eventually gets us under the instruction limit,
+but it takes a while to work through some remaining problems.
+
+
+## A few more obstacles
+
 We are stumped about the remaining access violation though.
 It looks like this:
 
@@ -1668,9 +1689,11 @@ We verify that our `account.data` buffer is filled with zeros initially.
 After some experimenting we realize that `HashMap` simply doesn't work
 within a Solana program,
 and this manifests as an access violation.
-I am guessing that `HashMap` operations panic,
-and we didn't get to see the panic message.
-Is it possible to see the panic message?
+I would guess that `HashMap` operations panic,
+and we didn't get to see the panic message,
+but I think we've seen panic messages before.
+I am unclear on what actually happened with `HashMap`.
+Maybe it is doing a runtime abort.
 
 We switch to a `BTreeMap` and things start proceeding more smoothly.
 
@@ -1682,6 +1705,44 @@ I do something obvious to me:
 I reserve byte 1 of the program data for an "initialized" flag,
 and serialize to the remaining slice of the program data.
 
+Finally, we run into an error deserializing our program state
+with the borsch [`try_from_slice`] method.
+
+When we created our program state on chain,
+we overallocated the amount of space we would need,
+and the amount of state we need for the program currently grows dynamically.
+
+`try_from_slice` though expects to be given a slice with exactly
+the number of bytes to deserialize,
+and returns an `InvalidData` / "not all bytes read" error
+if given an overlarge buffer.
+
+In our case it manifests with these logs in the client:
+
+```
+[2021-06-01T03:12:20Z INFO  geonft_sync] executing step UploadPlantToSolana for gtp1q0av2y3acvsmeq6nepdw9hnts5sptmpp97rt4h5xltajxx9d7kqnxkecltt
+[2021-06-01T03:12:20Z DEBUG solana_client::rpc_client] -32002 Transaction simulation failed: Error processing Instruction 0: Program failed to complete
+...
+[2021-06-01T03:12:20Z DEBUG solana_client::rpc_client]   8: Program log: panicked at 'called `Result::unwrap()` on an `Err` value: Custom { kind: InvalidData, error: "Not all bytes read" }', src/geonft_solana/src/lib.rs:56:68
+...
+```
+
+The solution here,
+which we found by reading code in the SPL,
+is to use the [`try_from_slice_unchecked`] function,
+which is not in borsch itself,
+but in the Solana SDK.
+
+[`try_from_slice_unchecked`]: https://docs.rs/solana-sdk/1.6.9/solana_sdk/borsh/fn.try_from_slice_unchecked.html
+[`try_from_slice`]: https://docs.rs/borsh/0.8.2/borsh/de/trait.BorshDeserialize.html#method.try_from_slice
+
+When we found this function we also
+discovered that we were using version 0.9 of borsch
+while Solana was using 0.8.
+This results in uncharacteristically bed error messages
+from the Rust compiler that are hard for newbies to understand and debug,
+just complaining about mismatched types.
+
 
 ## Wrapping it up
 
@@ -1689,7 +1750,7 @@ At this point we were a few days from the end of the hackathon.
 We didn't achieve everything we set out to,
 and had more problems to solve,
 but we were at a good stopping point,
-with a vaguelly-working client successfully executing
+with a vaguely-working client successfully executing
 the yet-incomplete on-chain program.
 
 So we spent the last few days cleaning up the UI,
@@ -1704,17 +1765,6 @@ and submitting it to the hackathon judges.
 
 
 <!--
-
-## Some other bits
-
-When we created our program state on chain,
-we overallocated the amount of space we would need.
-
-The borsch [`try_from_slice`] method
-
-
-[`try_from_slice_unchecked`]: https://docs.rs/solana-sdk/1.6.9/solana_sdk/borsh/fn.try_from_slice_unchecked.html
-[`try_from_slice`]: https://docs.rs/borsh/0.8.2/borsh/de/trait.BorshDeserialize.html#method.try_from_slice
 
 
 
