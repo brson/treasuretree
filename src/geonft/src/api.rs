@@ -27,7 +27,6 @@ pub struct PlantResponse;
 /// Stores the json to disk,
 /// with the encoded pubkey as the name of the file.
 /// The pubkey can be used later to retrieve (or claim) the treasure.
-
 #[post("/api/plant", format = "json", data = "<plant_info>")]
 pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<PlantResponse>> {
     let treasure_key_decode = crypto::decode_treasure_public_key(&plant_info.treasure_public_key)?;
@@ -43,9 +42,6 @@ pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<Pl
         bail!("Treasure already exists")
     }
 
-    // todo validate image type
-
-    // todo: get_hash from decoded_image
     let treasure_hash = crypto::get_hash(&plant_info.image)?;
 
     crypto::verify_plant_request_for_treasure(
@@ -85,7 +81,6 @@ pub struct ClaimResponse;
 ///
 /// If the checks pass then store a record indicating
 /// the treasure was claimed by the logged in user.
-
 #[post("/api/claim", format = "json", data = "<claim_info>")]
 pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<ClaimResponse>> {
     let treasure_key_decode = crypto::decode_treasure_public_key(&claim_info.treasure_public_key)?;
@@ -99,11 +94,6 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
     let account_key_decode = crypto::decode_account_public_key(&claim_info.account_public_key)?;
     let treasure_signature = crypto::decode_signature(&claim_info.treasure_signature)?;
     let account_signature = crypto::decode_signature(&claim_info.account_signature)?;
-
-    // todo:
-    // - claim success and transfer asset
-    // - disable secret_key
-    // - sync to blockchain
 
     crypto::verify_claim_request_for_treasure(
         &treasure_key_decode,
