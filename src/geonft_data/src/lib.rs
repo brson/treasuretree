@@ -20,6 +20,22 @@ pub struct PlantRequest {
     pub treasure_signature: String,
 }
 
+#[derive(Debug, BorshSerialize, BorshDeserialize, Serialize, Deserialize, Hash, Eq, PartialEq)]
+pub struct ClaimRequest {
+    /// The public key of the claiming account, bech32 encoded
+    pub account_public_key: String,
+    /// The public key of the treasure, bech32 encoded
+    pub treasure_public_key: String,
+    /// A base64-encoded signature by the account key of
+    /// the string "claim",
+    /// appended by the encoded treasure public key,
+    pub account_signature: String,
+    /// A base64-encoded signature by the treasure key of
+    /// the string "claim",
+    /// appended by the encoded account public key.
+    pub treasure_signature: String,
+}
+
 #[derive(Debug, BorshSerialize, BorshDeserialize, Serialize, Deserialize)]
 pub enum GeonftRequestSolana {
     PlantTreasure(PlantRequestSolana),
@@ -44,18 +60,3 @@ pub struct ClaimRequestSolana {
     pub treasure_public_key: Vec<u8>,
 }
 
-#[derive(Debug, BorshSerialize, BorshDeserialize, Serialize, Deserialize, Hash, Eq, PartialEq)]
-pub struct ClaimRequest {
-    /// The public key of the claiming account, bech32 encoded
-    pub account_public_key: String,
-    /// The public key of the treasure, bech32 encoded
-    pub treasure_public_key: String,
-    /// A base64-encoded signature by the account key of
-    /// the string "claim",
-    /// appended by the encoded treasure public key,
-    pub account_signature: String,
-    /// A base64-encoded signature by the treasure key of
-    /// the string "claim",
-    /// appended by the encoded account public key.
-    pub treasure_signature: String,
-}
