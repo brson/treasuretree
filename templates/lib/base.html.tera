@@ -50,9 +50,15 @@
     <footer>
 
       <section>
-
-        <p>Created by the committee for<br>
-          Coconut <span id="heart">❤︎</span> Cocobutt</p>
+        <p><a class="image-link" href="https://github.com/brson/treasuretree">
+            <img id="github-icon" src="images/github-icon.png" alt="GitHub">
+          </a>
+        </p>
+        <p>
+          Created by
+          <br>
+          Comité <span id="heart">❤︎</span> Cocoverse
+        </p>
 
       </section>
 

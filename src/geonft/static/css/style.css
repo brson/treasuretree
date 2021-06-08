@@ -155,6 +155,11 @@ a.image-link {
     background-color: inherit;
 }
 
+a.image-link img#github-icon {
+    width: 32px;
+    height: 32px;
+}
+
 input[type="text"] {
     background-color: var(--action-color-light);
     color: var(--text-color);
