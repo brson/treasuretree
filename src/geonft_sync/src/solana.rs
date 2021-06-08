@@ -1,10 +1,6 @@
 use anyhow::{anyhow, bail, Context, Result};
 use log::info;
 use std::convert::TryInto;
-use std::fs::File;
-use std::io::BufReader;
-use std::net::SocketAddr;
-use std::time::Duration;
 
 use geonft_nostd::crypto;
 use geonft_request::{ClaimRequestSolana, GeonftRequestSolana, PlantRequestSolana};
@@ -12,8 +8,6 @@ use geonft_shared::io;
 
 use borsh::ser::BorshSerialize;
 use solana_client::rpc_client::RpcClient;
-use solana_client::thin_client::{self, ThinClient};
-use solana_sdk::account::Account;
 use solana_sdk::commitment_config::CommitmentConfig;
 use solana_sdk::instruction::{AccountMeta, Instruction};
 use solana_sdk::pubkey::Pubkey;
@@ -57,13 +51,11 @@ pub fn connect(config: &Config) -> Result<RpcClient> {
 }
 
 static DEPLOY_PATH: &str = "target/deploy";
-static PROGRAM_SO_PATH: &str = "geonft_solana.so";
 static PROGRAM_KEYPAIR_PATH: &str = "geonft_solana-keypair.json";
 
 pub fn get_program_keypair(client: &RpcClient) -> Result<Keypair> {
     let manifest_dir = env!("CARGO_MANIFEST_DIR");
     let deploy_path = format!("{}/../../{}", manifest_dir, DEPLOY_PATH);
-    let program_so_path = format!("{}/{}", deploy_path, PROGRAM_SO_PATH);
     let program_keypair_path = format!("{}/{}", deploy_path, PROGRAM_KEYPAIR_PATH);
 
     info!("loading program keypair from {}", program_keypair_path);
@@ -146,7 +138,7 @@ pub fn get_program_instance_account(
     Ok(pubkey)
 }
 
-fn get_contract_size(client: &RpcClient) -> Result<usize> {
+fn get_contract_size(_client: &RpcClient) -> Result<usize> {
     // TODO
     Ok(10_000)
 }
