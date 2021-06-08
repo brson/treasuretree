@@ -1,7 +1,15 @@
+//! Request / response types used by both Rocket and Solana APIs
+//!
+//! These are all shared between at least two crates.
+//!
+//! Rocket APIs are JSON-encoded via serde,
+//! and Solana APIs are Borsch-encoded.
+
 use borsh::{BorshDeserialize, BorshSerialize};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, BorshSerialize, BorshDeserialize, Serialize, Deserialize, Hash, Eq, PartialEq)]
+/// A Rocket request to plant a treasure
+#[derive(Debug, Serialize, Deserialize, Hash, Eq, PartialEq)]
 pub struct PlantRequest {
     /// The public key of the account that is planting the treasure
     pub account_public_key: String,
@@ -20,7 +28,8 @@ pub struct PlantRequest {
     pub treasure_signature: String,
 }
 
-#[derive(Debug, BorshSerialize, BorshDeserialize, Serialize, Deserialize, Hash, Eq, PartialEq)]
+/// A Rocket request to claim a treasure
+#[derive(Debug, Serialize, Deserialize, Hash, Eq, PartialEq)]
 pub struct ClaimRequest {
     /// The public key of the claiming account, bech32 encoded
     pub account_public_key: String,
@@ -36,13 +45,15 @@ pub struct ClaimRequest {
     pub treasure_signature: String,
 }
 
-#[derive(Debug, BorshSerialize, BorshDeserialize, Serialize, Deserialize)]
+/// A Solana request
+#[derive(Debug, BorshSerialize, BorshDeserialize)]
 pub enum GeonftRequestSolana {
     PlantTreasure(PlantRequestSolana),
     ClaimTreasure(ClaimRequestSolana),
 }
 
-#[derive(Debug, BorshSerialize, BorshDeserialize, Serialize, Deserialize, Hash, Eq, PartialEq)]
+/// A Solana request to plant a treasure
+#[derive(Debug, BorshSerialize, BorshDeserialize, Hash, Eq, PartialEq)]
 pub struct PlantRequestSolana {
     /// The public key of the account that is planting the treasure
     pub account_public_key: Vec<u8>,
@@ -52,7 +63,8 @@ pub struct PlantRequestSolana {
     pub treasure_hash: Vec<u8>,
 }
 
-#[derive(Debug, BorshSerialize, BorshDeserialize, Serialize, Deserialize, Hash, Eq, PartialEq)]
+/// A Solana request to claim a treasure
+#[derive(Debug, BorshSerialize, BorshDeserialize, Hash, Eq, PartialEq)]
 pub struct ClaimRequestSolana {
     /// The public key of the claiming account, bech32 encoded
     pub account_public_key: Vec<u8>,
