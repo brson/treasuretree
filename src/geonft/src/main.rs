@@ -20,12 +20,10 @@ use std::io::prelude::*;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
-use treasure::Treasure;
 
 mod api;
 mod crypto;
 mod images;
-mod treasure;
 
 #[get("/")]
 fn root_page() -> Template {
