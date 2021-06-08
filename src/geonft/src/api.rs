@@ -10,9 +10,7 @@ use std::fs::{self, DirEntry, File, Metadata};
 use std::path::{Path, PathBuf};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct PlantResponse {
-    return_url: String,
-}
+pub struct PlantResponse;
 
 /// Stores a treasure and associated key
 ///
@@ -69,20 +67,11 @@ pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<Pl
     let mut file = File::create(filename)?;
     serde_json::to_writer(file, &plant_info.0)?;
 
-    let return_url = format!(
-        "{host}/api/plant/{key}\n",
-        host = "http://localhost:8000",
-        key = treasure_key_encode
-    );
-
-    Ok(Json(PlantResponse { return_url }))
+    Ok(Json(PlantResponse))
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ClaimResponse {
-    message: String,
-    return_url: String,
-}
+pub struct ClaimResponse;
 
 /// Claim a treasure.
 ///
@@ -140,10 +129,7 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
         key = treasure_key_encode
     );
 
-    Ok(Json(ClaimResponse {
-        message: "Congrats! Treasure received!".to_string(),
-        return_url,
-    }))
+    Ok(Json(ClaimResponse))
 }
 
 #[derive(Serialize, Deserialize, Debug)]
