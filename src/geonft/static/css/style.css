@@ -448,6 +448,7 @@ input[type="text"]:hover {
 
 .breakable {
     overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .qr-key-container {
