@@ -153,6 +153,7 @@ a.image-link {
     border-width: 0;
     box-shadow: none;
     background-color: inherit;
+    display: block;
 }
 
 a.image-link img#github-icon {
