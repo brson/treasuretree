@@ -1,0 +1,31 @@
+<section>
+
+  <p><a href="{{ treasure.public_url }}" class="image-link"><img src="{{ treasure.image_url }}"></a></p>
+
+  <p class="treasure-p">
+    <a href="{{ treasure.public_url }}">
+      <span class="breakable">{{ treasure.public_key_abbrev }}</span>
+    </a>
+  </p>
+
+  <p>Id: <span class="breakable">{{ treasure.public_key }}</span></p>
+
+  <p>Planted on: {{ treasure.planted_date_time }}</p>
+
+  <p>Planted by: <span class="breakable">{{ treasure.planted_by }}<span></p>
+
+  <p>Claimed on: {{ treasure.claimed_date_time }}</p>
+
+  <p>Claimed by: <span class="breakable">{{ treasure.claimed_by }}<span></p>
+
+  <div class="treasure-sync-section" id="{{ treasure.public_key }}">
+    <p>
+      Sync status:
+      <span class="sync-status">
+        {{ treasure.sync_status }}
+      </span>
+      <span class="spinner no-display"></span>
+    </p>
+  </div>
+
+</section>

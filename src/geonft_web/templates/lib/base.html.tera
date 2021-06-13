@@ -1,0 +1,69 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% if base_href %}
+    <base href="{{base_href}}">
+    {% endif %}
+
+    <link rel="stylesheet" href="css/style.css">
+
+    {% block styles %}
+    {% endblock styles %}
+
+    <!-- don't ask for a favicon -->
+    <link rel="shortcut icon" href="#" />
+
+    {% block scripts %}
+    {% endblock scripts %}
+
+  </head>
+
+  <body>
+
+    <header>
+
+      <section id="title-section">
+        <h1>
+          <a href="./">
+            <span>
+              <span>Treasure Tree</span>
+              <img src="images/treasure-tree-small-white.png" alt="logo">
+            </span>
+          </a>
+        </h1>
+      </section>
+
+      <section>
+        <h2>{% block title %}{% endblock title %}</h2>
+      </section>
+
+    </header>
+
+    {% block body %}
+    {% endblock body %}
+
+    <footer>
+
+      <section>
+        <p><a class="image-link" href="https://github.com/brson/treasuretree">
+            <img id="github-icon" src="images/github-icon.png" alt="GitHub">
+          </a>
+        </p>
+        <p>
+          Created by
+          <br>
+          Comité <span id="heart">❤︎</span> Cocoverse
+        </p>
+
+      </section>
+
+    </footer>
+
+  </body>
+
+</html>

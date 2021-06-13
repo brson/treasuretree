@@ -1,0 +1,49 @@
+{% extends "lib/base" %}
+
+
+{% block title %}
+
+Let's Plant a Treasure!
+
+{% endblock title %}
+
+
+{% block scripts %}
+
+<script src="js/plant.js" type="module"></script>
+
+{% endblock scripts %}
+
+
+{% block body %}
+
+<section>
+
+  <div class="action-row">
+    <span class="file-input">
+      <input type="file" id="image-upload-button">
+      <label for="image-upload-button">Upload Image</label>
+    </span>
+    <input type="button" id="use-test-image-button" value="Use Test Image">
+    <span id="file-spinner" class="spinner no-display"></span>
+  </div>
+
+  <p><img id="treasure-image" class="no-display"></p>
+
+</section>
+
+{% include "partials/secret-scan" %}
+
+{% include "partials/account" %}
+
+<section>
+
+  <p>
+    <input type="button" id="plant-button" value="Plant Treasure" disabled>
+    <span id="plant-spinner" class="spinner no-display"></span>
+  </p>
+  <p id="planted-message" class="success-message no-display">Treasure Planted<p>
+
+</section>
+
+{% endblock body %}

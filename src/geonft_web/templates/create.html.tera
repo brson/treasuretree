@@ -1,0 +1,46 @@
+{% extends "lib/base" %}
+
+
+{% block title %}
+
+Let's Create a Treasure Key!
+
+{% endblock title %}
+
+
+{% block styles %}
+
+<link rel="stylesheet" href="css/qr-print.css">
+
+{% endblock styles %}
+
+{% block scripts %}
+
+<script src="js/create.js" type="module"></script>
+
+{% endblock scripts %}
+
+
+{% block body %}
+
+<section>
+
+  <p>
+    <input type="button" id="create-button" value="Create Treasure Key">
+    <span id="create-spinner" class="spinner no-display"></span>
+  </p>
+
+</section>
+
+<div id="qrs">
+  <section>
+
+    <div class="qr-key-container">
+      <p><span id="secret-key" class="breakable"></span></p>
+      <p id="display-qrcode"></p>
+    </div>
+
+  </section>
+</div>
+
+{% endblock body %}

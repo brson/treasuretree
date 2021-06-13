@@ -1,0 +1,22 @@
+{% extends "lib/base" %}
+
+
+{% block title %}
+
+Somebody Planted Treasures!
+
+{% endblock title %}
+
+{% block scripts %}
+{% endblock scripts %}
+
+
+{% block body %}
+
+{% for treasure in treasures %}
+
+{% include "partials/treasure" %}
+
+{% endfor %}
+
+{% endblock body %}

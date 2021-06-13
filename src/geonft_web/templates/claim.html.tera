@@ -1,0 +1,34 @@
+{% extends "lib/base" %}
+
+
+{% block title %}
+
+Let's Claim a Treasure!
+
+{% endblock title %}
+
+
+{% block scripts %}
+
+<script src="js/claim.js" type="module"></script>
+
+{% endblock scripts %}
+
+
+{% block body %}
+
+{% include "partials/secret-scan" %}
+
+{% include "partials/account" %}
+
+<section>
+
+  <p>
+    <input type="button" id="claim-button" value="Claim Treasure" disabled>
+    <span id="claim-spinner" class="spinner no-display"></span>
+  </p>
+  <p id="claimed-message" class="success-message no-display">Treasure Claimed<p>
+
+</section>
+
+{% endblock body %}
