@@ -117,7 +117,7 @@ pub fn claim_treasure(
 pub enum GeonftError {
     SolanaError(ProgramError),
     AnyhowError(anyhow::Error),
-    IOError(std::io::Error),
+    IoError(std::io::Error),
 }
 
 impl From<anyhow::Error> for GeonftError {
@@ -128,7 +128,7 @@ impl From<anyhow::Error> for GeonftError {
 
 impl From<std::io::Error> for GeonftError {
     fn from(e: std::io::Error) -> Self {
-        GeonftError::IOError(e)
+        GeonftError::IoError(e)
     }
 }
 
@@ -140,7 +140,7 @@ impl From<GeonftError> for ProgramError {
                 msg!("{}", e);
                 ProgramError::Custom(0)
             }
-            GeonftError::IOError(e) => {
+            GeonftError::IoError(e) => {
                 msg!("{}", e);
                 ProgramError::Custom(1)
             }

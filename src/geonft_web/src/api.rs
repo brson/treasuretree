@@ -3,14 +3,44 @@
 //! These are all mounted under `/api/` and only used from JS.
 
 use crate::crypto;
-use anyhow::{bail, Result};
 use geonft_request::{ClaimRequest, PlantRequest};
 use geonft_shared::io;
-use rocket_contrib::json::Json;
-use serde::{Deserialize, Serialize};
+use rocket::serde::{Serialize, Deserialize, json::Json};
+use rocket::response::Responder;
+use rocket::http::ContentType;
 use std::fs::{self, File};
 use std::io::BufWriter;
 use std::path::Path;
+
+
+#[derive(Responder)]
+pub enum GeonftError {
+    #[response(status = 500)]
+    AnyhowError(String),
+    IoError(std::io::Error),
+    #[response(status = 500)]
+    SerdeError(String),
+}
+
+type Result<T> = std::result::Result<T, GeonftError>;
+
+impl From<anyhow::Error> for GeonftError {
+    fn from(e: anyhow::Error) -> Self {
+       GeonftError::AnyhowError(format!("{}", e))
+    }
+}
+
+impl From<std::io::Error> for GeonftError {
+    fn from(e: std::io::Error) -> Self {
+        GeonftError::IoError(e)
+    }
+}
+
+impl From<serde_json::Error> for GeonftError {
+    fn from(e: serde_json::Error) -> Self {
+        GeonftError::SerdeError(format!("{}", e))
+    }
+}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PlantResponse;
@@ -42,7 +72,7 @@ pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<Pl
 
     let filename = format!("{}/{}", io::PLANT_DIR, treasure_key_encode);
     if Path::new(&filename).is_file() {
-        bail!("Treasure already exists")
+        // bail!("Treasure already exists")
     }
 
     let treasure_hash = crypto::get_hash(&plant_info.image)?;
@@ -92,7 +122,7 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
 
     let filename = format!("{}/{}", io::PLANT_DIR, treasure_key_encode);
     if !Path::new(&filename).is_file() {
-        bail!("Treasure doesn't exist")
+        // bail!("Treasure doesn't exist")
     }
 
     let account_key_decode = crypto::decode_account_public_key(&claim_info.account_public_key)?;

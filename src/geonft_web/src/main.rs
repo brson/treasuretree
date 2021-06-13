@@ -6,12 +6,12 @@ use geonft_request::PlantRequest;
 use geonft_shared::io::{self, TreasureTemplateData};
 use std::fs::{self, DirEntry, File, Metadata};
 use std::io::BufReader;
-use std::collections::HashMap;
+
 use rocket_dyn_templates::Template;
 use rocket::serde::{Serialize, json::json};
 use rocket::fs::FileServer;
 
-// mod api;
+mod api;
 mod crypto;
 mod images;
 
@@ -45,5 +45,13 @@ fn rocket() -> _ {
                routes![
                    root_page,
                    static_page,
+                   // todo:
+                   // recent_page,
+                   // treasure_page,
+                   // treasure_image,
+                   api::plant_treasure_with_key,
+                   api::claim_treasure_with_key,
+                   api::treasure_exists,
+
 ])        
 }
