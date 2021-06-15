@@ -11,7 +11,7 @@ use rocket::http::ContentType;
 use std::fs::{self, File};
 use std::io::BufWriter;
 use std::path::Path;
-
+use base64::DecodeError;
 
 #[derive(Responder)]
 pub enum GeonftError {
@@ -20,9 +20,11 @@ pub enum GeonftError {
     IoError(std::io::Error),
     #[response(status = 500)]
     SerdeError(String),
+    #[response(status = 500)]
+    DecodeError(String),
 }
 
-type Result<T> = std::result::Result<T, GeonftError>;
+pub type Result<T> = std::result::Result<T, GeonftError>;
 
 impl From<anyhow::Error> for GeonftError {
     fn from(e: anyhow::Error) -> Self {
@@ -41,6 +43,13 @@ impl From<serde_json::Error> for GeonftError {
         GeonftError::SerdeError(format!("{}", e))
     }
 }
+
+impl From<DecodeError> for GeonftError {
+    fn from(e: base64::DecodeError) -> Self {
+        GeonftError::DecodeError(format!("{}", e))
+    }
+}
+
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PlantResponse;
