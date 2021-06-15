@@ -9,16 +9,15 @@ use std::io::BufReader;
 
 use rocket_dyn_templates::Template;
 use rocket::serde::{Serialize, json::json};
-use rocket::response::Responder;
 use rocket::fs::FileServer;
 use rocket::http::ContentType;
 
-use api::{Result, GeonftError};
+use errors::Result;
     
 mod api;
 mod crypto;
 mod images;
-
+mod errors;
 
     
 #[get("/")]
