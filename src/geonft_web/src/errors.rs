@@ -15,7 +15,7 @@ pub type Result<T> = std::result::Result<T, GeonftError>;
 
 impl From<anyhow::Error> for GeonftError {
     fn from(e: anyhow::Error) -> Self {
-       GeonftError::AnyhowError(format!("{}", e))
+        GeonftError::AnyhowError(format!("{}", e))
     }
 }
 
@@ -36,4 +36,3 @@ impl From<DecodeError> for GeonftError {
         GeonftError::DecodeError(format!("{}", e))
     }
 }
-

@@ -6,11 +6,10 @@ use crate::crypto;
 use crate::errors::Result;
 use geonft_request::{ClaimRequest, PlantRequest};
 use geonft_shared::io;
-use rocket::serde::{Serialize, Deserialize, json::Json};
+use rocket::serde::{json::Json, Deserialize, Serialize};
 use std::fs::{self, File};
 use std::io::BufWriter;
 use std::path::Path;
-
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PlantResponse;

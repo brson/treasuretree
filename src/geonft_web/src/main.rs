@@ -7,24 +7,22 @@ use geonft_shared::io::{self, TreasureTemplateData};
 use std::fs::{self, DirEntry, File, Metadata};
 use std::io::BufReader;
 
-use rocket_dyn_templates::Template;
-use rocket::serde::{Serialize, json::json};
 use rocket::fs::FileServer;
 use rocket::http::ContentType;
+use rocket::serde::{json::json, Serialize};
+use rocket_dyn_templates::Template;
 
 use errors::Result;
-    
+
 mod api;
 mod crypto;
-mod images;
 mod errors;
+mod images;
 
-    
 #[get("/")]
 fn root_page() -> Template {
     Template::render("index", json!({}))
 }
-
 
 #[get("/<page>")]
 fn static_page(page: String) -> Template {
@@ -42,7 +40,9 @@ fn recent_page() -> Result<Template> {
     // It does the "collect Iter<Item = Result> into Result<Vec>" trick.
     let mut files = fs::read_dir(io::PLANT_DIR)?
         // Get the file metadata
-        .map(|dent: std::result::Result<DirEntry, _>| dent.and_then(|dent| Ok((dent.metadata()?, dent))))
+        .map(|dent: std::result::Result<DirEntry, _>| {
+            dent.and_then(|dent| Ok((dent.metadata()?, dent)))
+        })
         // Only keep entries that are files or errors
         .filter(|dent: &std::result::Result<(Metadata, DirEntry), _>| {
             dent.as_ref()
@@ -127,7 +127,7 @@ fn treasure_image(public_key: &str) -> Result<(ContentType, Vec<u8>)> {
     let decoded_image = base64::decode(&encoded_image)?;
     let content_type = images::detect_image_type(&decoded_image).unwrap_or(ContentType::Binary);
 
-   Ok((content_type, decoded_image))
+    Ok((content_type, decoded_image))
 }
 
 #[launch]
@@ -143,16 +143,17 @@ fn rocket() -> _ {
         .mount("/js", FileServer::from(js_dir))
         .mount("/images", FileServer::from(images_dir))
         .mount("/wasm/pkg", FileServer::from(wasm_dir))
-        .mount("/",
-               routes![
-                   root_page,
-                   static_page,
-                   recent_page,
-                   treasure_page,
-                   treasure_image,
-                   api::plant_treasure_with_key,
-                   api::claim_treasure_with_key,
-                   api::treasure_exists,
-
-])        
+        .mount(
+            "/",
+            routes![
+                root_page,
+                static_page,
+                recent_page,
+                treasure_page,
+                treasure_image,
+                api::plant_treasure_with_key,
+                api::claim_treasure_with_key,
+                api::treasure_exists,
+            ],
+        )
 }
