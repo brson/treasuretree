@@ -24,3 +24,8 @@
 
 - print stylesheets
   - https://www.matuzo.at/blog/i-totally-forgot-about-print-style-sheets/
+- k256p native library
+
+  > @brson nice blog post! I looked at signature verification on-chain last hackathon and put a summary of the instruction count needed here: https://gist.github.com/jgensler8/ded6fef052a028c4db4c112e80a4833c
+  >
+  > not sure if it 100% covers your use case but there is also a Secp256k1 Native Program (kinda like a standard library for cross program invocation) which might also help: https://docs.solana.com/developing/runtime-facilities/programs#secp256k1-program
