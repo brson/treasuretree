@@ -11,7 +11,7 @@ geonft_nostd = { path = "../geonft_nostd" }
 geonft_shared = { path = "../geonft_shared" }
 
 anyhow = "1.0.40"
-rocket = { version = "0.5.0-rc.1", features = ["secrets", "tls", "json"] }
+rocket = { version = "0.5.0-rc.1", features = ["tls", "json"] }
 serde = { version = "1.0.125", features = ["derive"] }
 serde_json = "1.0.64"
 rand = "0.7.3"
