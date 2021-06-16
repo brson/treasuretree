@@ -53,7 +53,7 @@ It has this dual centralized/blockchain architecture for two reasons:
 
 It is written mostly in Rust and consists of several crates:
 
-- [`geonft`]: a [Rocket] web server, serving static pages, a JSON-based API,
+- [`geonft_web`]: a [Rocket] web server, serving static pages, a JSON-based API,
   and a WASM blob for use by the client.
 - [`geonft_wasm`]: Rust code used by the web app.
 - [`geonft_solana`]: a Solana program that implements a similar API
