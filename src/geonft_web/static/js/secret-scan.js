@@ -183,7 +183,7 @@ async function loadFromUrl() {
 
         let secretKey_ = wasm.treasure_secret_url_to_secret_key(url);
         let publicKey_ = wasm.treasure_secret_url_to_public_key(url);
-
+        
         if (secretKey_ == null || publicKey_ == null) {
             console.error("unable to decode key from URL");
         }

@@ -20,9 +20,9 @@ pub static TREASURE_PUBLIC_KEY_HRP: &'static str = "gtp";
 pub static TREASURE_SECRET_PLANT_URL_PREFIX: &'static str = "https://treasuretree.org/plant?key=";
 pub static TREASURE_SECRET_CLAIM_URL_PREFIX: &'static str = "https://treasuretree.org/claim?key=";
 pub static TREASURE_SECRET_PLANT_URL_PREFIX_LOCAL: &'static str =
-    "http://localhost:8000/plant?key=";
+    "http://127.0.0.1:8000/plant?key=";
 pub static TREASURE_SECRET_CLAIM_URL_PREFIX_LOCAL: &'static str =
-    "http://localhost:8000/claim?key=";
+    "http://127.0.0.1:8000/claim?key=";
 
 pub struct Keypair {
     pub secret: SecretKey,
