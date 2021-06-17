@@ -3,7 +3,7 @@
 //! These are all mounted under `/api/` and only used from JS.
 
 use crate::crypto;
-use crate::errors::Result;
+use crate::errors::{Result, GeonftError};
 use geonft_request::{ClaimRequest, PlantRequest};
 use geonft_shared::io;
 use rocket::serde::{json::Json, Deserialize, Serialize};
@@ -41,7 +41,7 @@ pub fn plant_treasure_with_key(plant_info: Json<PlantRequest>) -> Result<Json<Pl
 
     let filename = format!("{}/{}", io::PLANT_DIR, treasure_key_encode);
     if Path::new(&filename).is_file() {
-        // bail!("Treasure already exists")
+        return Err(GeonftError::FileError(format!("Treasure already exists")));
     }
 
     let treasure_hash = crypto::get_hash(&plant_info.image)?;
@@ -91,7 +91,7 @@ pub fn claim_treasure_with_key(claim_info: Json<ClaimRequest>) -> Result<Json<Cl
 
     let filename = format!("{}/{}", io::PLANT_DIR, treasure_key_encode);
     if !Path::new(&filename).is_file() {
-        // bail!("Treasure doesn't exist")
+        return Err(GeonftError::FileError(format!("Treasure doesn't exist")));
     }
 
     let account_key_decode = crypto::decode_account_public_key(&claim_info.account_public_key)?;

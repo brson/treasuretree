@@ -173,16 +173,19 @@ plantButton.addEventListener("click", async () => {
 
         if (!response.ok) {
             // TODO
+            let errorResponse = await response.text();
+            window.alert(errorResponse);
+        } else {
+
+            let jsonResponse = await response.json();
+            console.log(jsonResponse);
+
+            treasurePlanted = true;
+
+            let plantedMessageElt = document.getElementById("planted-message");
+            console.assert(plantedMessageElt);
+            plantedMessageElt.classList.remove("no-display");
         }
-
-        let jsonResponse = await response.json();
-        console.log(jsonResponse);
-
-        treasurePlanted = true;
-
-        let plantedMessageElt = document.getElementById("planted-message");
-        console.assert(plantedMessageElt);
-        plantedMessageElt.classList.remove("no-display");
     } finally {
         maybeEnablePlantButton();
         plantSpinner.classList.add("no-display");

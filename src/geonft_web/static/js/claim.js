@@ -71,17 +71,21 @@ claimButton.addEventListener("click", async () => {
         if (!response.ok) {
             // TODO
             console.log("something wrong with response");
+
+            let errorResponse = await response.text();
+            window.alert(errorResponse);
+        } else {
+
+            let jsonResponse = await response.json();
+            console.log(jsonResponse);
+
+            treasureClaimed = true;
+
+            let claimedMessageElt = document.getElementById("claimed-message");
+            console.log(claimedMessageElt);
+            console.assert(claimedMessageElt);
+            claimedMessageElt.classList.remove("no-display");
         }
-
-        let jsonResponse = await response.json();
-        console.log(jsonResponse);
-
-        treasureClaimed = true;
-
-        let claimedMessageElt = document.getElementById("claimed-message");
-        console.log(claimedMessageElt);
-        console.assert(claimedMessageElt);
-        claimedMessageElt.classList.remove("no-display");
     } finally {
         maybeEnableClaimButton();
         claimSpinner.classList.add("no-display");

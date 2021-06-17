@@ -9,6 +9,8 @@ pub enum GeonftError {
     SerdeError(String),
     #[response(status = 500)]
     DecodeError(String),
+    #[response(status = 500)]
+    FileError(String),
 }
 
 pub type Result<T> = std::result::Result<T, GeonftError>;
