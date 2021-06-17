@@ -68,7 +68,7 @@ It is written mostly in Rust and consists of several crates:
 (The original name of this project was "geonft").
 
 [Rocket]: https://rocket.rs
-[`geonft`]: src/geonft
+[`geonft_web`]: src/geonft_web
 [`geonft_wasm`]: src/geonft_wasm
 [`geonft_solana`]: src/geonft_solana
 [`geonft_sync`]: src/geonft_sync
