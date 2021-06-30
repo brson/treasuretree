@@ -4,7 +4,6 @@ cargo-features = ["resolver"]
 resolver = "2"
 
 members = [
-    "src/geonft",
     "src/geonft_web",
     "src/geonft_request",
     "src/geonft_nostd",
