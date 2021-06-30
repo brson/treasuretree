@@ -2,8 +2,8 @@
 //!
 //! These are all mounted under `/api/` and only used from JS.
 
-use crate::crypto;
 use crate::errors::{GeonftError, Result};
+use geonft_nostd::crypto;
 use geonft_request::{ClaimRequest, PlantRequest};
 use geonft_shared::io;
 use rocket::serde::{json::Json, Deserialize, Serialize};

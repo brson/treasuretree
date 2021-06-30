@@ -2,6 +2,7 @@
 extern crate rocket;
 extern crate rocket_dyn_templates;
 
+use geonft_nostd::crypto;
 use geonft_request::PlantRequest;
 use geonft_shared::io::{self, TreasureTemplateData};
 use std::fs::{self, DirEntry, File, Metadata};
@@ -15,7 +16,6 @@ use rocket_dyn_templates::Template;
 use errors::Result;
 
 mod api;
-mod crypto;
 mod errors;
 mod images;
 
