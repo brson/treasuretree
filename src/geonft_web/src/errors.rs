@@ -1,5 +1,3 @@
-use base64::DecodeError;
-
 #[derive(Responder)]
 pub enum GeonftError {
     #[response(status = 500)]
@@ -33,7 +31,7 @@ impl From<serde_json::Error> for GeonftError {
     }
 }
 
-impl From<DecodeError> for GeonftError {
+impl From<base64::DecodeError> for GeonftError {
     fn from(e: base64::DecodeError) -> Self {
         GeonftError::DecodeError(format!("{}", e))
     }
