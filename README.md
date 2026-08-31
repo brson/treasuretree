@@ -29,15 +29,6 @@ and the [blog about our experience][blog].
 [vid]: https://youtu.be/uc2MUdDo4xs
 [blog]: https://brson.github.io/2021/06/08/rust-on-solana
 
-See it live at [treasuretree.org],
-but note that
-**this is prototype-quality software,
-and works just enough to demo**.
-It runs only against a Solana devnet,
-not a live network.
-
-[treasuretree.org]: https://treasuretree.org
-
 
 ## About the software
 
